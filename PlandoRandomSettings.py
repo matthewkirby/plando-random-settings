@@ -1,9 +1,8 @@
+import json
+import random
 from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
 from LocationList import location_table
-from StartingItems import inventory, songs, equipment, everything
-import json
-import sys
-import random as R
+from StartingItems import inventory, songs, equipment
 
 __version__ = "5-1-73.1.1"
 
@@ -31,13 +30,13 @@ NUM_EXCLUDED_LOCATIONS = 0
 
 
 # Populate random tricks using the constant above
-def populateTricks():
+def populate_tricks():
     weight = NUM_EXPECTED_TRICKS / len(logic_tricks)
-    r = 0
+    rand = 0
     tricks = []
-    for k,v in logic_tricks.items():
-        r = R.random()  
-        if r <= weight:
+    for _, v in logic_tricks.items():
+        rand = random.random()
+        if rand <= weight:
             tricks.append(v['name'])
         else:
             continue
@@ -46,76 +45,76 @@ def populateTricks():
 
 
 # Populate random location exclusions using the constant above
-def populateLocationExclusions():
+def populate_location_exclusions():
     # prune the raw list of locations to only those that give items
     TYPES_NOT_INCLUDED = ['Event', 'Drop', 'Boss', 'GossipStone']
     refined_locations = []
-    for k,v in location_table.items():
-        if ((v[0] in TYPES_NOT_INCLUDED) or (v[0] == 'Shop' and k[-1] in ['1','2','3','4'])):
+    for k, v in location_table.items():
+        if ((v[0] in TYPES_NOT_INCLUDED) or (v[0] == 'Shop' and k[-1] in ['1', '2', '3', '4'])):
             continue
         else:
             refined_locations.append(k)
-    
+
     # randomly generate a list from the above for locations to exclude
     weight = NUM_EXCLUDED_LOCATIONS / len(refined_locations)
     excluded_locations = []
     r = 0
     for l in refined_locations:
-        r = R.random()
+        r = random.random()
         if r <= weight:
             excluded_locations.append(l)
-    
+
     return excluded_locations
 
 
 # Populate starting pool (inventory, songs, equipment)
-def populateStartingPool(pool):
+def populate_starting_pool(pool):
     starting_pool = []
     for item in pool:
-        if R.random() < 0.05:
+        if random.random() < 0.05:
             starting_pool.append(pool[item].settingname)
 
     return starting_pool
 
 
 # Populate starting inventory
-def populateStartingItems():
-    return populateStartingPool(inventory)
+def populate_starting_items():
+    return populate_starting_pool(inventory)
 
 
 # Populate starting songs
-def populateStartingSongs():
-    return populateStartingPool(songs)
+def populate_starting_songs():
+    return populate_starting_pool(songs)
 
 
 # Populate starting equipment
-def populateStartingEquipment():
-    return populateStartingPool(equipment)
+def populate_starting_equipment():
+    return populate_starting_pool(equipment)
 
 
-def getRandomFromType(setting):
+def get_random_from_type(setting):
     if setting.gui_type == 'Checkbutton':
-        return R.random() <= 0.5
+        return random.random() <= 0.5
     elif setting.gui_type == 'Combobox':
         s = list(setting.choices.keys())
         if setting.name == 'bridge' and not ALLOW_BRIDGETOKENS:
             s.pop(s.index('tokens'))
-        return R.choice(s)
+        return random.choice(s)
     elif setting.gui_type == 'Scale':
         s = list(setting.choices.keys())
         s.sort()
-        return R.randint(s[0], s[-1])
+        return random.randint(s[0], s[-1])
     elif setting.gui_type == 'SearchBox':
         if setting.name == 'disabled_locations':
-            return populateLocationExclusions()
+            return populate_location_exclusions()
         elif setting.name == 'allowed_tricks':
-            return populateTricks()
+            return populate_tricks()
         elif setting.name == "starting_items":
-            return populateStartingItems()
+            return populate_starting_items()
         elif setting.name == "starting_songs":
-            return populateStartingSongs()
+            return populate_starting_songs()
         elif setting.name == "starting_equipment":
-            return populateStartingEquipment()
+            return populate_starting_equipment()
     else:
         return setting.default
 
@@ -158,15 +157,15 @@ if STARTING_ITEMS in ["none", "legacy"]:
 random_settings = {}
 for info in setting_infos:
     if info.name in settings_to_randomize:
-        random_settings[info.name] = getRandomFromType(info)
-        print(info.name + ' : ' + info.gui_type + ' : ' + str(getRandomFromType(info)))
+        random_settings[info.name] = get_random_from_type(info)
+        print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
 
 # Randomize the starting items and songs in legacy mode
 if STARTING_ITEMS == "legacy":
     starting_items = []
     starting_songs = []
-    fast_travel = R.choice([True, False])
-    omega_wallet = R.choice([True, False])
+    fast_travel = random.choice([True, False])
+    omega_wallet = random.choice([True, False])
     if fast_travel:
         starting_items.append("farores_wind")
         starting_songs.append("prelude")
