@@ -1,5 +1,6 @@
 from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
 from LocationList import location_table
+from StartingItems import inventory, songs, equipment, everything
 import json
 import sys
 import random as R
@@ -17,9 +18,9 @@ ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc
 
 # Randomize starting items
 # "none": No starting items
-# "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Faore, Prelude, Serenade)
-# "full": Randomize ALL starting items (not implemented)
-STARTING_ITEMS = "legacy" # Randomize starting items
+# "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
+# "everything": Randomize ALL starting items
+STARTING_ITEMS = "everything"
 
 # MasterQuest specific options
 NUM_MASTERQUEST = 0 # Overrides ALLOW_MASTERQUEST, max=12
@@ -43,6 +44,7 @@ def populateTricks():
 
     return tricks
 
+
 # Populate random location exclusions using the constant above
 def populateLocationExclusions():
     # prune the raw list of locations to only those that give items
@@ -65,6 +67,34 @@ def populateLocationExclusions():
     
     return excluded_locations
 
+
+# Populate starting pool (inventory, songs, equipment)
+def populateStartingPool(pool):
+    starting_pool_dict = {}
+    for item in pool:
+        (setting_name, item_name, available, gui_text, special) = pool[item]
+        if R.random() < 0.05:
+            amount = starting_pool_dict.get(item_name, 0)
+            starting_pool_dict.update({item_name: amount + 1})
+
+    return starting_pool_dict
+
+
+# Populate starting inventory
+def populateStartingItems():
+    return populateStartingPool(inventory)
+
+
+# Populate starting songs
+def populateStartingSongs():
+    return populateStartingPool(songs)
+
+
+# Populate starting equipment
+def populateStartingEquipment():
+    return populateStartingPool(equipment)
+
+
 def getRandomFromType(setting):
     if setting.gui_type == 'Checkbutton':
         return R.random() <= 0.5
@@ -82,6 +112,12 @@ def getRandomFromType(setting):
             return populateLocationExclusions()
         elif setting.name == 'allowed_tricks':
             return populateTricks()
+        elif setting.name == "starting_items":
+            return populateStartingItems()
+        elif setting.name == "starting_songs":
+            return populateStartingSongs()
+        elif setting.name == "starting_equipment":
+            return populateStartingEquipment()
     else:
         return setting.default
 
@@ -127,18 +163,19 @@ for info in setting_infos:
         random_settings[info.name] = getRandomFromType(info)
         print(info.name + ' : ' + info.gui_type + ' : ' + str(getRandomFromType(info)))
 
-# Randomize the starting items
+# Randomize the starting items and songs in legacy mode
 if STARTING_ITEMS == "legacy":
     starting_items_dict = {}
+    starting_songs_dict = {}
     fast_travel = R.choice([True, False])
     omega_wallet = R.choice([True, False])
     if fast_travel:
-        starting_items_dict.update({"Farores Wind": 1, "Prelude of Light": 1, 
-                                    "Serenade of Water": 1})
+        starting_items_dict.update({"Farores Wind": 1})
+        starting_songs_dict.update({"Prelude of Light": 1, "Serenade of Water": 1})
     if omega_wallet:
         starting_items_dict.update({"Progressive Wallet": 3})
     random_settings["starting_items"] = starting_items_dict
-
+    random_settings["starting_songs"] = starting_songs_dict
 
 # Manually set the number of master quest dungeons
 if NUM_MASTERQUEST > 0:
