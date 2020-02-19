@@ -4,7 +4,7 @@ import json
 import sys
 import random as R
 
-__version__ = 5.1.73
+__version__ = "5-1-73.1.1"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
