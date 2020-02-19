@@ -11,13 +11,13 @@ ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_ER = True # Randomize entrance randomizer settings
 ALLOW_TRIHUNT = True # Randomize triforce hunt
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
-ALLOW_MASTERQUEST = False # Randomize master question dungeons
+ALLOW_MASTERQUEST = False # Randomize master quest dungeons
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 
 # Randomize starting items
 # "none": No starting items
-# "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Faore, Prelude, Serenade)
+# "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore, Prelude, Serenade)
 # "full": Randomize ALL starting items (not implemented)
 STARTING_ITEMS = "legacy" # Randomize starting items
 
