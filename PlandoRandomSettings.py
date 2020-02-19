@@ -70,14 +70,12 @@ def populateLocationExclusions():
 
 # Populate starting pool (inventory, songs, equipment)
 def populateStartingPool(pool):
-    starting_pool_dict = {}
+    starting_pool = []
     for item in pool:
-        (setting_name, item_name, available, gui_text, special) = pool[item]
         if R.random() < 0.05:
-            amount = starting_pool_dict.get(item_name, 0)
-            starting_pool_dict.update({item_name: amount + 1})
+            starting_pool.append(pool[item].settingname)
 
-    return starting_pool_dict
+    return starting_pool
 
 
 # Populate starting inventory
@@ -165,17 +163,20 @@ for info in setting_infos:
 
 # Randomize the starting items and songs in legacy mode
 if STARTING_ITEMS == "legacy":
-    starting_items_dict = {}
-    starting_songs_dict = {}
+    starting_items = []
+    starting_songs = []
     fast_travel = R.choice([True, False])
     omega_wallet = R.choice([True, False])
     if fast_travel:
-        starting_items_dict.update({"Farores Wind": 1})
-        starting_songs_dict.update({"Prelude of Light": 1, "Serenade of Water": 1})
+        starting_items.append("farores_wind")
+        starting_songs.append("prelude")
+        starting_songs.append("serenade")
     if omega_wallet:
-        starting_items_dict.update({"Progressive Wallet": 3})
-    random_settings["starting_items"] = starting_items_dict
-    random_settings["starting_songs"] = starting_songs_dict
+        starting_items.append("wallet")
+        starting_items.append("wallet2")
+        starting_items.append("wallet3")
+    random_settings["starting_items"] = starting_items
+    random_settings["starting_songs"] = starting_songs
 
 # Manually set the number of master quest dungeons
 if NUM_MASTERQUEST > 0:
