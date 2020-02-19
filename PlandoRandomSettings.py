@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-1-73.1.1"
+__version__ = "5-1-73.1.2"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
