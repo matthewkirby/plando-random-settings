@@ -73,7 +73,7 @@ def populate_location_exclusions():
 
 
 # Randomize starting pool up to the specified maximum
-def populate_random_starting_pool(pool, max):
+def populate_starting_pool(pool, max):
     k = random.randint(0, max)
     return random.sample(list(pool), k)
 
@@ -90,7 +90,7 @@ def populate_starting_items():
             starting_items.append("wallet3")
         return starting_items
     elif STARTING_INVENTORY == "random":
-        return populate_random_starting_pool(inventory, MAX_STARTING_ITEMS)
+        return populate_starting_pool(inventory, MAX_STARTING_ITEMS)
     else:
         return []
 
@@ -104,7 +104,7 @@ def populate_starting_songs():
             starting_songs.append("serenade")
         return starting_songs
     elif STARTING_INVENTORY == "random":
-        return populate_random_starting_pool(songs, MAX_STARTING_SONGS)
+        return populate_starting_pool(songs, MAX_STARTING_SONGS)
     else:
         return []
 
@@ -114,7 +114,7 @@ def populate_starting_equipment():
     if STARTING_INVENTORY == "legacy":
         return []
     elif STARTING_INVENTORY == "random":
-        return populate_random_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
+        return populate_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
     else:
         return []
 
