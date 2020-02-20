@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-1-73.1.2"
+__version__ = "5-1-73.1.3"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -15,11 +15,20 @@ ALLOW_MASTERQUEST = False # Randomize master quest dungeons
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 
-# Randomize starting items
-# "none": No starting items
+# Randomize starting inventory
+# "off": No starting inventory
 # "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
-# "everything": Randomize ALL starting items
-STARTING_ITEMS = "everything"
+# "statistical": Randomize starting inventory such that each item, song, or equipment has an independent chance of selection
+# "random": Randomize starting items, songs, and equipment up to the specified maximum
+STARTING_INVENTORY = "random"
+
+# Chance of each item, song, or equipment getting selected for the "statistical" STARTING_INVENTORY setting
+STARTING_INVENTORY_SELECTION_CHANCE = 0.05 # Between 0 and 1
+
+# Maximum number of starting items, songs, and equipment for the "random" STARTING_INVENTORY setting
+MAX_STARTING_ITEMS = 4 # Between 0 and 32
+MAX_STARTING_SONGS = 2 # Between 0 and 12
+MAX_STARTING_EQUIPMENT = 3 # Between 0 and 21
 
 # MasterQuest specific options
 NUM_MASTERQUEST = 0 # Overrides ALLOW_MASTERQUEST, max=12
@@ -67,29 +76,67 @@ def populate_location_exclusions():
     return excluded_locations
 
 
-# Populate starting pool (inventory, songs, equipment)
-def populate_starting_pool(pool):
+# Populate starting pool such that each item, song, or equipment has an independent chance of selection
+def populate_statistical_starting_pool(pool):
     starting_pool = []
     for item in pool:
-        if random.random() < 0.05:
-            starting_pool.append(pool[item].settingname)
+        if random.random() < STARTING_INVENTORY_SELECTION_CHANCE:
+            starting_pool.append(item)
 
     return starting_pool
 
 
-# Populate starting inventory
+# Randomize starting pool up to the specified maximum
+def populate_random_starting_pool(pool, max):
+    k = random.randint(0, max)
+    return random.sample(list(pool), k)
+
+
+# Populate starting items
 def populate_starting_items():
-    return populate_starting_pool(inventory)
+    if STARTING_INVENTORY == "legacy":
+        starting_items = []
+        if fast_travel:
+            starting_items.append("farores_wind")
+        if omega_wallet:
+            starting_items.append("wallet")
+            starting_items.append("wallet2")
+            starting_items.append("wallet3")
+        return starting_items
+    elif STARTING_INVENTORY == "statistical":
+        return populate_statistical_starting_pool(inventory)
+    elif STARTING_INVENTORY == "random":
+        return populate_random_starting_pool(inventory, MAX_STARTING_ITEMS)
+    else:
+        return []
 
 
 # Populate starting songs
 def populate_starting_songs():
-    return populate_starting_pool(songs)
+    if STARTING_INVENTORY == "legacy":
+        starting_songs = []
+        if fast_travel:
+            starting_songs.append("prelude")
+            starting_songs.append("serenade")
+        return starting_songs
+    elif STARTING_INVENTORY == "statistical":
+        return populate_statistical_starting_pool(songs)
+    elif STARTING_INVENTORY == "random":
+        return populate_random_starting_pool(songs, MAX_STARTING_SONGS)
+    else:
+        return []
 
 
 # Populate starting equipment
 def populate_starting_equipment():
-    return populate_starting_pool(equipment)
+    if STARTING_INVENTORY == "legacy":
+        return []
+    elif STARTING_INVENTORY == "statistical":
+        return populate_statistical_starting_pool(equipment)
+    elif STARTING_INVENTORY == "random":
+        return populate_random_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
+    else:
+        return []
 
 
 def get_random_from_type(setting):
@@ -148,10 +195,15 @@ if not ALLOW_DAMAGE_MULTIPLIER:
     settings_to_randomize.pop(settings_to_randomize.index('damage_multiplier'))
 
 # Randomize the starting items
-if STARTING_ITEMS in ["none", "legacy"]:
+if STARTING_INVENTORY == "off":
     settings_to_randomize.pop(settings_to_randomize.index('starting_equipment'))
     settings_to_randomize.pop(settings_to_randomize.index('starting_items'))
     settings_to_randomize.pop(settings_to_randomize.index('starting_songs'))
+
+# Randomize the starting items and songs in legacy mode
+if STARTING_INVENTORY == "legacy":
+    fast_travel = random.choice([True, False])
+    omega_wallet = random.choice([True, False])
 
 # Draw the randomized settings
 random_settings = {}
@@ -159,23 +211,6 @@ for info in setting_infos:
     if info.name in settings_to_randomize:
         random_settings[info.name] = get_random_from_type(info)
         print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
-
-# Randomize the starting items and songs in legacy mode
-if STARTING_ITEMS == "legacy":
-    starting_items = []
-    starting_songs = []
-    fast_travel = random.choice([True, False])
-    omega_wallet = random.choice([True, False])
-    if fast_travel:
-        starting_items.append("farores_wind")
-        starting_songs.append("prelude")
-        starting_songs.append("serenade")
-    if omega_wallet:
-        starting_items.append("wallet")
-        starting_items.append("wallet2")
-        starting_items.append("wallet3")
-    random_settings["starting_items"] = starting_items
-    random_settings["starting_songs"] = starting_songs
 
 # Manually set the number of master quest dungeons
 if NUM_MASTERQUEST > 0:
