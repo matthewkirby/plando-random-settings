@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-1-73.1.3"
+__version__ = "5-1-73.1.4"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -18,12 +18,8 @@ ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc
 # Randomize starting inventory
 # "off": No starting inventory
 # "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
-# "statistical": Randomize starting inventory such that each item, song, or equipment has an independent chance of selection
 # "random": Randomize starting items, songs, and equipment up to the specified maximum
 STARTING_INVENTORY = "random"
-
-# Chance of each item, song, or equipment getting selected for the "statistical" STARTING_INVENTORY setting
-STARTING_INVENTORY_SELECTION_CHANCE = 0.05 # Between 0 and 1
 
 # Maximum number of starting items, songs, and equipment for the "random" STARTING_INVENTORY setting
 MAX_STARTING_ITEMS = 4 # Between 0 and 32
@@ -76,16 +72,6 @@ def populate_location_exclusions():
     return excluded_locations
 
 
-# Populate starting pool such that each item, song, or equipment has an independent chance of selection
-def populate_statistical_starting_pool(pool):
-    starting_pool = []
-    for item in pool:
-        if random.random() < STARTING_INVENTORY_SELECTION_CHANCE:
-            starting_pool.append(item)
-
-    return starting_pool
-
-
 # Randomize starting pool up to the specified maximum
 def populate_random_starting_pool(pool, max):
     k = random.randint(0, max)
@@ -103,8 +89,6 @@ def populate_starting_items():
             starting_items.append("wallet2")
             starting_items.append("wallet3")
         return starting_items
-    elif STARTING_INVENTORY == "statistical":
-        return populate_statistical_starting_pool(inventory)
     elif STARTING_INVENTORY == "random":
         return populate_random_starting_pool(inventory, MAX_STARTING_ITEMS)
     else:
@@ -119,8 +103,6 @@ def populate_starting_songs():
             starting_songs.append("prelude")
             starting_songs.append("serenade")
         return starting_songs
-    elif STARTING_INVENTORY == "statistical":
-        return populate_statistical_starting_pool(songs)
     elif STARTING_INVENTORY == "random":
         return populate_random_starting_pool(songs, MAX_STARTING_SONGS)
     else:
@@ -131,8 +113,6 @@ def populate_starting_songs():
 def populate_starting_equipment():
     if STARTING_INVENTORY == "legacy":
         return []
-    elif STARTING_INVENTORY == "statistical":
-        return populate_statistical_starting_pool(equipment)
     elif STARTING_INVENTORY == "random":
         return populate_random_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
     else:
