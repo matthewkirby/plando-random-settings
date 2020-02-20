@@ -72,6 +72,22 @@ def populate_location_exclusions():
     return excluded_locations
 
 
+# Whether to start with Fast Travel
+def start_with_fast_travel():
+    if not hasattr(start_with_fast_travel, "choice"):
+        start_with_fast_travel.choice = random.choice([True, False])
+
+    return start_with_fast_travel.choice
+
+
+# Whether to start with Tycoon's Wallet
+def start_with_tycoons_wallet():
+    if not hasattr(start_with_tycoons_wallet, "choice"):
+        start_with_tycoons_wallet.choice = random.choice([True, False])
+
+    return start_with_tycoons_wallet.choice
+
+
 # Randomize starting pool up to the specified maximum
 def populate_starting_pool(pool, max):
     k = random.randint(0, max)
@@ -82,9 +98,9 @@ def populate_starting_pool(pool, max):
 def populate_starting_items():
     if STARTING_INVENTORY == "legacy":
         starting_items = []
-        if fast_travel:
+        if start_with_fast_travel():
             starting_items.append("farores_wind")
-        if omega_wallet:
+        if start_with_tycoons_wallet():
             starting_items.append("wallet")
             starting_items.append("wallet2")
             starting_items.append("wallet3")
@@ -99,7 +115,7 @@ def populate_starting_items():
 def populate_starting_songs():
     if STARTING_INVENTORY == "legacy":
         starting_songs = []
-        if fast_travel:
+        if start_with_fast_travel():
             starting_songs.append("prelude")
             starting_songs.append("serenade")
         return starting_songs
@@ -179,11 +195,6 @@ if STARTING_INVENTORY == "off":
     settings_to_randomize.pop(settings_to_randomize.index('starting_equipment'))
     settings_to_randomize.pop(settings_to_randomize.index('starting_items'))
     settings_to_randomize.pop(settings_to_randomize.index('starting_songs'))
-
-# Randomize the starting items and songs in legacy mode
-if STARTING_INVENTORY == "legacy":
-    fast_travel = random.choice([True, False])
-    omega_wallet = random.choice([True, False])
 
 # Draw the randomized settings
 random_settings = {}
