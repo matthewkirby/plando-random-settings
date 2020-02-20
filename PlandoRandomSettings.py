@@ -18,7 +18,7 @@ ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc
 # Randomize starting inventory
 # "off": No starting inventory
 # "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
-# "random": Randomize starting items, songs, and equipment up to the specified maximum
+# "random": Randomize starting items, songs, and equipment up to the specified maximum for each category
 STARTING_INVENTORY = "random"
 
 # Maximum number of starting items, songs, and equipment for the "random" STARTING_INVENTORY setting
