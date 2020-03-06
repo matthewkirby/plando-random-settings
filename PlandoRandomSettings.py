@@ -11,6 +11,7 @@ ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_ER = True # Randomize entrance randomizer settings
 ALLOW_TRIHUNT = True # Randomize triforce hunt
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
+MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
 ALLOW_MASTERQUEST = False # Randomize master quest dungeons
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
@@ -206,6 +207,9 @@ for info in setting_infos:
 # Manually set the number of master quest dungeons
 if NUM_MASTERQUEST > 0:
     random_settings["mq_dungeons"] = NUM_MASTERQUEST
+
+# Manually set the max number of skulls for bridge
+random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
 
 # Output the json file
 output = {'settings': random_settings}
