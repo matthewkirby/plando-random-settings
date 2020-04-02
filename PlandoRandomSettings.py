@@ -229,5 +229,5 @@ else:
 
 # Output the json file
 output = {'settings': random_settings}
-# with open('rand-settings.json', 'w') as fp:
-#     json.dump(output, fp, indent=4)
+with open('rand-settings.json', 'w') as fp:
+    json.dump(output, fp, indent=4)
