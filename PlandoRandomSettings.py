@@ -1,6 +1,6 @@
 import json
 import random
-from SettingsList import logic_tricks, setting_infos, get_settings_from_tab
+from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get_setting_info
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
@@ -8,13 +8,12 @@ __version__ = "5-1-73.1.4"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
-ALLOW_ER = True # Randomize entrance randomizer settings
-ALLOW_TRIHUNT = True # Randomize triforce hunt
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
 MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
 ALLOW_MASTERQUEST = False # Randomize master quest dungeons
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
+ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
 
 # Randomize starting inventory
 # "off": No starting inventory
@@ -168,12 +167,8 @@ settings_to_randomize = list(get_settings_from_tab('main_tab'))[1:] + \
             list(get_settings_from_tab('other_tab')) + \
             list(get_settings_from_tab('starting_tab'))
 
-if not ALLOW_ER:
-    settings_to_randomize.pop(settings_to_randomize.index('entrance_shuffle'))
 if not ALLOW_LOGIC:
     settings_to_randomize.pop(settings_to_randomize.index('logic_rules'))
-if not ALLOW_TRIHUNT:
-    settings_to_randomize.pop(settings_to_randomize.index('triforce_hunt'))
 if not ALLOW_MASTERQUEST or NUM_MASTERQUEST > 0:
     settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons_random'))
     settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons'))
@@ -187,9 +182,11 @@ if not ALLOW_DERP:
     settings_to_randomize.pop(settings_to_randomize.index('hints'))
     settings_to_randomize.pop(settings_to_randomize.index('disabled_locations'))
     settings_to_randomize.pop(settings_to_randomize.index('allowed_tricks'))
-    settings_to_randomize.pop(settings_to_randomize.index('all_reachable'))
-if not ALLOW_DAMAGE_MULTIPLIER:
-    settings_to_randomize.pop(settings_to_randomize.index('damage_multiplier'))
+    settings_to_randomize.pop(settings_to_randomize.index('one_item_per_dungeon'))
+    settings_to_randomize.pop(settings_to_randomize.index('decouple_entrances'))
+    settings_to_randomize.pop(settings_to_randomize.index('mix_entrance_pools'))
+if not ALLOW_RECENT_BROKEN:
+    settings_to_randomize.pop(settings_to_randomize.index('shuffle_medigoron_carpet_salesman'))
 
 # Randomize the starting items
 if STARTING_INVENTORY == "off":
@@ -211,7 +208,26 @@ if NUM_MASTERQUEST > 0:
 # Manually set the max number of skulls for bridge
 random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
 
+# If damage multiplier quad or ohko, restrict ice traps
+if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
+    random_settings["junk_ice_traps"] in ['mayhem', 'onslaught'] :
+    random_settings["junk_ice_traps"] = random.choice(["off", "normal", "on"])
+
+# Shuffle Triforce Hunt in with ganon's boss key and group LACS bk requirements
+bk_full = list(get_setting_info("shuffle_ganon_bosskey").choices.keys())
+bk_lacs_options = [entry for entry in bk_full if entry[:4] == 'lacs']
+bk_choice = random.choice([entry for entry in bk_full if not entry[:4] == 'lacs'] + ['th', 'lacs'])
+if bk_choice == 'th':
+    random_settings['triforce_hunt'] = True
+    random_settings['shuffle_ganon_bosskey'] = 'remove'
+elif bk_choice == 'lacs':
+    random_settings['triforce_hunt'] = False
+    random_settings['shuffle_ganon_bosskey'] = random.choice(bk_lacs_options)
+else:
+    random_settings['triforce_hunt'] = False
+    random_settings['shuffle_ganon_bosskey'] = bk_choice
+
 # Output the json file
 output = {'settings': random_settings}
-with open('rand-settings.json', 'w') as fp:
-    json.dump(output, fp, indent=4)
+# with open('rand-settings.json', 'w') as fp:
+#     json.dump(output, fp, indent=4)
