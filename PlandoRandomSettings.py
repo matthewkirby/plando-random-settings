@@ -93,10 +93,6 @@ def populate_starting_pool(pool, max):
     k = random.randint(0, max)
     return random.sample(list(pool), k)
 
-# Randomize starting pool up to the specified maximum
-def populate_starting_pool(pool, max):
-    k = random.randint(0, max)
-    return random.sample(list(pool), k)
 
 # Populate starting items
 def populate_starting_items():
