@@ -9,7 +9,7 @@ __version__ = "5-2-4R.2.0"
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
-MAX_BRIDGE_TOKENS = 50 # Between 1 and 100
+MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
 ALLOW_MASTERQUEST = True # Randomize master quest dungeons using a geometric distribution (expected value ~1)
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
