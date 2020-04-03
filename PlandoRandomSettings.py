@@ -4,13 +4,13 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.1.0"
+__version__ = "5-2-4R.2.0"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
-MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
-ALLOW_MASTERQUEST = False # Randomize master quest dungeons
+MAX_BRIDGE_TOKENS = 50 # Between 1 and 100
+ALLOW_MASTERQUEST = True # Randomize master quest dungeons using a geometric distribution (expected value ~1)
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
@@ -18,13 +18,8 @@ ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
 # Randomize starting inventory
 # "off": No starting inventory
 # "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
-# "random": Randomize starting items, songs, and equipment up to the specified maximum for each category
+# "random": Randomize starting items, songs, and equipment using a geometric distribution (expected value ~1)
 STARTING_INVENTORY = "random"
-
-# Maximum number of starting items, songs, and equipment for the "random" STARTING_INVENTORY setting
-MAX_STARTING_ITEMS = 4 # Between 0 and 32
-MAX_STARTING_SONGS = 2 # Between 0 and 12
-MAX_STARTING_EQUIPMENT = 3 # Between 0 and 21
 
 # Numbers of tricks and excluded locations to add
 NUM_EXPECTED_TRICKS = 0
@@ -85,10 +80,16 @@ def start_with_tycoons_wallet():
     return start_with_tycoons_wallet.choice
 
 
-# Randomize starting pool up to the specified maximum
-def populate_starting_pool(pool, max):
-    k = random.randint(0, max)
-    return random.sample(list(pool), k)
+# Get a list of bools where the xth element is True with probability 1/2**(x + 1)
+def get_geometric_distribution(k):
+    return [random.random() < 1/2**(x + 1) for x in range(k)]
+
+
+# Randomize starting pool using a geometric distribution
+def populate_starting_pool(pool):
+    shuffled_pool = random.sample(list(pool), len(pool))
+    distribution = get_geometric_distribution(len(pool))
+    return [elt for (elt, include) in zip(shuffled_pool, distribution) if include]
 
 
 # Populate starting items
@@ -103,7 +104,7 @@ def populate_starting_items():
             starting_items.append("wallet3")
         return starting_items
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(inventory, MAX_STARTING_ITEMS)
+        return populate_starting_pool(inventory)
     else:
         return []
 
@@ -117,7 +118,7 @@ def populate_starting_songs():
             starting_songs.append("serenade")
         return starting_songs
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(songs, MAX_STARTING_SONGS)
+        return populate_starting_pool(songs)
     else:
         return []
 
@@ -127,7 +128,7 @@ def populate_starting_equipment():
     if STARTING_INVENTORY == "legacy":
         return []
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
+        return populate_starting_pool(equipment)
     else:
         return []
 
@@ -199,12 +200,13 @@ def main():
             random_settings[info.name] = get_random_from_type(info)
             print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
 
-    # Choose the number of master quest dungeons using a geometric distribution (each dungeon has a 1/2**x chance)
+    # Choose the number of master quest dungeons using a geometric distribution
     if ALLOW_MASTERQUEST:
-        random_settings["mq_dungeons"] = sum([random.random() < 1/2**(x + 1) for x in range(12)])
+        random_settings["mq_dungeons_random"] = False
+        random_settings["mq_dungeons"] = sum(get_geometric_distribution(12))
 
-    # Choose the number of starting hearts using a geometric distribution (each additional heart has a 1/2**x chance)
-    random_settings["starting_hearts"] = 3 + sum([random.random() < 1/2**(x + 1) for x in range(17)])
+    # Choose the number of starting hearts using a geometric distribution
+    random_settings["starting_hearts"] = 3 + sum(get_geometric_distribution(17))
 
     # Manually set the max number of skulls for bridge
     random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
