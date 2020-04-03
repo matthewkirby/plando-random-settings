@@ -4,13 +4,13 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.1.0"
+__version__ = "5-2-4R.2.0"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
 MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
-ALLOW_MASTERQUEST = False # Randomize master quest dungeons
+ALLOW_MASTERQUEST = True # Randomize master quest dungeons using a geometric distribution (expected value ~1)
 ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
@@ -18,16 +18,8 @@ ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
 # Randomize starting inventory
 # "off": No starting inventory
 # "legacy": Randomly start with Tycoon's Wallet and Fast Travel (Farore's, Prelude, Serenade)
-# "random": Randomize starting items, songs, and equipment up to the specified maximum for each category
+# "random": Randomize starting items, songs, and equipment using a geometric distribution (expected value ~1)
 STARTING_INVENTORY = "random"
-
-# Maximum number of starting items, songs, and equipment for the "random" STARTING_INVENTORY setting
-MAX_STARTING_ITEMS = 4 # Between 0 and 32
-MAX_STARTING_SONGS = 2 # Between 0 and 12
-MAX_STARTING_EQUIPMENT = 3 # Between 0 and 21
-
-# MasterQuest specific options
-NUM_MASTERQUEST = 0 # Overrides ALLOW_MASTERQUEST, max=12
 
 # Numbers of tricks and excluded locations to add
 NUM_EXPECTED_TRICKS = 0
@@ -88,10 +80,16 @@ def start_with_tycoons_wallet():
     return start_with_tycoons_wallet.choice
 
 
-# Randomize starting pool up to the specified maximum
-def populate_starting_pool(pool, max):
-    k = random.randint(0, max)
-    return random.sample(list(pool), k)
+# Get a list of bools where the xth element is True with probability 1/2**(x + 1)
+def get_geometric_distribution(k):
+    return [random.random() < 1/2**(x + 1) for x in range(k)]
+
+
+# Randomize starting pool using a geometric distribution
+def populate_starting_pool(pool):
+    shuffled_pool = random.sample(list(pool), len(pool))
+    distribution = get_geometric_distribution(len(pool))
+    return [elt for (elt, include) in zip(shuffled_pool, distribution) if include]
 
 
 # Populate starting items
@@ -106,7 +104,7 @@ def populate_starting_items():
             starting_items.append("wallet3")
         return starting_items
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(inventory, MAX_STARTING_ITEMS)
+        return populate_starting_pool(inventory)
     else:
         return []
 
@@ -120,7 +118,7 @@ def populate_starting_songs():
             starting_songs.append("serenade")
         return starting_songs
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(songs, MAX_STARTING_SONGS)
+        return populate_starting_pool(songs)
     else:
         return []
 
@@ -130,7 +128,7 @@ def populate_starting_equipment():
     if STARTING_INVENTORY == "legacy":
         return []
     elif STARTING_INVENTORY == "random":
-        return populate_starting_pool(equipment, MAX_STARTING_EQUIPMENT)
+        return populate_starting_pool(equipment)
     else:
         return []
 
@@ -162,72 +160,81 @@ def get_random_from_type(setting):
         return setting.default
 
 
-settings_to_randomize = list(get_settings_from_tab('main_tab'))[1:] + \
-            list(get_settings_from_tab('detailed_tab')) + \
-            list(get_settings_from_tab('other_tab')) + \
-            list(get_settings_from_tab('starting_tab'))
+def main():
+    settings_to_randomize = list(get_settings_from_tab('main_tab'))[1:] + \
+                list(get_settings_from_tab('detailed_tab')) + \
+                list(get_settings_from_tab('other_tab')) + \
+                list(get_settings_from_tab('starting_tab'))
 
-if not ALLOW_LOGIC:
-    settings_to_randomize.pop(settings_to_randomize.index('logic_rules'))
-if not ALLOW_MASTERQUEST or NUM_MASTERQUEST > 0:
-    settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons_random'))
-    settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons'))
-if not ALLOW_DERP:
-    settings_to_randomize.pop(settings_to_randomize.index('useful_cutscenes'))
-    settings_to_randomize.pop(settings_to_randomize.index('fast_chests'))
-    settings_to_randomize.pop(settings_to_randomize.index('logic_lens'))
-    settings_to_randomize.pop(settings_to_randomize.index('ocarina_songs'))
-    settings_to_randomize.pop(settings_to_randomize.index('clearer_hints'))
-    settings_to_randomize.pop(settings_to_randomize.index('text_shuffle'))
-    settings_to_randomize.pop(settings_to_randomize.index('hints'))
-    settings_to_randomize.pop(settings_to_randomize.index('disabled_locations'))
-    settings_to_randomize.pop(settings_to_randomize.index('allowed_tricks'))
-    settings_to_randomize.pop(settings_to_randomize.index('one_item_per_dungeon'))
-    settings_to_randomize.pop(settings_to_randomize.index('decouple_entrances'))
-    settings_to_randomize.pop(settings_to_randomize.index('mix_entrance_pools'))
-if not ALLOW_RECENT_BROKEN:
-    settings_to_randomize.pop(settings_to_randomize.index('shuffle_medigoron_carpet_salesman'))
+    if not ALLOW_LOGIC:
+        settings_to_randomize.pop(settings_to_randomize.index('logic_rules'))
+    if not ALLOW_MASTERQUEST:
+        settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons_random'))
+        settings_to_randomize.pop(settings_to_randomize.index('mq_dungeons'))
+    if not ALLOW_DERP:
+        settings_to_randomize.pop(settings_to_randomize.index('useful_cutscenes'))
+        settings_to_randomize.pop(settings_to_randomize.index('fast_chests'))
+        settings_to_randomize.pop(settings_to_randomize.index('logic_lens'))
+        settings_to_randomize.pop(settings_to_randomize.index('ocarina_songs'))
+        settings_to_randomize.pop(settings_to_randomize.index('clearer_hints'))
+        settings_to_randomize.pop(settings_to_randomize.index('text_shuffle'))
+        settings_to_randomize.pop(settings_to_randomize.index('hints'))
+        settings_to_randomize.pop(settings_to_randomize.index('disabled_locations'))
+        settings_to_randomize.pop(settings_to_randomize.index('allowed_tricks'))
+        settings_to_randomize.pop(settings_to_randomize.index('one_item_per_dungeon'))
+        settings_to_randomize.pop(settings_to_randomize.index('decouple_entrances'))
+        settings_to_randomize.pop(settings_to_randomize.index('mix_entrance_pools'))
+    if not ALLOW_RECENT_BROKEN:
+        settings_to_randomize.pop(settings_to_randomize.index('shuffle_medigoron_carpet_salesman'))
 
-# Randomize the starting items
-if STARTING_INVENTORY == "off":
-    settings_to_randomize.pop(settings_to_randomize.index('starting_equipment'))
-    settings_to_randomize.pop(settings_to_randomize.index('starting_items'))
-    settings_to_randomize.pop(settings_to_randomize.index('starting_songs'))
+    # Randomize the starting items
+    if STARTING_INVENTORY == "off":
+        settings_to_randomize.pop(settings_to_randomize.index('starting_equipment'))
+        settings_to_randomize.pop(settings_to_randomize.index('starting_items'))
+        settings_to_randomize.pop(settings_to_randomize.index('starting_songs'))
 
-# Draw the randomized settings
-random_settings = {}
-for info in setting_infos:
-    if info.name in settings_to_randomize:
-        random_settings[info.name] = get_random_from_type(info)
-        print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
+    # Draw the randomized settings
+    random_settings = {}
+    for info in setting_infos:
+        if info.name in settings_to_randomize:
+            random_settings[info.name] = get_random_from_type(info)
+            print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
 
-# Manually set the number of master quest dungeons
-if NUM_MASTERQUEST > 0:
-    random_settings["mq_dungeons"] = NUM_MASTERQUEST
+    # Choose the number of master quest dungeons using a geometric distribution
+    if ALLOW_MASTERQUEST:
+        random_settings["mq_dungeons_random"] = False
+        random_settings["mq_dungeons"] = sum(get_geometric_distribution(12))
 
-# Manually set the max number of skulls for bridge
-random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
+    # Choose the number of starting hearts using a geometric distribution
+    random_settings["starting_hearts"] = 3 + sum(get_geometric_distribution(17))
 
-# If damage multiplier quad or ohko, restrict ice traps
-if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
-    random_settings["junk_ice_traps"] in ['mayhem', 'onslaught'] :
-    random_settings["junk_ice_traps"] = random.choice(["off", "normal", "on"])
+    # Manually set the max number of skulls for bridge
+    random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
 
-# Shuffle Triforce Hunt in with ganon's boss key and group LACS bk requirements
-bk_full = list(get_setting_info("shuffle_ganon_bosskey").choices.keys())
-bk_lacs_options = [entry for entry in bk_full if entry[:4] == 'lacs']
-bk_choice = random.choice([entry for entry in bk_full if not entry[:4] == 'lacs'] + ['th', 'lacs'])
-if bk_choice == 'th':
-    random_settings['triforce_hunt'] = True
-    random_settings['shuffle_ganon_bosskey'] = 'remove'
-elif bk_choice == 'lacs':
-    random_settings['triforce_hunt'] = False
-    random_settings['shuffle_ganon_bosskey'] = random.choice(bk_lacs_options)
-else:
-    random_settings['triforce_hunt'] = False
-    random_settings['shuffle_ganon_bosskey'] = bk_choice
+    # If damage multiplier quad or ohko, restrict ice traps
+    if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
+        random_settings["junk_ice_traps"] in ['mayhem', 'onslaught'] :
+        random_settings["junk_ice_traps"] = random.choice(["off", "normal", "on"])
 
-# Output the json file
-output = {'settings': random_settings}
-with open('rand-settings.json', 'w') as fp:
-    json.dump(output, fp, indent=4)
+    # Shuffle Triforce Hunt in with ganon's boss key and group LACS bk requirements
+    bk_full = list(get_setting_info("shuffle_ganon_bosskey").choices.keys())
+    bk_lacs_options = [entry for entry in bk_full if entry[:4] == 'lacs']
+    bk_choice = random.choice([entry for entry in bk_full if not entry[:4] == 'lacs'] + ['th', 'lacs'])
+    if bk_choice == 'th':
+        random_settings['triforce_hunt'] = True
+        random_settings['shuffle_ganon_bosskey'] = 'remove'
+    elif bk_choice == 'lacs':
+        random_settings['triforce_hunt'] = False
+        random_settings['shuffle_ganon_bosskey'] = random.choice(bk_lacs_options)
+    else:
+        random_settings['triforce_hunt'] = False
+        random_settings['shuffle_ganon_bosskey'] = bk_choice
+
+    # Output the json file
+    output = {'settings': random_settings}
+    with open('rand-settings.json', 'w') as fp:
+        json.dump(output, fp, indent=4)
+
+
+if __name__ == '__main__':
+    main()
