@@ -201,10 +201,10 @@ def main():
 
     # Choose the number of master quest dungeons using a geometric distribution (each dungeon has a 1/2**x chance)
     if ALLOW_MASTERQUEST:
-        random_settings["mq_dungeons"] = sum(list(map(lambda x: x == 0, [random.randint(0, 2**(x + 1) - 1) for x in range(12)])))
+        random_settings["mq_dungeons"] = sum([random.random() < 1/2**(x + 1) for x in range(12)])
 
     # Choose the number of starting hearts using a geometric distribution (each additional heart has a 1/2**x chance)
-    random_settings["starting_hearts"] = 3 + sum(list(map(lambda x: x == 0, [random.randint(0, 2**(x + 1) - 1) for x in range(17)])))
+    random_settings["starting_hearts"] = 3 + sum([random.random() < 1/2**(x + 1) for x in range(17)])
 
     # Manually set the max number of skulls for bridge
     random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
