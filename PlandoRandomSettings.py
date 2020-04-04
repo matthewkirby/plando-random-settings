@@ -9,11 +9,10 @@ __version__ = "5-2-4R.2.0"
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
-MAX_BRIDGE_TOKENS = 100 # Between 1 and 100
 ALLOW_MASTERQUEST = True # Randomize master quest dungeons using a geometric distribution (expected value ~1)
-ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
+COOP_SETTINGS = False # Flag to generate a coop seed. This flag changes some of the flags above.
 
 # Randomize starting inventory
 # "off": No starting inventory
@@ -198,7 +197,6 @@ def main():
     for info in setting_infos:
         if info.name in settings_to_randomize:
             random_settings[info.name] = get_random_from_type(info)
-            print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
 
     # Choose the number of master quest dungeons using a geometric distribution
     if ALLOW_MASTERQUEST:
@@ -207,9 +205,6 @@ def main():
 
     # Choose the number of starting hearts using a geometric distribution
     random_settings["starting_hearts"] = 3 + sum(get_geometric_distribution(17))
-
-    # Manually set the max number of skulls for bridge
-    random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
 
     # If damage multiplier quad or ohko, restrict ice traps
     if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
@@ -223,12 +218,20 @@ def main():
     if bk_choice == 'th':
         random_settings['triforce_hunt'] = True
         random_settings['shuffle_ganon_bosskey'] = 'remove'
+        item_pools = list(get_setting_info('item_pool_value').choices.keys())
+        random_settings['item_pool_value'] = random.choice([entry for entry in item_pools if not entry == 'minimal'])
     elif bk_choice == 'lacs':
         random_settings['triforce_hunt'] = False
         random_settings['shuffle_ganon_bosskey'] = random.choice(bk_lacs_options)
     else:
         random_settings['triforce_hunt'] = False
         random_settings['shuffle_ganon_bosskey'] = bk_choice
+
+    # If generating a seed for a Co-Op race, tailer settings to be a little more 2-player friendly
+    if COOP_SETTINGS:
+        random_settings["bridge_tokens"] = random.randint(1, 50)
+        remove_for_coop = ['damage_multiplier', 'mq_dungeons_random', 'mq_dungeons']
+        random_settings = {key:value for key, value in random_settings.items() if key not in remove_for_coop}
 
     # Output the json file
     output = {'settings': random_settings}
