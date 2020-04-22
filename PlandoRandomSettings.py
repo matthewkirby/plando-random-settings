@@ -242,6 +242,23 @@ def main():
         random_settings['shuffle_medigoron_carpet_salesman'] = False
         random_settings['no_first_minigame_phases'] = False
 
+    # Set season 3 standard settings that we do not randomize
+    random_settings['randomize_settings'] = False
+    random_settings['logic_rules'] = 'glitchless'
+    random_settings['logic_lens'] = 'chest-wasteland'
+    random_settings['useful_cutscenes'] = False
+    random_settings['fast_chests'] = True
+    random_settings['ocarina_songs'] = False
+    random_settings['clearer_hints'] = True
+    random_settings['hints'] = 'always'
+    random_settings['text_shuffle'] = 'none'
+    random_settings['disabled_locations'] = ["Deku Theater Mask of Truth"]
+    random_settings['allowed_tricks'] = ["logic_fewer_tunic_requirements", "logic_grottos_without_agony",
+                                         "logic_child_deadhand", "logic_man_on_roof", "logic_dc_jump",
+                                         "logic_rusted_switches", "logic_windmill_poh",
+                                         "logic_crater_bean_poh_with_hovers", "logic_forest_vines",
+                                         "logic_goron_city_pot_with_strength", "logic_visible_collisions"]
+
     # Output the json file
     output = {'settings': random_settings}
     with open('rand-settings.json', 'w') as fp:
