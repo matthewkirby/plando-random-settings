@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.2.1"
+__version__ = "5-2-4R.2.2"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -224,6 +224,12 @@ def main():
     else:
         random_settings['triforce_hunt'] = False
         random_settings['shuffle_ganon_bosskey'] = bk_choice
+
+    # Remove OHKO from the damage multiplier options
+    if random_settings['damage_multiplier'] == 'ohko':
+        dmg_opts = list(get_setting_info('damage_multiplier').choices.keys())
+        dmg_opts = [entry for entry in dmg_opts if not entry == 'ohko']
+        random_settings['damage_multiplier'] = random.choice(dmg_opts)
 
     # If generating a seed for a Co-Op race, tailer settings to be a little more 2-player friendly
     if COOP_SETTINGS:
