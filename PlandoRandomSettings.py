@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.2.0"
+__version__ = "5-2-4R.2.1"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -183,8 +183,6 @@ def main():
         settings_to_randomize.pop(settings_to_randomize.index('one_item_per_dungeon'))
         settings_to_randomize.pop(settings_to_randomize.index('decouple_entrances'))
         settings_to_randomize.pop(settings_to_randomize.index('mix_entrance_pools'))
-    if not ALLOW_RECENT_BROKEN:
-        settings_to_randomize.pop(settings_to_randomize.index('shuffle_medigoron_carpet_salesman'))
 
     # Randomize the starting items
     if STARTING_INVENTORY == "off":
@@ -232,6 +230,11 @@ def main():
         random_settings["bridge_tokens"] = random.randint(1, 50)
         remove_for_coop = ['damage_multiplier', 'mq_dungeons_random', 'mq_dungeons']
         random_settings = {key:value for key, value in random_settings.items() if key not in remove_for_coop}
+
+    # Set the broken settings to override standard preset
+    if not ALLOW_RECENT_BROKEN:
+        random_settings['shuffle_medigoron_carpet_salesman'] = False
+        random_settings['no_first_minigame_phases'] = False
 
     # Output the json file
     output = {'settings': random_settings}
