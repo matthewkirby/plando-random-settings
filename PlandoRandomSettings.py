@@ -4,16 +4,15 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.2.0"
+__version__ = "5-2-4R.2.3"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
 ALLOW_BRIDGETOKENS = True # Randomize Skulltula bridge condition
-MAX_BRIDGE_TOKENS = 4 # Between 1 and 100
 ALLOW_MASTERQUEST = True # Randomize master quest dungeons using a geometric distribution (expected value ~1)
-ALLOW_DAMAGE_MULTIPLIER = True # Randomize damage multiplier
 ALLOW_DERP = False # Randomize pointless things (textshuffle, unclear hints, etc)
 ALLOW_RECENT_BROKEN = False # Section to hold settings currently broken
+COOP_SETTINGS = False # Flag to generate a coop seed. This flag changes some of the flags above.
 
 # Randomize starting inventory
 # "off": No starting inventory
@@ -184,8 +183,6 @@ def main():
         settings_to_randomize.pop(settings_to_randomize.index('one_item_per_dungeon'))
         settings_to_randomize.pop(settings_to_randomize.index('decouple_entrances'))
         settings_to_randomize.pop(settings_to_randomize.index('mix_entrance_pools'))
-    if not ALLOW_RECENT_BROKEN:
-        settings_to_randomize.pop(settings_to_randomize.index('shuffle_medigoron_carpet_salesman'))
 
     # Randomize the starting items
     if STARTING_INVENTORY == "off":
@@ -198,7 +195,6 @@ def main():
     for info in setting_infos:
         if info.name in settings_to_randomize:
             random_settings[info.name] = get_random_from_type(info)
-            print(info.name + ' : ' + info.gui_type + ' : ' + str(get_random_from_type(info)))
 
     # Choose the number of master quest dungeons using a geometric distribution
     if ALLOW_MASTERQUEST:
@@ -207,9 +203,6 @@ def main():
 
     # Choose the number of starting hearts using a geometric distribution
     random_settings["starting_hearts"] = 3 + sum(get_geometric_distribution(17))
-
-    # Manually set the max number of skulls for bridge
-    random_settings["bridge_tokens"] = random.randint(1, MAX_BRIDGE_TOKENS)
 
     # If damage multiplier quad or ohko, restrict ice traps
     if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
@@ -223,12 +216,48 @@ def main():
     if bk_choice == 'th':
         random_settings['triforce_hunt'] = True
         random_settings['shuffle_ganon_bosskey'] = 'remove'
+        item_pools = list(get_setting_info('item_pool_value').choices.keys())
+        random_settings['item_pool_value'] = random.choice([entry for entry in item_pools if not entry == 'minimal'])
     elif bk_choice == 'lacs':
         random_settings['triforce_hunt'] = False
         random_settings['shuffle_ganon_bosskey'] = random.choice(bk_lacs_options)
     else:
         random_settings['triforce_hunt'] = False
         random_settings['shuffle_ganon_bosskey'] = bk_choice
+
+    # Remove OHKO from the damage multiplier options
+    if random_settings['damage_multiplier'] == 'ohko':
+        dmg_opts = list(get_setting_info('damage_multiplier').choices.keys())
+        dmg_opts = [entry for entry in dmg_opts if not entry == 'ohko']
+        random_settings['damage_multiplier'] = random.choice(dmg_opts)
+
+    # If generating a seed for a Co-Op race, tailer settings to be a little more 2-player friendly
+    if COOP_SETTINGS:
+        random_settings["bridge_tokens"] = random.randint(1, 50)
+        remove_for_coop = ['damage_multiplier', 'mq_dungeons_random', 'mq_dungeons']
+        random_settings = {key:value for key, value in random_settings.items() if key not in remove_for_coop}
+
+    # Set the broken settings to override standard preset
+    if not ALLOW_RECENT_BROKEN:
+        random_settings['shuffle_medigoron_carpet_salesman'] = False
+        random_settings['no_first_minigame_phases'] = False
+
+    # Set season 3 standard settings that we do not randomize
+    random_settings['randomize_settings'] = False
+    random_settings['logic_rules'] = 'glitchless'
+    random_settings['logic_lens'] = 'chest-wasteland'
+    random_settings['useful_cutscenes'] = False
+    random_settings['fast_chests'] = True
+    random_settings['ocarina_songs'] = False
+    random_settings['clearer_hints'] = True
+    random_settings['hints'] = 'always'
+    random_settings['text_shuffle'] = 'none'
+    random_settings['disabled_locations'] = ["Deku Theater Mask of Truth"]
+    random_settings['allowed_tricks'] = ["logic_fewer_tunic_requirements", "logic_grottos_without_agony",
+                                         "logic_child_deadhand", "logic_man_on_roof", "logic_dc_jump",
+                                         "logic_rusted_switches", "logic_windmill_poh",
+                                         "logic_crater_bean_poh_with_hovers", "logic_forest_vines",
+                                         "logic_goron_city_pot_with_strength", "logic_visible_collisions"]
 
     # Output the json file
     output = {'settings': random_settings}
