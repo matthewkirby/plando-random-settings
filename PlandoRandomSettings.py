@@ -4,7 +4,7 @@ from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-4R.2.4"
+__version__ = "5-2-12R.2.0"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -243,8 +243,7 @@ def main():
 
     # Set the broken settings to override standard preset
     if not ALLOW_RECENT_BROKEN:
-        random_settings['shuffle_medigoron_carpet_salesman'] = False
-        random_settings['no_first_minigame_phases'] = False
+        pass
 
     # Set season 3 standard settings that we do not randomize
     random_settings['randomize_settings'] = False
