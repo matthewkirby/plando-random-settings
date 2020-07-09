@@ -1,10 +1,12 @@
 import json
 import random
+import sys
+sys.path.append('..')
 from SettingsList import logic_tricks, setting_infos, get_settings_from_tab, get_setting_info
 from LocationList import location_table
 from StartingItems import inventory, songs, equipment
 
-__version__ = "5-2-12R.2.0"
+__version__ = "5-2-30R.1.0"
 
 # Parameters for generation
 ALLOW_LOGIC = False # True for random logic, false otherwise
@@ -173,7 +175,6 @@ def main():
     if not ALLOW_DERP:
         settings_to_randomize.pop(settings_to_randomize.index('useful_cutscenes'))
         settings_to_randomize.pop(settings_to_randomize.index('fast_chests'))
-        settings_to_randomize.pop(settings_to_randomize.index('logic_lens'))
         settings_to_randomize.pop(settings_to_randomize.index('ocarina_songs'))
         settings_to_randomize.pop(settings_to_randomize.index('clearer_hints'))
         settings_to_randomize.pop(settings_to_randomize.index('text_shuffle'))
@@ -260,7 +261,11 @@ def main():
                                          "logic_child_deadhand", "logic_man_on_roof", "logic_dc_jump",
                                          "logic_rusted_switches", "logic_windmill_poh",
                                          "logic_crater_bean_poh_with_hovers", "logic_forest_vines",
-                                         "logic_goron_city_pot_with_strength", "logic_visible_collisions"]
+                                         "logic_goron_city_pot_with_strength", "logic_visible_collisions",
+                                         "logic_lens_botw", "logic_lens_castle", "logic_lens_gtg",
+                                         "logic_lens_shadow", "logic_lens_shadow_back", "logic_lens_spirit",
+                                         "logic_lens_castle_mq", "logic_lens_gtg_mq", "logic_lens_jabu_mq",
+                                         "logic_lens_shadow_mq", "logic_lens_shadow_mq_back", "logic_lens_spirit_mq"]
 
     # Output the json file
     output = {'settings': random_settings}
