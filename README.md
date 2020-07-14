@@ -13,3 +13,6 @@ This script allows us to blindly randomize anything and (nearly) everything in t
 #### When I double click `PlandoRandomSettings.py` nothing happens and no file is generated.
 
 The script is crashing. Ensure that you have the correct version of dev-R Ocarina of Time randomizer and that the script is in the correct directory. If it is still not working, try to run via the command line to see the error message.
+
+## To Do
+- Write a test that prints all of the settings and options and compares them to what we expect. This can test if a new version of the rando has added new settings, options, or changed names
