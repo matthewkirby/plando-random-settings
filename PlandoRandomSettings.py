@@ -69,12 +69,12 @@ def generate_balanced_weights(fname='default_weights.json'):
 def add_standard_tricks(random_settings):
     """ Add the tricks enabled in standard to the plando. """
     random_settings['randomize_settings'] = False
-    random_settings['disabled_locations'] = ["Deku Theater Mask of Truth"]
+    random_settings['disabled_locations'] = []
     random_settings['allowed_tricks'] = ["logic_fewer_tunic_requirements", "logic_grottos_without_agony",
         "logic_child_deadhand", "logic_man_on_roof", "logic_dc_jump", "logic_rusted_switches", "logic_windmill_poh",
         "logic_crater_bean_poh_with_hovers", "logic_forest_vines", "logic_goron_city_pot_with_strength",
         "logic_visible_collisions", "logic_lens_botw", "logic_lens_castle", "logic_lens_gtg", "logic_lens_shadow",
-        "logic_lens_shadow_back", "logic_lens_spirit", "logic_lens_castle_mq", "logic_lens_gtg_mq", "logic_lens_jabu_mq",
+        "logic_lens_shadow_back", "logic_lens_spirit", "logic_lens_gtg_mq", "logic_lens_jabu_mq",
         "logic_lens_shadow_mq", "logic_lens_shadow_mq_back", "logic_lens_spirit_mq"]
 
 
@@ -144,6 +144,17 @@ def main():
     if STARTING_ITEMS:
         draw_starting_item_pool(random_settings)
 
+    # Format numbers and bools to not be strings
+    for setting, value in random_settings.items():
+        if value == "false":
+            random_settings[setting] = False
+        elif value == "true":
+            random_settings[setting] = True
+        else:
+            try:
+                random_settings[setting] = int(value)
+            except:
+                random_settings[setting] = value
 
     # Save the output plando
     output = {'settings': random_settings}
