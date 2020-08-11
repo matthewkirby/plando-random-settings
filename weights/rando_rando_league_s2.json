@@ -10,8 +10,9 @@
         "closed": 33.333333333333336
     },
     "open_kakariko": {
-        "true": 50.0,
-        "false": 50.0
+        "open": 33.333333333333336,
+        "zelda": 33.333333333333336,
+        "closed": 33.333333333333336
     },
     "open_door_of_time": {
         "true": 50.0,
@@ -246,6 +247,10 @@
     "chicken_count_random": {
         "true": 100,
         "false": 0
+    },
+    "complete_mask_quest": {
+        "true": 50.0,
+        "false": 50.0
     },
     "chicken_count": {
         "0": 12.5,
