@@ -4,7 +4,7 @@ from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
 import Conditionals as conds
 
-__version__ = "5-2-44R.1.0"
+__version__ = "5-2-44R.1.1"
 
 # Please set the weights file you with to load
 weights = 'rrl' # The default Rando Rando League Season 2 weights
