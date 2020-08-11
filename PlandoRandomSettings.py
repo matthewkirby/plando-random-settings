@@ -2,8 +2,9 @@ import json, random, sys, os
 sys.path.append('..')
 from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
+import Conditionals as conds
 
-__version__ = "5-2-30R.1.0"
+__version__ = "5-2-44R.1.0"
 
 # Please set the weights file you with to load
 weights = 'rrl' # The default Rando Rando League Season 2 weights
@@ -14,11 +15,10 @@ weights = 'rrl' # The default Rando Rando League Season 2 weights
 COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
 RRL_TRICKS = True # Add the extra tricks that we enable for rando rando
-RRL_STIPULATIONS = True # In rando rando we have a couple conditional cases. Ensure that they are met
+RRL_CONDITIONALS = True # In rando rando we have a couple conditional cases. Ensure that they are met
 STARTING_ITEMS = True # Draw starting items, songs, and equipment from a geometric distribution
 
 BROKEN_SETTINGS = [] # If any settings are broken, add their name here and they will be non-randomized
-
 
 
 def geometric_weights(N, startat=0, rtype='list'):
@@ -34,8 +34,6 @@ def draw_starting_item_pool(random_settings):
     random_settings['starting_items'] = draw_choices_from_pool(inventory)
     random_settings['starting_songs'] = draw_choices_from_pool(songs)
     random_settings['starting_equipment'] = draw_choices_from_pool(equipment)
-
-    return
     
 
 def draw_choices_from_pool(itempool):
@@ -73,14 +71,15 @@ def add_standard_tricks(random_settings):
     random_settings['allowed_tricks'] = ["logic_fewer_tunic_requirements", "logic_grottos_without_agony",
         "logic_child_deadhand", "logic_man_on_roof", "logic_dc_jump", "logic_rusted_switches", "logic_windmill_poh",
         "logic_crater_bean_poh_with_hovers", "logic_forest_vines", "logic_goron_city_pot_with_strength",
-        "logic_visible_collisions", "logic_lens_botw", "logic_lens_castle", "logic_lens_gtg", "logic_lens_shadow",
-        "logic_lens_shadow_back", "logic_lens_spirit", "logic_lens_gtg_mq", "logic_lens_jabu_mq",
-        "logic_lens_shadow_mq", "logic_lens_shadow_mq_back", "logic_lens_spirit_mq"]
+        "logic_lens_botw", "logic_lens_castle", "logic_lens_gtg", "logic_lens_shadow",
+        "logic_lens_shadow_back", "logic_lens_spirit"]
 
 
 def add_rrl_tricks(random_settings):
     """ Add some extra tricks to the plando that are beyond the scope of Standard. """
-    pass
+    random_settings['allowed_tricks'] = random_settings['allowed_tricks'] + ["logic_visible_collisions", 
+        "logic_deku_b1_webs_with_bow", "logic_lens_gtg_mq", "logic_lens_jabu_mq", "logic_lens_shadow_mq",
+        "logic_lens_shadow_mq_back", "logic_lens_spirit_mq"]
 
 
 def load_weights_file(weights_fname):
@@ -133,6 +132,12 @@ def main():
         random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
 
 
+    # Check conditional settings for rrl
+    if RRL_CONDITIONALS:
+        conds.exclude_minimal_triforce_hunt(weight_dict, random_settings)
+        conds.exclude_ice_trap_misery(weight_dict, random_settings)
+
+
     # Add the tricks to the plando
     if STANDARD_TRICKS:
         add_standard_tricks(random_settings)
@@ -143,6 +148,7 @@ def main():
     # Draw the starting items, songs, and equipment
     if STARTING_ITEMS:
         draw_starting_item_pool(random_settings)
+
 
     # Format numbers and bools to not be strings
     for setting, value in random_settings.items():
@@ -156,16 +162,11 @@ def main():
             except:
                 random_settings[setting] = value
 
+
     # Save the output plando
     output = {'settings': random_settings}
     with open('blind_random_settings.json', 'w') as fp:
         json.dump(output, fp, indent=4)
-
-
-    # # If damage multiplier quad or ohko, restrict ice traps
-    # if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
-    #     random_settings["junk_ice_traps"] in ['mayhem', 'onslaught'] :
-    #     random_settings["junk_ice_traps"] = random.choice(["off", "normal", "on"])
 
 
 if __name__ == '__main__':
