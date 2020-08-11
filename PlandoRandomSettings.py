@@ -40,7 +40,6 @@ def draw_choices_from_pool(itempool):
     N = random.choices(range(len(itempool)), weights=geometric_weights(len(itempool)))[0]
     return random.sample(list(itempool.keys()), N)
 
-
 def generate_balanced_weights(fname='default_weights.json'):
     """ Generate a file with even weights for each setting. """
     settings_to_randomize = list(get_settings_from_tab('main_tab'))[1:] + \
@@ -149,7 +148,6 @@ def main():
     if STARTING_ITEMS:
         draw_starting_item_pool(random_settings)
 
-
     # Format numbers and bools to not be strings
     for setting, value in random_settings.items():
         if value == "false":
@@ -162,11 +160,16 @@ def main():
             except:
                 random_settings[setting] = value
 
-
     # Save the output plando
     output = {'settings': random_settings}
     with open('blind_random_settings.json', 'w') as fp:
         json.dump(output, fp, indent=4)
+
+
+    # # If damage multiplier quad or ohko, restrict ice traps
+    # if random_settings["damage_multiplier"] in ["quadruple", "ohko"] and \
+    #     random_settings["junk_ice_traps"] in ['mayhem', 'onslaught'] :
+    #     random_settings["junk_ice_traps"] = random.choice(["off", "normal", "on"])
 
 
 if __name__ == '__main__':
