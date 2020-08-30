@@ -15,3 +15,8 @@ def exclude_ice_trap_misery(weight_dict, random_settings):
     if 'onslaught' in weights.keys() and random_settings['damage_multiplier'] in ['quadruple', 'ohko']:
         weights.pop('onslaught')
     random_settings['junk_ice_traps'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]
+
+def exclude_overworld_mixed_pools(random_settings):
+    """ If Overworld ER is enabled, mixed entrance pools should be disabled. """
+    if random_settings['shuffle_overworld_entrances'] == "true":
+        random_settings['mix_entrance_pools'] = "false"

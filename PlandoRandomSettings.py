@@ -135,6 +135,7 @@ def main():
     if RRL_CONDITIONALS:
         conds.exclude_minimal_triforce_hunt(weight_dict, random_settings)
         conds.exclude_ice_trap_misery(weight_dict, random_settings)
+        conds.exclude_overworld_mixed_pools(random_settings)
 
 
     # Add the tricks to the plando
