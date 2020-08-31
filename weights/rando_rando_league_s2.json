@@ -5,9 +5,9 @@
         "none": 0
     },
     "open_forest": {
-        "open": 33.333333333333336,
-        "closed_deku": 33.333333333333336,
-        "closed": 33.333333333333336
+        "open": 50,
+        "closed_deku": 50,
+        "closed": 0
     },
     "open_kakariko": {
         "open": 33.333333333333336,
