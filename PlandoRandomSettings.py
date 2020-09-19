@@ -2,9 +2,9 @@ import json, random, sys, os
 sys.path.append('..')
 from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
+from Spoiler import HASH_ICONS
 import Conditionals as conds
-
-__version__ = "5-2-46R.1.2"
+from version import version_hash_1, version_hash_2
 
 # Please set the weights file you with to load
 weights = 'rrl' # The default Rando Rando League Season 2 weights
@@ -39,6 +39,7 @@ def draw_starting_item_pool(random_settings):
 def draw_choices_from_pool(itempool):
     N = random.choices(range(len(itempool)), weights=geometric_weights(len(itempool)))[0]
     return random.sample(list(itempool.keys()), N)
+
 
 def generate_balanced_weights(fname='default_weights.json'):
     """ Generate a file with even weights for each setting. """
@@ -164,7 +165,10 @@ def main():
 
 
     # Save the output plando
-    output = {'settings': random_settings}
+    output = {
+        'settings': random_settings,
+        'file_hash': [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
+    }
     with open('blind_random_settings.json', 'w') as fp:
         json.dump(output, fp, indent=4)
 
