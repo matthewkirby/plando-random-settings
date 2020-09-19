@@ -292,9 +292,9 @@
     },
     "hints": {
         "none": 0,
-        "mask": 10,
-        "agony": 10,
-        "always": 70
+        "mask": 0,
+        "agony": 25,
+        "always": 75
     },
     "hint_dist": {
         "useless": 20.0,
