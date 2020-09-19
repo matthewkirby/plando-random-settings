@@ -4,7 +4,8 @@ from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
 from Spoiler import HASH_ICONS
 import Conditionals as conds
-from version import version_hash_1, version_hash_2
+from rsl_version import version_hash_1, version_hash_2, VersionError, check_rando_version
+check_rando_version()
 
 # Please set the weights file you with to load
 weights = 'rrl' # The default Rando Rando League Season 2 weights
@@ -105,18 +106,23 @@ def main():
 
 
     # Load the weight dictionary
-    if weights == 'rrl':
+    if weights in ['rrl', 'coop']:
         weight_dict = load_weights_file('rando_rando_league_s2.json')
+        if weight_dict['hash']['obj1'] != version_hash_1 or weight_dict['hash']['obj2'] != version_hash_2:
+            raise VersionError("weights file")
+        weight_dict.pop('hash')
     elif weights == 'full-random':
         weight_dict = generate_balanced_weights(None)
-    elif weights == 'coop':
-        weight_dict = load_weights_file('rando_rando_league_s2.json')
+    else:
+        weight_dict = load_weights_file(weights)
+
+
+    # If its a co-op seed, make some small changes to weights
+    if weights == 'coop':
         weight_dict['bridge_tokens'] = {i+1: 2.0 for i in range(50)}
         weight_dict['mq_dungeons_random'] = {"false": 100}
         weight_dict['mq_dungeons'] = {"0": 100,}
         weight_dict['damage_multiplier'] = {"normal": 100}
-    else:
-        weight_dict = load_weights_file(weights)
 
 
     # Check if bridge_tokens or triforce piece count is set already, if not draw uniformly.

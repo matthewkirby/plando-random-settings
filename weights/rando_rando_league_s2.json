@@ -1,4 +1,8 @@
 {
+    "hash": {
+        "obj1": "Mask of Truth",
+        "obj2": "Mask of Truth"
+    },
     "logic_rules": {
         "glitchless": 100,
         "glitched": 0,
