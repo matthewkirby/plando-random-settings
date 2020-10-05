@@ -1,6 +1,6 @@
-__version__ = "5.2.54 R-2 v1"
-version_hash_1 = "Mask of Truth"
-version_hash_2 = "Mask of Truth"
+__version__ = "5.2.65 R-6 v1"
+version_hash_1 = "Beans"
+version_hash_2 = "Beans"
 
 
 class VersionError(Exception):

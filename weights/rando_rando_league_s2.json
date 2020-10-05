@@ -1,7 +1,7 @@
 {
     "hash": {
-        "obj1": "Mask of Truth",
-        "obj2": "Mask of Truth"
+        "obj1": "Beans",
+        "obj2": "Beans"
     },
     "logic_rules": {
         "glitchless": 100,
@@ -152,8 +152,9 @@
         "false": 50.0
     },
     "shuffle_song_items": {
-        "true": 50.0,
-        "false": 50.0
+        "song": 33.333333333333336,
+        "dungeon": 33.333333333333336,
+        "any": 33.333333333333336
     },
     "shuffle_kokiri_sword": {
         "true": 50.0,
@@ -184,24 +185,32 @@
         "startwith": 25,
         "vanilla": 19,
         "dungeon": 19,
+        "overworld": 0,
+        "dungeons": 0,
         "keysanity": 19
     },
     "shuffle_smallkeys": {
-        "remove": 25.0,
-        "vanilla": 25.0,
-        "dungeon": 25.0,
-        "keysanity": 25.0
+        "remove": 16.666666666666668,
+        "vanilla": 16.666666666666668,
+        "dungeon": 16.666666666666668,
+        "overworld": 16.666666666666668,
+        "dungeons": 16.666666666666668,
+        "keysanity": 16.666666666666668
     },
     "shuffle_bosskeys": {
-        "remove": 25.0,
-        "vanilla": 25.0,
-        "dungeon": 25.0,
-        "keysanity": 25.0
+        "remove": 16.666666666666668,
+        "vanilla": 16.666666666666668,
+        "dungeon": 16.666666666666668,
+        "overworld": 16.666666666666668,
+        "dungeons": 16.666666666666668,
+        "keysanity": 16.666666666666668
     },
     "shuffle_ganon_bosskey": {
         "remove": 20,
         "vanilla": 20,
         "dungeon": 20,
+        "overworld": 0,
+        "dungeons": 0,
         "keysanity": 20,
         "lacs_vanilla": 5,
         "lacs_medallions": 5,
@@ -301,11 +310,13 @@
         "always": 75
     },
     "hint_dist": {
-        "useless": 20.0,
-        "balanced": 20.0,
-        "strong": 20.0,
-        "very_strong": 20.0,
-        "tournament": 20.0
+        "balanced": 16.666666666666668,
+        "bingo": 0,
+        "strong": 16.666666666666668,
+        "tournament": 16.666666666666668,
+        "tournament_s3": 16.666666666666668,
+        "useless": 16.666666666666668,
+        "very_strong": 16.666666666666668
     },
     "text_shuffle": {
         "none": 95,
