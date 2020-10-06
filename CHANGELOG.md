@@ -1,5 +1,13 @@
 ## Changelog
 
+5.2.65 R-6 v1 - Beans, Beans
+- Shuffle Songs (Song Checks, Dungeon Rewards, Songsanity) 33/33/33 (was 50/50 SongChecks/Songsanity)
+- Shuffle map/compass (overworld and dungeons options added). Both at zero weight for now (since the old options were not evenly distributed)
+- Shuffle small keys (New overworld and dungeons options added). Even chance at remove/vanilla/dungeon/overworld/dungeonS/keysanity
+- Shuffle Boss keys (New overworld and dungeons options added). Even chance at remove/vanilla/dungeon/overworld/dungeonS/keysanity
+- Shuffle ganon boss key (new overworld and dungeons options added). Both at zero weight for now (since the old options were not evenly distributed).
+- Hint dist tournament changed for S4 testing, tournament_S3 for previous tournament hint dist, bingo hint dist added. Bingo hints at weight of 0, all other even.
+
 5.2.54 R-2 v1 - Mask of Truth, Mask of Truth
 - Added a change log!
 - Slight adjustment to hint requirements in weights file. Mask of Truth/Stone of Agony/free: 10/10/70 to 12.5/12.5/75
