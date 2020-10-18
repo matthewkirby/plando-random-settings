@@ -21,5 +21,5 @@ def check_rando_version():
 
     if int(rmajor) != int(major) or int(rminor) != int(minor) or int(rfix) < int(fix):
         raise VersionError("dev-R or rando rando script")
-    if int(rver[-1]) < int(ver[-1]):
+    if int(rver[2:]) < int(ver[2:]):
         raise VersionError("dev-R")
