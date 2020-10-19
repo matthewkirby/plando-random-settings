@@ -1,4 +1,4 @@
-import json, random, sys, os
+import json, random, sys, os, traceback
 sys.path.append('..')
 from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
@@ -21,6 +21,14 @@ RRL_CONDITIONALS = True # In rando rando we have a couple conditional cases. Ens
 STARTING_ITEMS = True # Draw starting items, songs, and equipment from a geometric distribution
 
 BROKEN_SETTINGS = [] # If any settings are broken, add their name here and they will be non-randomized
+
+
+# Handle all uncaught exceptions with logging
+def error_handler(type, value, tb):
+    with open('ERRORLOG.TXT', 'w') as errout:
+        traceback.print_exception(type, value, tb, file=errout)
+        traceback.print_exception(type, value, tb, file=sys.stdout)
+sys.excepthook = error_handler
 
 
 def geometric_weights(N, startat=0, rtype='list'):
@@ -103,11 +111,13 @@ def load_weights_file(weights_fname):
 
 
 def main():
-    # Delete the old settings plando file
-    try:
-        os.remove('blind_random_settings.json')
-    except FileNotFoundError:
-        pass
+    # Delete residual files from previous runs
+    remove_me = ['blind_random_settings.json', 'ERRORLOG.TXT']
+    for file_to_delete in remove_me:
+        try:
+            os.remove(file_to_delete)
+        except FileNotFoundError:
+            pass
 
 
     # Load the weight dictionary
@@ -135,8 +145,6 @@ def main():
         # Replace the weights
         for mwkey, mwval in mw_weights.items():
             weight_dict[mwkey] = mwval
-
-
 
 
     # If its a co-op seed, make some small changes to weights
