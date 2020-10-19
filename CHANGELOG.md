@@ -1,5 +1,12 @@
 ## Changelog
 
+5.2.61 R-11 v2
+- Added option for easy multiworld support, see README for instructions
+- All errors are now dumped to ERRORLOG.TXT to help debug non-command line users
+
+5.2.61 R-11 v1
+- Bug fix for devR revisions greater than 10
+
 5.2.65 R-6 v1 - Beans, Beans
 - Shuffle Songs (Song Checks, Dungeon Rewards, Songsanity) 33/33/33 (was 50/50 SongChecks/Songsanity)
 - Shuffle map/compass (overworld and dungeons options added). Both at zero weight for now (since the old options were not evenly distributed)

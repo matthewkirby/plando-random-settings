@@ -1,4 +1,4 @@
-__version__ = "5.2.65 R-6 v1"
+__version__ = "5.2.65 R-11 v2"
 version_hash_1 = "Beans"
 version_hash_2 = "Beans"
 
