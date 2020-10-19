@@ -12,6 +12,7 @@ weights = 'rrl' # The default Rando Rando League Season 2 weights
 # weights = 'full-random' # Every setting with even weights
 # weights = 'coop' # Uses the rrl weights with some extra modifications
 # weights = 'my_weights.json' # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
+# mw_weights_file = 'rsl_multiworld.json' # If this variable exists, load this file and use it to edit loaded weights
 
 COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
@@ -30,12 +31,16 @@ def geometric_weights(N, startat=0, rtype='list'):
         return {str(startat+i): 50.0/2**i for i in range(N)}
 
 
-def draw_starting_item_pool(random_settings):
+def draw_starting_item_pool(random_settings, start_with):
     """ Select starting items, songs, and equipment. """
     random_settings['starting_items'] = draw_choices_from_pool(inventory)
     random_settings['starting_songs'] = draw_choices_from_pool(songs)
     random_settings['starting_equipment'] = draw_choices_from_pool(equipment)
     
+    for key, val in start_with.items():
+        for thing in val:
+            if thing not in random_settings[key]:
+                random_settings[key] += [thing]
 
 def draw_choices_from_pool(itempool):
     N = random.choices(range(len(itempool)), weights=geometric_weights(len(itempool)))[0]
@@ -117,6 +122,23 @@ def main():
         weight_dict = load_weights_file(weights)
 
 
+    # If a multiworld weights file is supplied, make appropriate changes
+    start_with = {'starting_items':[], 'starting_songs':[], 'starting_equipment':[]}
+    if "mw_weights_file" in globals():
+        mw_weights = load_weights_file(mw_weights_file)
+        # Check for starting items, songs and equipment
+        for key in start_with.keys():
+            if key in mw_weights.keys():
+                start_with[key] = mw_weights[key]
+                mw_weights.pop(key)
+
+        # Replace the weights
+        for mwkey, mwval in mw_weights.items():
+            weight_dict[mwkey] = mwval
+
+
+
+
     # If its a co-op seed, make some small changes to weights
     if weights == 'coop':
         weight_dict['bridge_tokens'] = {i+1: 2.0 for i in range(50)}
@@ -154,7 +176,7 @@ def main():
 
     # Draw the starting items, songs, and equipment
     if STARTING_ITEMS:
-        draw_starting_item_pool(random_settings)
+        draw_starting_item_pool(random_settings, start_with)
 
 
     # Format numbers and bools to not be strings
