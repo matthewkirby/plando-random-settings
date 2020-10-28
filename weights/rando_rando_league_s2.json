@@ -40,9 +40,33 @@
         "dungeons": 16.666666666666668,
         "tokens": 16.666666666666668
     },
+    "bridge_medallions": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 50
+    },
+    "bridge_stones": {
+        "1": 25,
+        "2": 25,
+        "3": 50
+    },
+    "bridge_rewards": {
+        "1": 6.25,
+        "2": 6.25,
+        "3": 6.25,
+        "4": 6.25,
+        "5": 6.25,
+        "6": 6.25,
+        "7": 6.25,
+        "8": 6.25,
+        "9": 50
+    },
     "triforce_hunt": {
-        "true": 16.6,
-        "false": 83.4
+        "true": 14.28,
+        "false": 85.72
     },
     "bombchus_in_logic": {
         "true": 50.0,
@@ -181,41 +205,72 @@
         "false": 50.0
     },
     "shuffle_mapcompass": {
-        "remove": 19,
-        "startwith": 25,
-        "vanilla": 19,
-        "dungeon": 19,
-        "overworld": 0,
-        "dungeons": 0,
-        "keysanity": 19
+        "remove": 14.28,
+        "startwith": 14.28,
+        "vanilla": 14.28,
+        "dungeon": 14.28,
+        "overworld": 14.28,
+        "any_dungeon": 14.28,
+        "keysanity": 14.28
     },
     "shuffle_smallkeys": {
-        "remove": 16.666666666666668,
-        "vanilla": 16.666666666666668,
-        "dungeon": 16.666666666666668,
-        "overworld": 16.666666666666668,
-        "dungeons": 16.666666666666668,
-        "keysanity": 16.666666666666668
+        "remove": 16.66,
+        "vanilla": 16.66,
+        "dungeon": 16.66,
+        "overworld": 16.66,
+        "any_dungeon": 16.66,
+        "keysanity": 16.66
+    },
+    "shuffle_fortresskeys": {
+        "vanilla": 100,
+        "overworld": 0,
+        "any_dungeon": 0,
+        "keysanity": 0
     },
     "shuffle_bosskeys": {
-        "remove": 16.666666666666668,
-        "vanilla": 16.666666666666668,
-        "dungeon": 16.666666666666668,
-        "overworld": 16.666666666666668,
-        "dungeons": 16.666666666666668,
-        "keysanity": 16.666666666666668
+        "remove": 16.66,
+        "vanilla": 16.66,
+        "dungeon": 16.66,
+        "overworld": 16.66,
+        "any_dungeon": 16.66,
+        "keysanity": 16.66
     },
     "shuffle_ganon_bosskey": {
-        "remove": 20,
-        "vanilla": 20,
-        "dungeon": 20,
-        "overworld": 0,
-        "dungeons": 0,
-        "keysanity": 20,
-        "lacs_vanilla": 5,
-        "lacs_medallions": 5,
-        "lacs_stones": 5,
-        "lacs_dungeons": 5
+        "remove": 14.28,
+        "vanilla": 14.28,
+        "dungeon": 14.28,
+        "overworld": 4.76,
+        "any_dungeon": 4.76,
+        "keysanity": 4.76,
+        "lacs_vanilla": 3.57,
+        "lacs_medallions": 3.57,
+        "lacs_stones": 3.57,
+        "lacs_dungeons": 3.57,
+        "lacs_tokens": 14.28
+    },
+    "lacs_medallions": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 50
+    },
+    "lacs_stones": {
+        "1": 25,
+        "2": 25,
+        "3": 50
+    },
+    "lacs_rewards": {
+        "1": 6.25,
+        "2": 6.25,
+        "3": 6.25,
+        "4": 6.25,
+        "5": 6.25,
+        "6": 6.25,
+        "7": 6.25,
+        "8": 6.25,
+        "9": 50
     },
     "enhance_map_compass": {
         "true": 50.0,
@@ -299,19 +354,24 @@
         "true": 50.0,
         "false": 50.0
     },
+    "fast_bunny_hood": {
+        "true": 100,
+        "false": 0
+    },
     "clearer_hints": {
         "true": 100,
         "false": 0
     },
     "hints": {
         "none": 0,
-        "mask": 0,
-        "agony": 25,
+        "mask": 12.5,
+        "agony": 12.5,
         "always": 75
     },
     "hint_dist": {
         "balanced": 16.666666666666668,
         "bingo": 0,
+        "scrubs": 0,
         "strong": 16.666666666666668,
         "tournament": 16.666666666666668,
         "tournament_s3": 16.666666666666668,

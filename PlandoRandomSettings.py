@@ -62,8 +62,8 @@ def generate_balanced_weights(fname='default_weights.json'):
                 list(get_settings_from_tab('other_tab')) + \
                 list(get_settings_from_tab('starting_tab'))
 
-    exclude_from_weights = ['bridge_tokens', 'triforce_goal_per_world', 'disabled_locations', 'allowed_tricks',
-                            'starting_equipment', 'starting_items', 'starting_songs']
+    exclude_from_weights = ['bridge_tokens', 'lacs_tokens', 'triforce_goal_per_world', 'disabled_locations',
+                            'allowed_tricks', 'starting_equipment', 'starting_items', 'starting_songs']
     weight_dict = {}
     for name in settings_to_randomize:
         if name not in exclude_from_weights:
@@ -150,16 +150,17 @@ def main():
     # If its a co-op seed, make some small changes to weights
     if weights == 'coop':
         weight_dict['bridge_tokens'] = {i+1: 2.0 for i in range(50)}
+        weight_dict['lacs_tokens'] = {i+1: 2.0 for i in range(50)}
         weight_dict['mq_dungeons_random'] = {"false": 100}
         weight_dict['mq_dungeons'] = {"0": 100,}
         weight_dict['damage_multiplier'] = {"normal": 100}
 
 
-    # Check if bridge_tokens or triforce piece count is set already, if not draw uniformly.
-    if not 'bridge_tokens' in weight_dict:
-        weight_dict['bridge_tokens'] = {i+1: 1.0 for i in range(100)}
-    if not 'triforce_goal_per_world' in weight_dict:
-        weight_dict['triforce_goal_per_world'] = {i+1: 1.0 for i in range(100)}
+    # Check if bridge_tokens, lacs_tokens, or triforce piece count is set already, if not draw uniformly.
+    number_settings = ['bridge_tokens', 'lacs_tokens', 'triforce_goal_per_world']
+    for nset in number_settings:
+        if not nset in weight_dict:
+            weight_dict[nset] = {i+1: 1.0 for i in range(100)}
 
 
     # Draw the random settings

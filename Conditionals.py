@@ -20,3 +20,10 @@ def exclude_overworld_mixed_pools(random_settings):
     """ If Overworld ER is enabled, mixed entrance pools should be disabled. """
     if random_settings['shuffle_overworld_entrances'] == "true":
         random_settings['mix_entrance_pools'] = "false"
+
+def disable_fortresskeys_independence(random_settings):
+    """ Set shuffle_fortresskeys to match shuffle_smallkeys. """
+    if random_settings['shuffle_smallkeys'] in ['remove', 'vanilla', 'dungeon']:
+        random_settings['shuffle_fortresskeys'] = 'vanilla'
+    else:
+        random_settings['shuffle_fortresskeys'] = random_settings['shuffle_smallkeys']
