@@ -1,13 +1,13 @@
 ## Changelog
 
 5.2.82 R-2 v1 - Skull Token, Skull Token
-- For LACs and bridge medallions, stones and dungeons, we now have 50% chance for all to be required (6 meds, 3 stones, or 9 dungeon rewards) and 50% chance at variable (1-5 meds, 1-2 stones, 1-8 dungeons)
+- For LACS and bridge medallions, stones and dungeons, we now have 50% chance for all to be required (6 meds, 3 stones, or 9 dungeon rewards) and 50% chance at variable (1-5 meds, 1-2 stones, 1-8 dungeons)
 - Renamed `dungeons` option to `any_dungeon` for `shuffle_mapcompass`, `shuffle_smallkeys`, `shuffle_bosskeys` and `shuffle_ganon_bosskey`
 - Added `lacs_tokens` as an option to `shuffle_ganon_bosskey`. Renormalized weights
     - Ganon BK in `any_dungeon` now possible as well
-    - Even probability of: Triforce hunt, `remove`, `vanilla`, `dungeon`, Keysanity, LACs (dungeon rewards), and LACs Tokens
+    - Even probability of: Triforce hunt, `remove`, `vanilla`, `dungeon`, Keysanity, LACS (dungeon rewards), and LACS Tokens
     - If Keysanity is chosen, even probability of `keysanity`, `overworld` or `any_dungeon`
-    - If LACs (dungeon rewards) is chosen, even probability between `lacs_vanilla`, `lacs_medallion`, `lacs_stone` and `lacs_dungeons`
+    - If LACS (dungeon rewards) is chosen, even probability between `lacs_vanilla`, `lacs_medallion`, `lacs_stone` and `lacs_dungeons`
 - `fast_bunny_hood` setting added and set to always on
 - `shuffle_mapcompass` now includes `overworld` and `any_dungeon` and all of the options are equally weighted.
 - Mask of truth hints are no longer broken, so hint requirements are now back to 12.5/12.5/75 MoT/SoA/Free
