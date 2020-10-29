@@ -1,6 +1,6 @@
 ## Changelog
 
-5.2.82 R-2 v1 - Skull Token, Skull Token
+5.2.84 R-2 v1 - Skull Token, Skull Token
 - For LACS and bridge medallions, stones and dungeons, we now have 50% chance for all to be required (6 meds, 3 stones, or 9 dungeon rewards) and 50% chance at variable (1-5 meds, 1-2 stones, 1-8 dungeons)
 - Renamed `dungeons` option to `any_dungeon` for `shuffle_mapcompass`, `shuffle_smallkeys`, `shuffle_bosskeys` and `shuffle_ganon_bosskey`
 - Added `lacs_tokens` as an option to `shuffle_ganon_bosskey`. Renormalized weights
