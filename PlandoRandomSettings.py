@@ -8,10 +8,10 @@ from rsl_version import version_hash_1, version_hash_2, VersionError, check_rand
 check_rando_version()
 
 # Please set the weights file you with to load
-weights = 'rrl' # The default Rando Rando League Season 2 weights
+# weights = 'rrl' # The default Rando Rando League Season 2 weights
 # weights = 'full-random' # Every setting with even weights
 # weights = 'coop' # Uses the rrl weights with some extra modifications
-# weights = 'my_weights.json' # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
+weights = 'my_weights.json' # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
 # mw_weights_file = 'rsl_multiworld.json' # If this variable exists, load this file and use it to edit loaded weights
 
 COOP_SETTINGS = False # Change some settings to be more coop friendly

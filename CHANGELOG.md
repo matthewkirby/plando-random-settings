@@ -1,5 +1,9 @@
 ## Changelog
 
+5.2.87 R-1 v1 - Cucco, Cucco
+- `skip_child_zelda` added with 50/50 on/off. We will reexamine this weighting before the S2 brackets.
+- Fixed bug with versioning
+
 5.2.84 R-2 v1 - Skull Token, Skull Token
 - For LACS and bridge medallions, stones and dungeons, we now have 50% chance for all to be required (6 meds, 3 stones, or 9 dungeon rewards) and 50% chance at variable (1-5 meds, 1-2 stones, 1-8 dungeons)
 - Renamed `dungeons` option to `any_dungeon` for `shuffle_mapcompass`, `shuffle_smallkeys`, `shuffle_bosskeys` and `shuffle_ganon_bosskey`

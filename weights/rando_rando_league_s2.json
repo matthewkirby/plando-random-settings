@@ -1,7 +1,7 @@
 {
     "hash": {
-        "obj1": "Skull Token",
-        "obj2": "Skull Token"
+        "obj1": "Cucco",
+        "obj2": "Cucco"
     },
     "logic_rules": {
         "glitchless": 100,
@@ -283,6 +283,10 @@
     "logic_no_night_tokens_without_suns_song": {
         "true": 0,
         "false": 100
+    },
+    "skip_child_zelda": {
+        "true": 50.0,
+        "false": 50.0
     },
     "no_escape_sequence": {
         "true": 60.0,

@@ -1,6 +1,6 @@
-__version__ = "5.2.84 R-2 v1"
-version_hash_1 = "Skull Token"
-version_hash_2 = "Skull Token"
+__version__ = "5.2.87 R-1 v1"
+version_hash_1 = "Cucco"
+version_hash_2 = "Cucco"
 
 
 class VersionError(Exception):
