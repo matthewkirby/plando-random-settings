@@ -1,7 +1,7 @@
 {
     "hash": {
-        "obj1": "Cucco",
-        "obj2": "Cucco"
+        "obj1": "SOLD OUT",
+        "obj2": "SOLD OUT"
     },
     "logic_rules": {
         "glitchless": 100,
@@ -112,8 +112,9 @@
         "false": 60
     },
     "mix_entrance_pools": {
-        "true": 40,
-        "false": 60
+        "all": 0,
+        "indoor": 40,
+        "off": 60
     },
     "decouple_entrances": {
         "true": 0,
@@ -393,6 +394,10 @@
         "double": 20,
         "quadruple": 15,
         "ohko": 5
+    },
+    "no_collectible_hearts": {
+        "true": 50.0,
+        "false": 50.0
     },
     "starting_tod": {
         "default": 10.0,

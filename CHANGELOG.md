@@ -1,5 +1,9 @@
 ## Changelog
 
+5.2.100 R-1 v1 - Sold Out, Sold Out
+- Mixed Pools (exclude overworld) is now an option. We have replaced the preexisting mixed pool weights and removed conditional on mixed pools. We now have 0/40/60 weights for full mixed/exclude ow/off as was initially voted on.
+- `no_collectible_hearts` added with weight of 50/50. Incoming poll for this setting.
+
 5.2.87 R-1 v1 - Cucco, Cucco
 - `skip_child_zelda` added with 50/50 on/off. We will reexamine this weighting before the S2 brackets.
 - Fixed bug with versioning

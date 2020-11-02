@@ -1,6 +1,6 @@
-__version__ = "5.2.87 R-1 v1"
-version_hash_1 = "Cucco"
-version_hash_2 = "Cucco"
+__version__ = "5.2.100 R-1 v1"
+version_hash_1 = "SOLD OUT"
+version_hash_2 = "SOLD OUT"
 
 
 class VersionError(Exception):
