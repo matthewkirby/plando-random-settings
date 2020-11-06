@@ -396,8 +396,8 @@
         "ohko": 5
     },
     "no_collectible_hearts": {
-        "true": 50.0,
-        "false": 50.0
+        "true": 10,
+        "false": 90
     },
     "starting_tod": {
         "default": 10.0,
