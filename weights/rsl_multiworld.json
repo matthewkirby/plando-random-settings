@@ -12,10 +12,6 @@
         "true": 0,
         "false": 100
     },
-    "mix_entrance_pools": {
-        "true": 24,
-        "false": 76
-    },
     "free_scarecrow": {
         "true": 100,
         "false": 0
@@ -41,6 +37,10 @@
         "double": 25,
         "quadruple": 0,
         "ohko": 0
+    },
+    "no_collectible_hearts": {
+        "true": 0,
+        "false": 100
     },
     "starting_songs": [
         "suns_song"
