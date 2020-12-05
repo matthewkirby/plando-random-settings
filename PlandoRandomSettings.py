@@ -1,16 +1,18 @@
-import json, random, sys, os
+import json, random, sys, os, traceback
 sys.path.append('..')
 from SettingsList import get_settings_from_tab, get_setting_info
 from StartingItems import inventory, songs, equipment
+from Spoiler import HASH_ICONS
 import Conditionals as conds
-
-__version__ = "5-2-44R.1.1"
+from rsl_version import version_hash_1, version_hash_2, VersionError, check_rando_version
+check_rando_version()
 
 # Please set the weights file you with to load
 weights = 'rrl' # The default Rando Rando League Season 2 weights
 # weights = 'full-random' # Every setting with even weights
 # weights = 'coop' # Uses the rrl weights with some extra modifications
 # weights = 'my_weights.json' # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
+# mw_weights_file = 'rsl_multiworld.json' # If this variable exists, load this file and use it to edit loaded weights
 
 COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
@@ -21,6 +23,14 @@ STARTING_ITEMS = True # Draw starting items, songs, and equipment from a geometr
 BROKEN_SETTINGS = [] # If any settings are broken, add their name here and they will be non-randomized
 
 
+# Handle all uncaught exceptions with logging
+def error_handler(type, value, tb):
+    with open('ERRORLOG.TXT', 'w') as errout:
+        traceback.print_exception(type, value, tb, file=errout)
+        traceback.print_exception(type, value, tb, file=sys.stdout)
+sys.excepthook = error_handler
+
+
 def geometric_weights(N, startat=0, rtype='list'):
     """ Compute weights according to a geometric distribution """
     if rtype == 'list':
@@ -29,16 +39,21 @@ def geometric_weights(N, startat=0, rtype='list'):
         return {str(startat+i): 50.0/2**i for i in range(N)}
 
 
-def draw_starting_item_pool(random_settings):
+def draw_starting_item_pool(random_settings, start_with):
     """ Select starting items, songs, and equipment. """
     random_settings['starting_items'] = draw_choices_from_pool(inventory)
     random_settings['starting_songs'] = draw_choices_from_pool(songs)
     random_settings['starting_equipment'] = draw_choices_from_pool(equipment)
     
+    for key, val in start_with.items():
+        for thing in val:
+            if thing not in random_settings[key]:
+                random_settings[key] += [thing]
 
 def draw_choices_from_pool(itempool):
     N = random.choices(range(len(itempool)), weights=geometric_weights(len(itempool)))[0]
     return random.sample(list(itempool.keys()), N)
+
 
 def generate_balanced_weights(fname='default_weights.json'):
     """ Generate a file with even weights for each setting. """
@@ -47,8 +62,8 @@ def generate_balanced_weights(fname='default_weights.json'):
                 list(get_settings_from_tab('other_tab')) + \
                 list(get_settings_from_tab('starting_tab'))
 
-    exclude_from_weights = ['bridge_tokens', 'triforce_goal_per_world', 'disabled_locations', 'allowed_tricks',
-                            'starting_equipment', 'starting_items', 'starting_songs']
+    exclude_from_weights = ['bridge_tokens', 'lacs_tokens', 'triforce_goal_per_world', 'disabled_locations',
+                            'allowed_tricks', 'starting_equipment', 'starting_items', 'starting_songs']
     weight_dict = {}
     for name in settings_to_randomize:
         if name not in exclude_from_weights:
@@ -96,33 +111,56 @@ def load_weights_file(weights_fname):
 
 
 def main():
-    # Delete the old settings plando file
-    try:
-        os.remove('blind_random_settings.json')
-    except FileNotFoundError:
-        pass
+    # Delete residual files from previous runs
+    remove_me = ['blind_random_settings.json', 'ERRORLOG.TXT']
+    for file_to_delete in remove_me:
+        try:
+            os.remove(file_to_delete)
+        except FileNotFoundError:
+            pass
 
 
     # Load the weight dictionary
-    if weights == 'rrl':
+    if weights in ['rrl', 'coop']:
         weight_dict = load_weights_file('rando_rando_league_s2.json')
+        if weight_dict['hash']['obj1'] != version_hash_1 or weight_dict['hash']['obj2'] != version_hash_2:
+            raise VersionError("weights file")
+        weight_dict.pop('hash')
     elif weights == 'full-random':
         weight_dict = generate_balanced_weights(None)
-    elif weights == 'coop':
-        weight_dict = load_weights_file('rando_rando_league_s2.json')
-        weight_dict['bridge_tokens'] = {i+1: 2.0 for i in range(50)}
-        weight_dict['mq_dungeons_random'] = {"false": 100}
-        weight_dict['mq_dungeons'] = {"0": 100,}
-        weight_dict['damage_multiplier'] = {"normal": 100}
     else:
         weight_dict = load_weights_file(weights)
 
 
-    # Check if bridge_tokens or triforce piece count is set already, if not draw uniformly.
-    if not 'bridge_tokens' in weight_dict:
-        weight_dict['bridge_tokens'] = {i+1: 1.0 for i in range(100)}
-    if not 'triforce_goal_per_world' in weight_dict:
-        weight_dict['triforce_goal_per_world'] = {i+1: 1.0 for i in range(100)}
+    # If a multiworld weights file is supplied, make appropriate changes
+    start_with = {'starting_items':[], 'starting_songs':[], 'starting_equipment':[]}
+    if "mw_weights_file" in globals():
+        mw_weights = load_weights_file(mw_weights_file)
+        # Check for starting items, songs and equipment
+        for key in start_with.keys():
+            if key in mw_weights.keys():
+                start_with[key] = mw_weights[key]
+                mw_weights.pop(key)
+
+        # Replace the weights
+        for mwkey, mwval in mw_weights.items():
+            weight_dict[mwkey] = mwval
+
+
+    # If its a co-op seed, make some small changes to weights
+    if weights == 'coop':
+        weight_dict['bridge_tokens'] = {i+1: 2.0 for i in range(50)}
+        weight_dict['lacs_tokens'] = {i+1: 2.0 for i in range(50)}
+        weight_dict['mq_dungeons_random'] = {"false": 100}
+        weight_dict['mq_dungeons'] = {"0": 100,}
+        weight_dict['damage_multiplier'] = {"normal": 100}
+
+
+    # Check if bridge_tokens, lacs_tokens, or triforce piece count is set already, if not draw uniformly.
+    number_settings = ['bridge_tokens', 'lacs_tokens', 'triforce_goal_per_world']
+    for nset in number_settings:
+        if not nset in weight_dict:
+            weight_dict[nset] = {i+1: 1.0 for i in range(100)}
 
 
     # Draw the random settings
@@ -135,6 +173,7 @@ def main():
     if RRL_CONDITIONALS:
         conds.exclude_minimal_triforce_hunt(weight_dict, random_settings)
         conds.exclude_ice_trap_misery(weight_dict, random_settings)
+        conds.disable_fortresskeys_independence(random_settings)
 
 
     # Add the tricks to the plando
@@ -146,7 +185,7 @@ def main():
 
     # Draw the starting items, songs, and equipment
     if STARTING_ITEMS:
-        draw_starting_item_pool(random_settings)
+        draw_starting_item_pool(random_settings, start_with)
 
 
     # Format numbers and bools to not be strings
@@ -163,7 +202,10 @@ def main():
 
 
     # Save the output plando
-    output = {'settings': random_settings}
+    output = {
+        'settings': random_settings,
+        'file_hash': [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
+    }
     with open('blind_random_settings.json', 'w') as fp:
         json.dump(output, fp, indent=4)
 

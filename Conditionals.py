@@ -15,3 +15,10 @@ def exclude_ice_trap_misery(weight_dict, random_settings):
     if 'onslaught' in weights.keys() and random_settings['damage_multiplier'] in ['quadruple', 'ohko']:
         weights.pop('onslaught')
     random_settings['junk_ice_traps'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]
+
+def disable_fortresskeys_independence(random_settings):
+    """ Set shuffle_fortresskeys to match shuffle_smallkeys. """
+    if random_settings['shuffle_smallkeys'] in ['remove', 'vanilla', 'dungeon']:
+        random_settings['shuffle_fortresskeys'] = 'vanilla'
+    else:
+        random_settings['shuffle_fortresskeys'] = random_settings['shuffle_smallkeys']
