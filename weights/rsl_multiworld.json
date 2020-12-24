@@ -2,7 +2,7 @@
     "open_door_of_time": {
         "true": 100,
         "false": 0
-    }, 
+    },
     "zora_fountain": {
         "closed": 0,
         "adult": 0,
@@ -44,5 +44,26 @@
     },
     "starting_songs": [
         "suns_song"
-    ]
+    ],
+    "item_pool_value": {
+        "plentiful": 20,
+        "balanced": 40,
+        "scarce": 20,
+        "minimal": 20
+    },
+    "triforce_hunt": {
+        "true": 14.28,
+        "false": 85.72
+    },
+    "junk_ice_traps": {
+        "off": 30,
+        "normal": 30,
+        "on": 15,
+        "mayhem": 15,
+        "onslaught": 10
+    },
+    "skip_child_zelda": {
+        "true": 0,
+        "false": 100
+    }
 }
