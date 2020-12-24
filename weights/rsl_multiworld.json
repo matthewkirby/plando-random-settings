@@ -45,31 +45,6 @@
     "starting_songs": [
         "suns_song"
     ],
-    "item_pool_value": {
-        "plentiful": 20,
-        "balanced": 40,
-        "scarce": 20,
-        "minimal": 20
-    },
-    "triforce_hunt": {
-        "true": 14.28,
-        "false": 85.72
-    },
-    "junk_ice_traps": {
-        "off": 30,
-        "normal": 30,
-        "on": 15,
-        "mayhem": 15,
-        "onslaught": 10
-    },
-    "shuffle_smallkeys": {
-        "remove": 16.66,
-        "vanilla": 16.66,
-        "dungeon": 16.66,
-        "overworld": 16.66,
-        "any_dungeon": 16.66,
-        "keysanity": 16.66
-    },
     "skip_child_zelda": {
         "true": 0,
         "false": 100

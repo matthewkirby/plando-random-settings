@@ -166,8 +166,7 @@ def main():
     # Draw the random settings
     random_settings = {}
     for setting, options in weight_dict.items():
-        if isinstance(options, dict): # Skip settings that are hardcoded lists, like starting_items
-            random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
+        random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
 
 
     # Check conditional settings for rrl
