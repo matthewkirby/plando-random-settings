@@ -2,7 +2,7 @@
     "open_door_of_time": {
         "true": 100,
         "false": 0
-    }, 
+    },
     "zora_fountain": {
         "closed": 0,
         "adult": 0,
@@ -44,5 +44,9 @@
     },
     "starting_songs": [
         "suns_song"
-    ]
+    ],
+    "skip_child_zelda": {
+        "true": 0,
+        "false": 100
+    }
 }
