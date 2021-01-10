@@ -1,4 +1,4 @@
-__version__ = "5.2.119 R-1 v1"
+__version__ = "6.0.2 R-3 v1"
 version_hash_1 = "Longshot"
 version_hash_2 = "Longshot"
 
