@@ -1,0 +1,762 @@
+{
+    "hash": [
+        "Longshot",
+        "Longshot"
+    ],
+    "disabledLocations": [],
+    "allowedTricks": [
+        "logic_fewer_tunic_requirements",
+        "logic_grottos_without_agony",
+        "logic_child_deadhand",
+        "logic_man_on_roof",
+        "logic_dc_jump",
+        "logic_rusted_switches",
+        "logic_windmill_poh",
+        "logic_crater_bean_poh_with_hovers",
+        "logic_forest_vines",
+        "logic_goron_city_pot_with_strength",
+        "logic_lens_botw",
+        "logic_lens_castle",
+        "logic_lens_gtg",
+        "logic_lens_shadow",
+        "logic_lens_shadow_back",
+        "logic_lens_spirit",
+        "logic_visible_collisions",
+        "logic_deku_b1_webs_with_bow",
+        "logic_lens_gtg_mq",
+        "logic_lens_jabu_mq",
+        "logic_lens_shadow_mq",
+        "logic_lens_shadow_mq_back",
+        "logic_lens_spirit_mq"
+    ],
+    "randomStartingItems": true,
+    "weights": [
+        {
+            "setting": "logic_rules",
+            "values": {
+                "glitchless": 1,
+                "glitched": 0,
+                "none": 0
+            }
+        },
+        {
+            "setting": "open_forest",
+            "values": {
+                "open": 1,
+                "closed_deku": 1,
+                "closed": 0
+            }
+        },
+        {
+            "setting": "open_kakariko",
+            "values": {
+                "open": 1,
+                "zelda": 1,
+                "closed": 1
+            }
+        },
+        {
+            "setting": "open_door_of_time",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "zora_fountain",
+            "values": {
+                "closed": 1,
+                "adult": 1,
+                "open": 1
+            }
+        },
+        {
+            "setting": "gerudo_fortress",
+            "values": {
+                "normal": 1,
+                "fast": 1,
+                "open": 1
+            }
+        },
+        {
+            "setting": "bridge",
+            "values": {
+                "open": 1,
+                "vanilla": 1,
+                "stones": 1,
+                "medallions": 1,
+                "dungeons": 1,
+                "tokens": 1
+            }
+        },
+        {
+            "setting": "bridge_medallions",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "5": 1,
+                "6": 5
+            }
+        },
+        {
+            "setting": "bridge_stones",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 2
+            }
+        },
+        {
+            "setting": "bridge_rewards",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "5": 1,
+                "6": 1,
+                "7": 1,
+                "8": 1,
+                "9": 8
+            }
+        },
+        {
+            "setting": "bridge_tokens",
+            "distribution": "uniform",
+            "min": 1,
+            "max": 100
+        },
+        {
+            "setting": "triforce_hunt",
+            "values": {
+                "true": 1,
+                "false": 6
+            }
+        },
+        {
+            "setting": "triforce_goal_per_world",
+            "distribution": "uniform",
+            "min": 1,
+            "max": 100
+        },
+        {
+            "setting": "bombchus_in_logic",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "one_item_per_dungeon",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "trials_random",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "starting_age",
+            "values": {
+                "child": 0,
+                "adult": 0,
+                "random": 1
+            }
+        },
+        {
+            "setting": "shuffle_interior_entrances",
+            "values": {
+                "off": 1,
+                "simple": 1,
+                "all": 1
+            }
+        },
+        {
+            "setting": "shuffle_grotto_entrances",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_dungeon_entrances",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_overworld_entrances",
+            "values": {
+                "true": 2,
+                "false": 3
+            }
+        },
+        {
+            "setting": "mix_entrance_pools",
+            "values": {
+                "all": 0,
+                "indoor": 2,
+                "off": 3
+            }
+        },
+        {
+            "setting": "decouple_entrances",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "owl_drops",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "warp_songs",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "spawn_positions",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "mq_dungeons_random",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "mq_dungeons",
+            "distribution": "geometric",
+            "min": 0,
+            "max": 12
+        },
+        {
+            "setting": "shopsanity",
+            "values": {
+                "off": 1,
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "random": 1
+            }
+        },
+        {
+            "setting": "tokensanity",
+            "values": {
+                "off": 1,
+                "dungeons": 1,
+                "overworld": 1,
+                "all": 1
+            }
+        },
+        {
+            "setting": "shuffle_scrubs",
+            "values": {
+                "off": 2,
+                "low": 2,
+                "regular": 1,
+                "random": 1
+            }
+        },
+        {
+            "setting": "shuffle_cows",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_song_items",
+            "values": {
+                "song": 1,
+                "dungeon": 1,
+                "any": 1
+            }
+        },
+        {
+            "setting": "shuffle_kokiri_sword",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_ocarinas",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_weird_egg",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_gerudo_card",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_beans",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_medigoron_carpet_salesman",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "shuffle_mapcompass",
+            "values": {
+                "remove": 1,
+                "startwith": 1,
+                "vanilla": 1,
+                "dungeon": 1,
+                "overworld": 1,
+                "any_dungeon": 1,
+                "keysanity": 1
+            }
+        },
+        {
+            "setting": "shuffle_smallkeys",
+            "values": {
+                "remove": 1,
+                "vanilla": 1,
+                "dungeon": 1,
+                "overworld": 1,
+                "any_dungeon": 1,
+                "keysanity": 1
+            }
+        },
+        {
+            "setting": "shuffle_fortresskeys",
+            "conditionals": [
+                {
+                    "setting": "shuffle_smallkeys",
+                    "conditions": [
+                        "overworld"
+                    ],
+                    "values": {
+                        "overworld": 1
+                    }
+                },
+                {
+                    "setting": "shuffle_smallkeys",
+                    "conditions": [
+                        "any_dungeon"
+                    ],
+                    "values": {
+                        "any_dungeon": 1
+                    }
+                },
+                {
+                    "setting": "shuffle_smallkeys",
+                    "conditions": [
+                        "keysanity"
+                    ],
+                    "values": {
+                        "keysanity": 1
+                    }
+                }
+            ],
+            "default": {
+                "vanilla": 1
+            }
+        },
+        {
+            "setting": "shuffle_bosskeys",
+            "values": {
+                "remove": 1,
+                "vanilla": 1,
+                "dungeon": 1,
+                "overworld": 1,
+                "any_dungeon": 1,
+                "keysanity": 1
+            }
+        },
+        {
+            "setting": "shuffle_ganon_bosskey",
+            "values": {
+                "remove": 12,
+                "vanilla": 12,
+                "dungeon": 12,
+                "overworld": 4,
+                "any_dungeon": 4,
+                "keysanity": 4,
+                "lacs_vanilla": 3,
+                "lacs_medallions": 3,
+                "lacs_stones": 3,
+                "lacs_dungeons": 3,
+                "lacs_tokens": 12
+            }
+        },
+        {
+            "setting": "lacs_medallions",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "5": 1,
+                "6": 5
+            }
+        },
+        {
+            "setting": "lacs_stones",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 2
+            }
+        },
+        {
+            "setting": "lacs_rewards",
+            "values": {
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "4": 1,
+                "5": 1,
+                "6": 1,
+                "7": 1,
+                "8": 1,
+                "9": 8
+            }
+        },
+        {
+            "setting": "lacs_tokens",
+            "distribution": "uniform",
+            "min": 1,
+            "max": 100
+        },
+        {
+            "setting": "enhance_map_compass",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "all_reachable",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "logic_no_night_tokens_without_suns_song",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "skip_child_zelda",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "no_escape_sequence",
+            "values": {
+                "true": 3,
+                "false": 2
+            }
+        },
+        {
+            "setting": "no_guard_stealth",
+            "values": {
+                "true": 3,
+                "false": 2
+            }
+        },
+        {
+            "setting": "no_epona_race",
+            "values": {
+                "true": 3,
+                "false": 2
+            }
+        },
+        {
+            "setting": "skip_some_minigame_phases",
+            "values": {
+                "true": 3,
+                "false": 2
+            }
+        },
+        {
+            "setting": "useful_cutscenes",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "fast_chests",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "free_scarecrow",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "chicken_count_random",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "complete_mask_quest",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "big_poe_count_random",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "ocarina_songs",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "correct_chest_sizes",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "fast_bunny_hood",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "clearer_hints",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        },
+        {
+            "setting": "hints",
+            "values": {
+                "none": 0,
+                "mask": 1,
+                "agony": 1,
+                "always": 6
+            }
+        },
+        {
+            "setting": "hint_dist",
+            "values": {
+                "balanced": 1,
+                "bingo": 0,
+                "scrubs": 0,
+                "strong": 1,
+                "tournament": 1,
+                "tournament_s3": 1,
+                "useless": 1,
+                "very_strong": 1
+            }
+        },
+        {
+            "setting": "text_shuffle",
+            "values": {
+                "none": 19,
+                "except_hints": 1,
+                "complete": 0
+            }
+        },
+        {
+            "setting": "damage_multiplier",
+            "values": {
+                "half": 20,
+                "normal": 40,
+                "double": 20,
+                "quadruple": 15,
+                "ohko": 5
+            }
+        },
+        {
+            "setting": "no_collectible_hearts",
+            "values": {
+                "true": 1,
+                "false": 9
+            }
+        },
+        {
+            "setting": "starting_tod",
+            "values": {
+                "default": 1,
+                "random": 1,
+                "sunrise": 1,
+                "morning": 1,
+                "noon": 1,
+                "afternoon": 1,
+                "sunset": 1,
+                "evening": 1,
+                "midnight": 1,
+                "witching-hour": 1
+            }
+        },
+        {
+            "setting": "item_pool_value",
+            "conditionals": [
+                {
+                    "setting": "triforce_hunt",
+                    "conditions": [
+                        true
+                    ],
+                    "values": {
+                        "plentiful": 1,
+                        "balanced": 2,
+                        "scarce": 1
+                    }
+                }
+            ],
+            "default": {
+                "plentiful": 1,
+                "balanced": 2,
+                "scarce": 1,
+                "minimal": 1
+            }
+        },
+        {
+            "setting": "junk_ice_traps",
+            "conditionals": [
+                {
+                    "setting": "damage_multiplier",
+                    "conditions": [
+                        "quadruple",
+                        "ohko"
+                    ],
+                    "values": {
+                        "off": 2,
+                        "normal": 2,
+                        "on": 1
+                    }
+                }
+            ],
+            "default": {
+                "off": 6,
+                "normal": 6,
+                "on": 3,
+                "mayhem": 3,
+                "onslaught": 2
+            }
+        },
+        {
+            "setting": "ice_trap_appearance",
+            "values": {
+                "major_only": 1,
+                "junk_only": 1,
+                "anything": 1
+            }
+        },
+        {
+            "setting": "logic_earliest_adult_trade",
+            "values": {
+                "pocket_egg": 1,
+                "pocket_cucco": 0,
+                "cojiro": 0,
+                "odd_mushroom": 0,
+                "poachers_saw": 0,
+                "broken_sword": 0,
+                "prescription": 0,
+                "eyeball_frog": 0,
+                "eyedrops": 0,
+                "claim_check": 0
+            }
+        },
+        {
+            "setting": "logic_latest_adult_trade",
+            "values": {
+                "pocket_egg": 0,
+                "pocket_cucco": 0,
+                "cojiro": 0,
+                "odd_mushroom": 0,
+                "poachers_saw": 0,
+                "broken_sword": 0,
+                "prescription": 0,
+                "eyeball_frog": 0,
+                "eyedrops": 0,
+                "claim_check": 1
+            }
+        },
+        {
+            "setting": "start_with_consumables",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "start_with_rupees",
+            "values": {
+                "true": 1,
+                "false": 1
+            }
+        },
+        {
+            "setting": "starting_hearts",
+            "distribution": "geometric",
+            "min": 3,
+            "max": 20
+        },
+        {
+            "setting": "randomize_settings",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        }
+    ]
+}
