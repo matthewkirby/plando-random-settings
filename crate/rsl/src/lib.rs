@@ -1,7 +1,14 @@
 use {
     std::{
-        collections::BTreeMap,
+        collections::{
+            BTreeMap,
+            BTreeSet,
+        },
         convert::TryInto as _,
+        ops::{
+            Add,
+            AddAssign,
+        },
     },
     enum_iterator::IntoEnumIterator,
     rand::{
@@ -122,6 +129,17 @@ pub enum WeightsRule {
     },
 }
 
+impl WeightsRule {
+    fn setting(&self) -> &str {
+        match self {
+            WeightsRule::Simple { setting, .. }
+            | WeightsRule::Conditional { setting, .. }
+            | WeightsRule::Range { setting, .. }
+            => setting,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Weights {
@@ -129,7 +147,9 @@ pub struct Weights {
     pub disabled_locations: Option<Vec<String>>,
     pub allowed_tricks: Option<Vec<String>>,
     pub random_starting_items: bool,
-    //TODO hardcoded starting items
+    pub starting_items: Option<BTreeSet<String>>,
+    pub starting_songs: Option<BTreeSet<String>>,
+    pub starting_equipment: Option<BTreeSet<String>>,
     pub weights: Vec<WeightsRule>,
 }
 
@@ -166,7 +186,9 @@ impl Weights {
             settings.insert(format!("starting_songs"), Weights::draw_choices_from_pool(rng, &ootr::songs!()));
             settings.insert(format!("starting_equipment"), Weights::draw_choices_from_pool(rng, &ootr::equipment!()));
         }
-        //TODO hardcoded starting items
+        if let Some(ref starting_items) = self.starting_items { settings.entry(format!("starting_items")).or_default().as_array_mut().expect("starting_items setting was not an array").extend(starting_items.iter().map(|item| json!(item))) }
+        if let Some(ref starting_songs) = self.starting_songs { settings.entry(format!("starting_songs")).or_default().as_array_mut().expect("starting_songs setting was not an array").extend(starting_songs.iter().map(|item| json!(item))) }
+        if let Some(ref starting_equipment) = self.starting_equipment { settings.entry(format!("starting_equipment")).or_default().as_array_mut().expect("starting_equipment setting was not an array").extend(starting_equipment.iter().map(|item| json!(item))) }
         for rule in &self.weights {
             match rule {
                 WeightsRule::Simple { setting, values } => {
@@ -204,4 +226,36 @@ impl Weights {
 pub struct Plando {
     file_hash: [HashIcon; 5],
     settings: BTreeMap<String, Json>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct Override {
+    pub starting_items: Option<BTreeSet<String>>,
+    pub starting_songs: Option<BTreeSet<String>>,
+    pub starting_equipment: Option<BTreeSet<String>>,
+    pub weights: Vec<WeightsRule>,
+}
+
+impl AddAssign<Override> for Weights {
+    fn add_assign(&mut self, mut rhs: Override) {
+        if let Some(starting_items) = rhs.starting_items { self.starting_items = Some(starting_items) }
+        if let Some(starting_songs) = rhs.starting_songs { self.starting_songs = Some(starting_songs) }
+        if let Some(starting_equipment) = rhs.starting_equipment { self.starting_equipment = Some(starting_equipment) }
+        for rule in &mut self.weights {
+            if let Some(new_rule_pos) = rhs.weights.iter().position(|new_rule| rule.setting() == new_rule.setting()) {
+                *rule = rhs.weights.remove(new_rule_pos);
+            }
+        }
+        self.weights.extend_from_slice(&rhs.weights);
+    }
+}
+
+impl Add<Override> for Weights {
+    type Output = Weights;
+
+    fn add(mut self, rhs: Override) -> Weights {
+        self += rhs;
+        self
+    }
 }

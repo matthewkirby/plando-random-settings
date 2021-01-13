@@ -9,6 +9,7 @@ edition = "2018"
 
 [dependencies]
 directories = "3"
+enum-iterator = "0.6"
 itertools = "0.10"
 rand = "0.8"
 rfd = "0.0.3"

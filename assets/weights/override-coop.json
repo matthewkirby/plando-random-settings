@@ -1,0 +1,35 @@
+{
+    "weights": [
+        {
+            "setting": "bridge_tokens",
+            "distribution": "uniform",
+            "min": 1,
+            "max": 50
+        },
+        {
+            "setting": "lacs_tokens",
+            "distribution": "uniform",
+            "min": 1,
+            "max": 50
+        },
+        {
+            "setting": "mq_dungeons_random",
+            "values": {
+                "true": 0,
+                "false": 1
+            }
+        },
+        {
+            "setting": "mq_dungeons",
+            "values": {
+                "0": 1
+            }
+        },
+        {
+            "setting": "damage_multiplier",
+            "values": {
+                "normal": 1
+            }
+        }
+    ]
+}

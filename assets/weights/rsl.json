@@ -618,11 +618,11 @@
         {
             "setting": "damage_multiplier",
             "values": {
-                "half": 20,
-                "normal": 40,
-                "double": 20,
-                "quadruple": 15,
-                "ohko": 5
+                "half": 4,
+                "normal": 8,
+                "double": 4,
+                "quadruple": 3,
+                "ohko": 1
             }
         },
         {

@@ -18,12 +18,14 @@ use {
 
 const REPO_NAME: &str = "OoT-Randomizer";
 const LEAGUE_COMMIT_HASH: &str = "b670183e9aff520c20ac2ee65aa55e3740c5f4b4";
+const LEAGUE_VERSION: &str = "5.2.117 R-1";
 
 #[proc_macro]
 pub fn uses(_: TokenStream) -> TokenStream {
     TokenStream::from(quote! {
         const REPO_NAME: &str = #REPO_NAME;
         const LEAGUE_COMMIT_HASH: &str = #LEAGUE_COMMIT_HASH;
+        const LEAGUE_VERSION: &str = #LEAGUE_VERSION;
     })
 }
 
@@ -31,11 +33,11 @@ fn import<'p>(py: Python<'p>, module: &str) -> PyResult<&'p PyModule> {
     let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").expect("missing home directory");
     let cache_dir = project_dirs.cache_dir();
     // ensure the correct randomizer version is installed
-    let rando_path = cache_dir.join("ootr-rsl");
+    let rando_path = cache_dir.join("ootr-league");
     if rando_path.join("version.py").exists() {
         let mut version_string = String::default();
         File::open(rando_path.join("version.py"))?.read_to_string(&mut version_string)?;
-        if version_string != "__version = '5.2.117 R-1'" {
+        if version_string.trim() != format!("__version__ = '{}'", LEAGUE_VERSION) {
             // wrong version for RSL season 2
             fs::remove_dir_all(&rando_path)?;
         }

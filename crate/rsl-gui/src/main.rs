@@ -14,20 +14,26 @@ use {
     },
     derive_more::From,
     directories::ProjectDirs,
+    enum_iterator::IntoEnumIterator,
     iced::{
         Application,
         Command,
         Element,
+        Length,
         Settings,
         widget::{
+            Checkbox,
             Column,
+            Radio,
             Row,
+            Space,
             Text,
             button::{
                 self,
                 Button,
             },
         },
+        window,
     },
     rand::{
         distributions::WeightedError,
@@ -67,6 +73,10 @@ enum Message {
     GenError(GenError),
     Generate,
     SeedDone,
+    Tab(Tab),
+    ToggleRandomStartingItems(bool),
+    ToggleRslTricks(bool),
+    ToggleStandardTricks(bool),
     UpdateCheckComplete(bool),
 }
 
@@ -86,6 +96,44 @@ impl fmt::Display for UpdateCheckState {
             UpdateCheckState::NoUpdateAvailable => write!(f, "up to date"),
         }
     }
+}
+
+#[derive(Debug, SmartDefault, Clone, Copy, IntoEnumIterator, PartialEq, Eq)]
+enum Tab {
+    #[default]
+    League,
+    Solo,
+    CoOp,
+    Multiworld,
+}
+
+impl Tab {
+    fn view(&self) -> Element<'_, Message> {
+        Row::with_children(Tab::into_enum_iter().map(|tab|
+            Radio::new(tab, tab.to_string(), Some(*self), Message::Tab).into()
+        ).collect()).into()
+    }
+}
+
+impl fmt::Display for Tab {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Tab::League => write!(f, "League"),
+            Tab::Solo => write!(f, "Solo"),
+            Tab::CoOp => write!(f, "Co-Op"),
+            Tab::Multiworld => write!(f, "Multiworld"),
+        }
+    }
+}
+
+#[derive(SmartDefault, Clone, Copy)]
+struct Options {
+    #[default = true]
+    standard_tricks: bool,
+    #[default = true]
+    rsl_tricks: bool,
+    #[default = true]
+    random_starting_items: bool,
 }
 
 #[derive(SmartDefault)]
@@ -123,6 +171,8 @@ struct App {
     base_rom: FilePicker<file::File, Message>,
     #[default(FilePicker::new(format!("Output Directory"), Message::ChangeOutputDir, Message::BrowseOutputDir))]
     output_dir: FilePicker<file::Folder, Message>,
+    tab: Tab,
+    options: Options,
     gen: GenState,
 }
 
@@ -148,14 +198,20 @@ impl Application for App {
                 self.gen = GenState::Generating;
                 let base_rom = self.base_rom.data.as_ref().expect("generate button should be disabled if no base rom is given").clone();
                 let output_dir = self.output_dir.data.as_ref().expect("generate button should be disabled if no output dir is given").clone();
+                let tab = self.tab;
+                let options = self.options;
                 return async move {
-                    match generate(base_rom, output_dir).await {
-                        Ok(()) => Message::SeedDone,
+                    match generate(base_rom, output_dir, tab, options).await {
+                        Ok(()) => Message::SeedDone, //TODO button to open output dir
                         Err(e) => Message::GenError(e),
                     }
                 }.into()
             }
             Message::SeedDone => self.gen = GenState::default(),
+            Message::Tab(tab) => self.tab = tab,
+            Message::ToggleRandomStartingItems(checked) => self.options.random_starting_items = checked,
+            Message::ToggleRslTricks(checked) => self.options.rsl_tricks = checked,
+            Message::ToggleStandardTricks(checked) => self.options.standard_tricks = checked,
             Message::UpdateCheckComplete(true) => self.update_check = UpdateCheckState::UpdateAvailable,
             Message::UpdateCheckComplete(false) => self.update_check = UpdateCheckState::NoUpdateAvailable,
         }
@@ -174,7 +230,18 @@ impl Application for App {
             .push(Text::new(format!("version {} — {}", env!("CARGO_PKG_VERSION"), self.update_check)))
             .push(self.base_rom.view())
             .push(self.output_dir.view())
-            //TODO options
+            .push(self.tab.view())
+            .push(match self.tab {
+                Tab::League => Element::from(Text::new("This will generate a seed with the Random Settings League's season 2 tournament weights. It will use version 5.2.117 R-1 of the randomizer. You can use the tabs above to switch to the latest version and use different weights.")), //TODO after s2, update description
+                Tab::Solo | Tab::CoOp | Tab::Multiworld => Column::new()
+                    .push(Checkbox::new(self.options.standard_tricks, "Standard Tricks", Message::ToggleStandardTricks))
+                    .push(Checkbox::new(self.options.rsl_tricks, "RSL Tricks", Message::ToggleRslTricks))
+                    //TODO conditionals toggle?
+                    .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems))
+                    //TODO world count (Multiworld only)
+                    .into(),
+            })
+            .push(Space::with_height(Length::Fill))
             .push(self.gen.view(disabled_reason))
             .into()
     }
@@ -263,33 +330,50 @@ impl fmt::Display for GenError {
     }
 }
 
-async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) -> Result<(), GenError> {
+async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, tab: Tab, options: Options) -> Result<(), GenError> {
     let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").ok_or(GenError::MissingHomeDir)?;
     let cache_dir = project_dirs.cache_dir();
     let distribution_path = cache_dir.join("plando.json");
     // ensure the correct randomizer version is installed
-    let rando_path = cache_dir.join("ootr-rsl");
+    let rando_path = cache_dir.join(if tab == Tab::League { "ootr-league" } else { "ootr-latest" });
+    let repo_ref = if tab == Tab::League { LEAGUE_COMMIT_HASH } else { "Dev-R" };
     if rando_path.join("version.py").exists() {
         let mut version_string = String::default();
         File::open(rando_path.join("version.py")).await?.read_to_string(&mut version_string).await?;
-        if version_string != "__version = '5.2.117 R-1'" {
-            // wrong version for RSL season 2
-            //TODO only do this version check when generating a League seed, only warn for outdated versions otherwise
-            tokio::fs::remove_dir_all(&rando_path).await?;
+        if tab == Tab::League {
+            if version_string.trim() != format!("__version__ = '{}'", LEAGUE_VERSION) {
+                tokio::fs::remove_dir_all(&rando_path).await?;
+            }
+        } else {
+            //TODO check and warn for outdated versions
         }
     }
     if !rando_path.exists() {
-        let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, LEAGUE_COMMIT_HASH)).await? //TODO replace with Dev-R.zip if not generating a League seed
+        let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, repo_ref)).await?
             .bytes().await?;
         ZipArchive::new(Cursor::new(rando_download))?.extract(&cache_dir)?; //TODO async
-        tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, LEAGUE_COMMIT_HASH)), &rando_path).await?; //TODO replace with OoT-Randomizer-Dev-R if not generating a League seed
+        tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, repo_ref)), &rando_path).await?;
     }
     // write base rando settings to a file to be used as parameter later
     let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir))?; //TODO async-json
     let settings_path = cache_dir.join("settings.json");
     File::create(&settings_path).await?.write_all(&buf).await?;
     // generate seed
-    let weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json"))?; //TODO allow other presets or custom weights
+    let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json"))?; //TODO allow custom weights
+    match tab {
+        Tab::League | Tab::Solo => {} // no modifications
+        Tab::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json"))?,
+        Tab::Multiworld => weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json"))?, //TODO apply world count
+    }
+    if tab != Tab::League { //TODO `&& tab != Tab::Custom`
+        match (options.standard_tricks, options.rsl_tricks) {
+            (true, true) => {}
+            (true, false) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json"))?),
+            (false, true) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json"))?),
+            (false, false) => weights.allowed_tricks = Some(Vec::default()),
+        }
+        if !options.random_starting_items { weights.random_starting_items = false }
+    }
     #[cfg(unix)] let python = "python3";
     #[cfg(all(windows, debug_assertions))] let python = "python";
     #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";
@@ -304,5 +388,12 @@ async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) 
 }
 
 fn main() -> iced::Result {
-    App::run(Settings::default())
+    App::run(Settings {
+        window: window::Settings {
+            size: (512, 384),
+            //TODO icon
+            ..window::Settings::default()
+        },
+        ..Settings::default()
+    })
 }
