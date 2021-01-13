@@ -7,11 +7,7 @@ use {
         Element,
         widget::{
             Row,
-            Text,
-            button::{
-                self,
-                Button,
-            },
+            button,
             text_input::{
                 self,
                 TextInput,
@@ -20,6 +16,10 @@ use {
     },
     itertools::Itertools as _,
     rfd::DialogOptions,
+};
+#[cfg(not(target_os = "macos"))] use iced::widget::{
+    Button,
+    Text,
 };
 
 pub(crate) trait Kind {
@@ -118,6 +118,7 @@ impl Kind for Save {
     }
 }
 
+#[cfg_attr(target_os = "macos", allow(unused))]
 pub(crate) struct FilePicker<K: Kind, M: Clone + 'static> {
     _phantom: PhantomData<K>,
     pub(crate) data: Option<K::Data>,
@@ -148,9 +149,9 @@ impl<K: Kind, M: Clone + 'static> FilePicker<K, M> {
     }
 
     pub(crate) fn view(&mut self) -> Element<'_, M> {
-        Row::new()
-            .push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change))
-            .push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()))
-            .into()
+        let row = Row::new().push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change));
+        /// rfd currently hangs on macOS
+        #[cfg(not(target_os = "macos"))] let row = row.push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()));
+        row.into()
     }
 }

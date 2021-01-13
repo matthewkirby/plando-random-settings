@@ -56,6 +56,8 @@ use {
 
 mod file;
 
+ootr::uses!();
+
 #[derive(Debug, Clone)]
 enum Message {
     BrowseBaseRom,
@@ -262,8 +264,6 @@ impl fmt::Display for GenError {
 }
 
 async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) -> Result<(), GenError> {
-    let repo_name = "OoT-Randomizer";
-    let league_commit_hash = "b670183e9aff520c20ac2ee65aa55e3740c5f4b4";
     let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").ok_or(GenError::MissingHomeDir)?;
     let cache_dir = project_dirs.cache_dir();
     let distribution_path = cache_dir.join("plando.json");
@@ -279,10 +279,10 @@ async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) 
         }
     }
     if !rando_path.exists() {
-        let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", repo_name, league_commit_hash)).await? //TODO replace with Dev-R.zip if not generating a League seed
+        let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, LEAGUE_COMMIT_HASH)).await? //TODO replace with Dev-R.zip if not generating a League seed
             .bytes().await?;
         ZipArchive::new(Cursor::new(rando_download))?.extract(&cache_dir)?; //TODO async
-        tokio::fs::rename(cache_dir.join(format!("{}-{}", repo_name, league_commit_hash)), &rando_path).await?; //TODO replace with OoT-Randomizer-Dev-R if not generating a League seed
+        tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, LEAGUE_COMMIT_HASH)), &rando_path).await?; //TODO replace with OoT-Randomizer-Dev-R if not generating a League seed
     }
     // write base rando settings to a file to be used as parameter later
     let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir))?; //TODO async-json
