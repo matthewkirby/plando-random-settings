@@ -291,7 +291,8 @@ async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) 
     // generate seed
     let weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json"))?; //TODO allow other presets or custom weights
     #[cfg(unix)] let python = "python3";
-    #[cfg(windows)] let python = "py";
+    #[cfg(all(windows, debug_assertions))] let python = "python";
+    #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";
     for _ in 0..NUM_RANDO_RANDO_TRIES {
         let buf = serde_json::to_vec_pretty(&weights.gen(&mut thread_rng())?)?; //TODO async-json
         File::create(&distribution_path).await?.write_all(&buf).await?;
