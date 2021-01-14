@@ -335,7 +335,8 @@ async fn check_for_updates() -> Message {
 async fn install_python() -> Result<(), PyInstallError> {
     #[cfg(target_arch = "x86")] let arch_suffix = "";
     #[cfg(target_arch = "x86_64")] let arch_suffix = "-amd64";
-    let response = reqwest::get(&format!("https://www.python.org/ftp/python/{0}/python-{0}{1}.exe", PY_VERSION, arch_suffix)).await?;
+    let response = reqwest::get(&format!("https://www.python.org/ftp/python/{0}/python-{0}{1}.exe", PY_VERSION, arch_suffix)).await?
+        .error_for_status()?;
     let installer_path = cache_dir().ok_or(PyInstallError::MissingHomeDir)?.join("python-installer.exe");
     {
         let mut data = response.bytes_stream();

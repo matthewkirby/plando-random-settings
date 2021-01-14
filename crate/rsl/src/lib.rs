@@ -453,6 +453,7 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
     }
     if !rando_path.exists() {
         let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, repo_ref)).await?
+            .error_for_status()?
             .bytes().await?;
         ZipArchive::new(Cursor::new(rando_download))?.extract(&cache_dir)?; //TODO async
         tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, repo_ref)), &rando_path).await?;

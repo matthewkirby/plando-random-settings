@@ -50,6 +50,8 @@ fn import<'p>(py: Python<'p>, module: &str) -> PyResult<&'p PyModule> {
     if !rando_path.exists() {
         let rando_download = reqwest::blocking::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, LEAGUE_COMMIT_HASH))
             .expect("failed to download OoTR")
+            .error_for_status()
+            .expect("failed to download OoTR")
             .bytes()
             .expect("failed to download OoTR");
         ZipArchive::new(Cursor::new(rando_download)).expect("failed to extract OoTR repo").extract(&cache_dir).expect("failed to extract OoTR repo");
