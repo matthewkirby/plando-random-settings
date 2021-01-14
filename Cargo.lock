@@ -2736,9 +2736,11 @@ dependencies = [
  "iced",
  "itertools",
  "ootr",
+ "reqwest 0.10.10",
  "rfd",
  "rsl",
  "smart-default",
+ "tokio 0.2.24",
 ]
 
 [[package]]

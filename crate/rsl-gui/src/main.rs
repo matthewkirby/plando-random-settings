@@ -5,7 +5,11 @@
 use iced::{TextInput, text_input};
 
 use {
-    std::fmt,
+    std::{
+        fmt,
+        io,
+        sync::Arc,
+    },
     enum_iterator::IntoEnumIterator,
     iced::{
         Application,
@@ -32,11 +36,18 @@ use {
         window,
     },
     smart_default::SmartDefault,
+    tokio::{
+        fs::File,
+        io::AsyncWriteExt,
+        stream::StreamExt,
+    },
     rsl::{
         GenError,
         GenOptions,
         Preset,
         PresetOptions,
+        cache_dir,
+        from_arc,
     },
     crate::file::FilePicker,
 };
@@ -53,6 +64,9 @@ enum Message {
     ChangeOutputDir(String),
     GenError(GenError),
     Generate,
+    #[cfg(windows)]
+    InstallPython,
+    PyInstallError(PyInstallError),
     SeedDone,
     SetWorldCount(u8),
     SetWorldCountStr(String),
@@ -118,13 +132,25 @@ enum GenState {
         e: GenError,
         reset_btn: button::State,
     },
+    PyNotFound {
+        install_btn: button::State,
+        reset_btn: button::State,
+    },
+    PyInstallError {
+        e: PyInstallError,
+        reset_btn: button::State,
+    },
 }
 
 impl GenState {
     fn view(&mut self, disabled_reason: Option<&str>) -> Element<'_, Message> {
         match self {
             GenState::Idle(gen_btn) => if let Some(disabled_reason) = disabled_reason {
-                Row::new().push(Button::new(gen_btn, Text::new("Generate Seed"))).push(Text::new(format!(" ({})", disabled_reason))).into()
+                Row::new()
+                    .push(Button::new(gen_btn, Text::new("Generate Seed")))
+                    .push(Text::new(format!("({})", disabled_reason)))
+                    .spacing(16)
+                    .into()
             } else {
                 Button::new(gen_btn, Text::new("Generate Seed")).on_press(Message::Generate).into()
             },
@@ -132,7 +158,49 @@ impl GenState {
             GenState::Error { e, reset_btn } => Row::new()
                 .push(Text::new(format!("error generating seed: {}", e)))
                 .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone))
+                .spacing(16)
                 .into(),
+            GenState::PyNotFound { install_btn, reset_btn } => {
+                let mut row = Row::new().push(Text::new("Python not found"));
+                #[cfg(windows)] {
+                    row = row.push(Button::new(install_btn, Text::new("Install")).on_press(Message::InstallPython));
+                }
+                row = row.push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone));
+                row.spacing(16).into()
+            }
+            GenState::PyInstallError { e, reset_btn } => Row::new()
+                .push(Text::new(format!("error installing Python: {}", e)))
+                .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone))
+                .spacing(16)
+                .into(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+enum PyInstallError {
+    InstallerExit,
+    Io(Arc<io::Error>),
+    MissingHomeDir,
+    Reqwest(Arc<reqwest::Error>),
+}
+
+from_arc! {
+    io::Error => PyInstallError, Io,
+    reqwest::Error => PyInstallError, Reqwest,
+}
+
+impl fmt::Display for PyInstallError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PyInstallError::InstallerExit => write!(f, "the installer exited with an error status"),
+            PyInstallError::Io(e) => write!(f, "I/O error: {}", e),
+            PyInstallError::MissingHomeDir => write!(f, "failed to locate home directory"),
+            PyInstallError::Reqwest(e) => if let Some(url) = e.url() {
+                write!(f, "HTTP error at {}: {}", url, e)
+            } else {
+                write!(f, "HTTP error: {}", e)
+            },
         }
     }
 }
@@ -166,9 +234,16 @@ impl Application for App {
             Message::BrowseOutputDir => self.output_dir.browse(),
             Message::ChangeBaseRom(path_str) => self.base_rom.set(path_str),
             Message::ChangeOutputDir(path_str) => self.output_dir.set(path_str),
-            Message::GenError(e) => self.gen = GenState::Error {
-                e,
-                reset_btn: button::State::default(),
+            Message::GenError(e) => self.gen = if let GenError::PyNotFound = e {
+                GenState::PyNotFound {
+                    install_btn: button::State::default(),
+                    reset_btn: button::State::default(),
+                }
+            } else {
+                GenState::Error {
+                    e,
+                    reset_btn: button::State::default(),
+                }
             },
             Message::Generate => {
                 self.gen = GenState::Generating;
@@ -187,6 +262,17 @@ impl Application for App {
                     }
                 }.into()
             }
+            #[cfg(windows)] //TODO macOS/Linux support?
+            Message::InstallPython => return async {
+                match install_python().await {
+                    Ok(()) => Message::Generate,
+                    Err(e) => Message::PyInstallError(e),
+                }
+            }.into(),
+            Message::PyInstallError(e) => self.gen = GenState::PyInstallError {
+                e,
+                reset_btn: button::State::default(),
+            },
             Message::SeedDone => self.gen = GenState::default(),
             Message::SetWorldCount(world_count) => self.options.world_count = world_count,
             Message::SetWorldCountStr(world_count_str) => if let Ok(world_count) = world_count_str.parse() {
@@ -246,10 +332,28 @@ async fn check_for_updates() -> Message {
     Message::UpdateCheckComplete(false) //TODO
 }
 
+async fn install_python() -> Result<(), PyInstallError> {
+    #[cfg(target_arch = "x86")] let arch_suffix = "";
+    #[cfg(target_arch = "x86_64")] let arch_suffix = "-amd64";
+    let response = reqwest::get(&format!("https://www.python.org/ftp/python/{0}/python-{0}{1}.exe", PY_VERSION, arch_suffix)).await?;
+    let installer_path = cache_dir().ok_or(PyInstallError::MissingHomeDir)?.join("python-installer.exe");
+    {
+        let mut data = response.bytes_stream();
+        let mut installer_file = File::create(&installer_path).await?;
+        while let Some(chunk) = data.try_next().await? {
+            installer_file.write_all(chunk.as_ref()).await?;
+        }
+    }
+    if !tokio::process::Command::new(installer_path).arg("/passive").arg("PrependPath=1").status().await?.success() {
+        return Err(PyInstallError::InstallerExit)
+    }
+    Ok(())
+}
+
 fn main() -> iced::Result {
     App::run(Settings {
         window: window::Settings {
-            size: (512, 384),
+            size: (512, 396),
             //TODO icon
             ..window::Settings::default()
         },

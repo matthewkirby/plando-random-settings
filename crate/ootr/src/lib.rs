@@ -24,11 +24,13 @@ const LEAGUE_VERSION: &str = "5.2.117 R-1";
 
 #[proc_macro]
 pub fn uses(_: TokenStream) -> TokenStream {
+    let py_version = Python::with_gil(|py| py.version().to_owned());
     TokenStream::from(quote! {
         const REPO_NAME: &str = #REPO_NAME;
         const LEAGUE_COMMIT_HASH: &str = #LEAGUE_COMMIT_HASH;
         const LEAGUE_VERSION: &str = #LEAGUE_VERSION;
         const MAX_WORLDS: u8 = 255; //TODO pull from SettingsList.py
+        const PY_VERSION: &str = #py_version;
     })
 }
 

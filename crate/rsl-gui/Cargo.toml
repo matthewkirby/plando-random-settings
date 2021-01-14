@@ -20,5 +20,14 @@ features = ["tokio_old"] #TODO change to tokio 1.0 once supported
 [dependencies.ootr]
 path = "../ootr"
 
+[dependencies.reqwest]
+version = "0.10" #TODO update to 0.11 once iced supports tokio 1.0
+default-features = false
+features = ["rustls-tls", "stream"]
+
 [dependencies.rsl]
 path = "../rsl"
+
+[dependencies.tokio]
+version = "0.2" #TODO upgrade to 1 once supported by iced
+features = ["fs", "process"]

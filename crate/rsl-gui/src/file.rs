@@ -152,6 +152,6 @@ impl<K: Kind, M: Clone + 'static> FilePicker<K, M> {
         let row = Row::new().push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change));
         // rfd currently hangs on macOS
         #[cfg(not(target_os = "macos"))] let row = row.push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()));
-        row.into()
+        row.spacing(16).into()
     }
 }

@@ -17,6 +17,7 @@ use {
             AddAssign,
         },
         path::PathBuf,
+        process::Stdio,
         str::FromStr,
         sync::Arc,
     },
@@ -380,6 +381,8 @@ pub enum GenError {
     Io(Arc<io::Error>),
     Json(Arc<serde_json::Error>),
     MissingHomeDir,
+    PyNotFound,
+    PyVersionStatus,
     Reqwest(Arc<reqwest::Error>),
     TriesExceeded,
     #[from]
@@ -387,7 +390,7 @@ pub enum GenError {
     Zip(Arc<ZipError>),
 }
 
-macro_rules! from_arc {
+#[macro_export] macro_rules! from_arc {
     ($($from:ty => $to:ty, $variant:ident,)*) => {
         $(
             impl From<$from> for $to {
@@ -412,6 +415,8 @@ impl fmt::Display for GenError {
             GenError::Io(e) => write!(f, "I/O error: {}", e),
             GenError::Json(e) => write!(f, "JSON error: {}", e),
             GenError::MissingHomeDir => write!(f, "failed to locate home directory"),
+            GenError::PyNotFound => write!(f, "Python not found"),
+            GenError::PyVersionStatus => write!(f, "failed to check Python version"),
             GenError::Reqwest(e) => if let Some(url) = e.url() {
                 write!(f, "HTTP error at {}: {}", url, e)
             } else {
@@ -424,9 +429,13 @@ impl fmt::Display for GenError {
     }
 }
 
+pub fn cache_dir() -> Option<PathBuf> {
+    let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL")?;
+    Some(project_dirs.cache_dir().to_owned())
+}
+
 pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> {
-    let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").ok_or(GenError::MissingHomeDir)?;
-    let cache_dir = project_dirs.cache_dir();
+    let cache_dir = cache_dir().ok_or(GenError::MissingHomeDir)?;
     let distribution_path = cache_dir.join("plando.json");
     // ensure the correct randomizer version is installed
     let rando_path = cache_dir.join(if let GenOptions::League = options { "ootr-league" } else { "ootr-latest" });
@@ -477,6 +486,10 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
     #[cfg(unix)] let python = "python3";
     #[cfg(all(windows, debug_assertions))] let python = "python";
     #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";
+    match tokio::process::Command::new(python).arg("--version").stdout(Stdio::null()).current_dir(&rando_path).status().await {
+        Ok(status) => if !status.success() { return Err(GenError::PyVersionStatus) },
+        Err(e) => return Err(if e.kind() == io::ErrorKind::NotFound { GenError::PyNotFound } else { e.into() }),
+    }
     for _ in 0..NUM_RANDO_RANDO_TRIES {
         let buf = serde_json::to_vec_pretty(&weights.gen(&mut thread_rng())?)?; //TODO async-json
         File::create(&distribution_path).await?.write_all(&buf).await?;
