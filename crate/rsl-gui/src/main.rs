@@ -111,7 +111,7 @@ impl Tab {
     fn view(&self) -> Element<'_, Message> {
         Row::with_children(Tab::into_enum_iter().map(|tab|
             Radio::new(tab, tab.to_string(), Some(*self), Message::Tab).into()
-        ).collect()).into()
+        ).collect()).spacing(16).into()
     }
 }
 

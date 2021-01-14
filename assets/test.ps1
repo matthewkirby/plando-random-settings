@@ -5,7 +5,7 @@ function ThrowOnNativeFailure {
     }
 }
 
-$env:PYO3_PYTHON = "py"
+$env:PYO3_PYTHON = "python"
 
 cargo run
 ThrowOnNativeFailure
