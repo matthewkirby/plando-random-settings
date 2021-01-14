@@ -136,6 +136,7 @@ enum GenState {
         install_btn: button::State,
         reset_btn: button::State,
     },
+    InstallingPython,
     PyInstallError {
         e: PyInstallError,
         reset_btn: button::State,
@@ -168,6 +169,7 @@ impl GenState {
                 row = row.push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone));
                 row.spacing(16).into()
             }
+            GenState::InstallingPython => Text::new("Installing Python…").into(),
             GenState::PyInstallError { e, reset_btn } => Row::new()
                 .push(Text::new(format!("error installing Python: {}", e)))
                 .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone))
@@ -263,12 +265,15 @@ impl Application for App {
                 }.into()
             }
             #[cfg(windows)] //TODO macOS/Linux support?
-            Message::InstallPython => return async {
-                match install_python().await {
-                    Ok(()) => Message::Generate,
-                    Err(e) => Message::PyInstallError(e),
-                }
-            }.into(),
+            Message::InstallPython => {
+                self.gen = GenState::InstallingPython;
+                return async {
+                    match install_python().await {
+                        Ok(()) => Message::Generate,
+                        Err(e) => Message::PyInstallError(e),
+                    }
+                }.into()
+            }
             Message::PyInstallError(e) => self.gen = GenState::PyInstallError {
                 e,
                 reset_btn: button::State::default(),
@@ -345,6 +350,7 @@ async fn install_python() -> Result<(), PyInstallError> {
             installer_file.write_all(chunk.as_ref()).await?;
         }
     }
+    tokio::time::delay_for(std::time::Duration::from_secs(1)).await; // to make sure the download is closed
     if !tokio::process::Command::new(installer_path).arg("/passive").arg("PrependPath=1").status().await?.success() {
         return Err(PyInstallError::InstallerExit)
     }
