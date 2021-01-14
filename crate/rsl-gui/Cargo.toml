@@ -17,5 +17,8 @@ smart-default = "0.6"
 version = "0.2"
 features = ["tokio_old"] #TODO change to tokio 1.0 once supported
 
+[dependencies.ootr]
+path = "../ootr"
+
 [dependencies.rsl]
 path = "../rsl"

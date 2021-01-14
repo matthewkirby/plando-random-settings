@@ -2,6 +2,8 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use iced::{TextInput, text_input};
+
 use {
     std::fmt,
     enum_iterator::IntoEnumIterator,
@@ -22,6 +24,10 @@ use {
                 self,
                 Button,
             },
+            slider::{
+                self,
+                Slider,
+            },
         },
         window,
     },
@@ -37,6 +43,8 @@ use {
 
 mod file;
 
+ootr::uses!();
+
 #[derive(Debug, Clone)]
 enum Message {
     BrowseBaseRom,
@@ -46,6 +54,8 @@ enum Message {
     GenError(GenError),
     Generate,
     SeedDone,
+    SetWorldCount(u8),
+    SetWorldCountStr(String),
     Tab(Tab),
     ToggleRandomStartingItems(bool),
     ToggleRslTricks(bool),
@@ -135,7 +145,10 @@ struct App {
     #[default(FilePicker::new(format!("Output Directory"), Message::ChangeOutputDir, Message::BrowseOutputDir))]
     output_dir: FilePicker<file::Folder, Message>,
     tab: Tab,
+    #[default(PresetOptions { world_count: 2, ..PresetOptions::default() })]
     options: PresetOptions,
+    worlds_slider: slider::State,
+    worlds_text: text_input::State,
     gen: GenState,
 }
 
@@ -175,6 +188,10 @@ impl Application for App {
                 }.into()
             }
             Message::SeedDone => self.gen = GenState::default(),
+            Message::SetWorldCount(world_count) => self.options.world_count = world_count,
+            Message::SetWorldCountStr(world_count_str) => if let Ok(world_count) = world_count_str.parse() {
+                if (2..=MAX_WORLDS).contains(&world_count) { self.options.world_count = world_count }
+            },
             Message::Tab(tab) => self.tab = tab,
             Message::ToggleRandomStartingItems(checked) => self.options.random_starting_items = checked,
             Message::ToggleRslTricks(checked) => self.options.rsl_tricks = checked,
@@ -200,14 +217,22 @@ impl Application for App {
             .push(self.tab.view())
             .push(match self.tab {
                 Tab::League => Element::from(Text::new("This will generate a seed with the Random Settings League's season 2 tournament weights. It will use version 5.2.117 R-1 of the randomizer. You can use the tabs above to switch to the latest version and use different weights.")), //TODO after s2, update description
-                Tab::Solo | Tab::CoOp | Tab::Multiworld => Column::new()
-                    .push(Checkbox::new(self.options.standard_tricks, "Standard Tricks", Message::ToggleStandardTricks))
-                    .push(Checkbox::new(self.options.rsl_tricks, "RSL Tricks", Message::ToggleRslTricks))
-                    //TODO conditionals toggle?
-                    .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems))
-                    //TODO world count (Multiworld only)
-                    .spacing(16)
-                    .into(),
+                Tab::Solo | Tab::CoOp | Tab::Multiworld => {
+                    let mut col = Column::new()
+                        .push(Checkbox::new(self.options.standard_tricks, "Standard Tricks", Message::ToggleStandardTricks))
+                        .push(Checkbox::new(self.options.rsl_tricks, "RSL Tricks", Message::ToggleRslTricks))
+                        //TODO conditionals toggle?
+                        .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems));
+                    if let Tab::Multiworld = self.tab {
+                        col = col.push(Row::new()
+                            .push(Text::new("Player Count:"))
+                            .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.options.world_count, Message::SetWorldCount))
+                            .push(TextInput::new(&mut self.worlds_text, "", &self.options.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)))
+                            .spacing(16)
+                        );
+                    }
+                    col.spacing(16).into()
+                }
             })
             .push(Space::with_height(Length::Fill))
             .push(self.gen.view(disabled_reason))

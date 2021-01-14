@@ -124,9 +124,9 @@ impl HashIcon {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Conditional {
-    setting: String,
-    conditions: Vec<Json>,
-    values: BTreeMap<String, u64>,
+    pub setting: String,
+    pub conditions: Vec<Json>,
+    pub values: BTreeMap<String, u64>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -167,10 +167,14 @@ impl WeightsRule {
     }
 }
 
+fn one() -> u8 { 1 }
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Weights {
     pub hash: [HashIcon; 2],
+    #[serde(default = "one")]
+    pub world_count: u8,
     pub disabled_locations: Option<Vec<String>>,
     pub allowed_tricks: Option<Vec<String>>,
     pub random_starting_items: bool,
@@ -202,6 +206,7 @@ impl Weights {
 
     pub fn gen(&self, rng: &mut impl Rng) -> Result<Plando, WeightedError> {
         let mut settings = BTreeMap::default();
+        settings.insert(format!("world_count"), json!(self.world_count));
         if let Some(ref disabled_locations) = self.disabled_locations {
             settings.insert(format!("disabled_locations"), json!(disabled_locations));
         }
@@ -464,7 +469,7 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
                 (false, false) => weights.allowed_tricks = Some(Vec::default()),
             }
             if !options.random_starting_items { weights.random_starting_items = false }
-            //TODO apply world count
+            weights.world_count = options.world_count;
             weights
         }
         GenOptions::Custom(weights) => weights,

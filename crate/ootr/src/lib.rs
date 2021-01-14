@@ -28,6 +28,7 @@ pub fn uses(_: TokenStream) -> TokenStream {
         const REPO_NAME: &str = #REPO_NAME;
         const LEAGUE_COMMIT_HASH: &str = #LEAGUE_COMMIT_HASH;
         const LEAGUE_VERSION: &str = #LEAGUE_VERSION;
+        const MAX_WORLDS: u8 = 255; //TODO pull from SettingsList.py
     })
 }
 

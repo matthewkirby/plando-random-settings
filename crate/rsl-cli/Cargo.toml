@@ -7,6 +7,10 @@ authors = [
 ]
 edition = "2018"
 
+[[bin]]
+name = "rsl"
+path = "src/main.rs"
+
 [dependencies]
 serde_json = "1"
 
@@ -14,6 +18,9 @@ serde_json = "1"
 version = "0.99"
 default-features = false
 features = ["from"]
+
+[dependencies.ootr]
+path = "../ootr"
 
 [dependencies.rsl]
 path = "../rsl"

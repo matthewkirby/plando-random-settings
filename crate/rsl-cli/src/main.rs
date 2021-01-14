@@ -17,6 +17,8 @@ use {
     },
 };
 
+ootr::uses!();
+
 #[derive(StructOpt)]
 struct Args {
     base_rom: PathBuf,
@@ -66,12 +68,12 @@ async fn main(args: Args) -> Result<(), Error> {
                 standard_tricks: !args.no_standard_tricks,
                 rsl_tricks: !args.no_rsl_tricks,
                 random_starting_items: !args.no_random_starting_items,
-                world_count: if (1..=255).contains(&args.world_count) { args.world_count } else { return Err(Error::WorldCount) },
+                world_count: if (1..=MAX_WORLDS).contains(&args.world_count) { args.world_count } else { return Err(Error::WorldCount) },
             },
         },
         (None, Some(weights_path)) => GenOptions::Custom(serde_json::from_reader(File::open(weights_path)?)?),
         (None, None) => GenOptions::League,
-    }; 
+    };
     rsl::generate(args.base_rom, args.output_dir, options).await?;
     Ok(())
 }
