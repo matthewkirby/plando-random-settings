@@ -1,3 +1,5 @@
+#![deny(rust_2018_idioms, unused, unused_import_braces, unused_qualifications, unused_crate_dependencies, warnings)]
+
 use {
     std::{
         fs::{

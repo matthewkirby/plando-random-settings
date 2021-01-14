@@ -8,39 +8,14 @@ authors = [
 edition = "2018"
 
 [dependencies]
-directories = "3"
 enum-iterator = "0.6"
 itertools = "0.10"
-rand = "0.8"
 rfd = "0.0.3"
-serde_json = "1"
 smart-default = "0.6"
-zip = "0.5"
-
-[dependencies.derive_more]
-version = "0.99"
-default-features = false
-features = ["from"]
 
 [dependencies.iced]
 version = "0.2"
 features = ["tokio_old"] #TODO change to tokio 1.0 once supported
 
-[dependencies.ootr]
-path = "../ootr"
-
-[dependencies.reqwest]
-version = "0.10" #TODO update to 0.11 once iced supports tokio 1.0
-default-features = false
-features = ["rustls-tls"]
-
 [dependencies.rsl]
 path = "../rsl"
-
-[dependencies.serde]
-version = "1"
-features = ["derive"]
-
-[dependencies.tokio]
-version = "0.2" #TODO upgrade to 1 once supported by iced
-features = ["fs", "process"]

@@ -1,3 +1,5 @@
+#![deny(rust_2018_idioms, unused, unused_import_braces, unused_qualifications, unused_crate_dependencies, warnings)]
+
 use {
     std::{
         collections::{
@@ -5,11 +7,21 @@ use {
             BTreeSet,
         },
         convert::TryInto as _,
+        fmt,
+        io::{
+            self,
+            Cursor,
+        },
         ops::{
             Add,
             AddAssign,
         },
+        path::PathBuf,
+        str::FromStr,
+        sync::Arc,
     },
+    derive_more::From,
+    directories::ProjectDirs,
     enum_iterator::IntoEnumIterator,
     rand::{
         distributions::WeightedError,
@@ -27,7 +39,22 @@ use {
         Value as Json,
         json,
     },
+    smart_default::SmartDefault,
+    structopt::StructOpt,
+    tokio::{
+        fs::File,
+        io::{
+            AsyncReadExt,
+            AsyncWriteExt,
+        },
+    },
+    zip::{
+        ZipArchive,
+        result::ZipError,
+    },
 };
+
+ootr::uses!();
 
 pub const NUM_RANDO_RANDO_TRIES: u8 = 20;
 pub const NUM_TRIES_PER_SETTINGS: u8 = 3;
@@ -258,4 +285,199 @@ impl Add<Override> for Weights {
         self += rhs;
         self
     }
+}
+
+#[derive(Debug, StructOpt, Clone, Copy, PartialEq, Eq)]
+#[structopt(rename_all = "kebab")]
+pub enum Preset {
+    Solo,
+    CoOp,
+    Multiworld,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct PresetParseError;
+
+impl fmt::Display for PresetParseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "unknown preset")
+    }
+}
+
+impl FromStr for Preset {
+    type Err = PresetParseError;
+
+    fn from_str(s: &str) -> Result<Preset, PresetParseError> {
+        match s {
+            "solo" => Ok(Preset::Solo),
+            "coop" | "co-op" => Ok(Preset::CoOp),
+            "multiworld" => Ok(Preset::Multiworld),
+            _ => Err(PresetParseError),
+        }
+    }
+}
+
+#[derive(Debug, SmartDefault, Clone, Copy)]
+pub struct PresetOptions {
+    #[default = true]
+    pub standard_tricks: bool,
+    #[default = true]
+    pub rsl_tricks: bool,
+    #[default = true]
+    pub random_starting_items: bool,
+    #[default = 1]
+    pub world_count: u8,
+}
+
+#[derive(Debug, SmartDefault, Clone)]
+pub enum GenOptions {
+    #[default]
+    League,
+    Preset {
+        preset: Preset,
+        options: PresetOptions,
+    },
+    Custom(Weights),
+}
+
+#[derive(Serialize)]
+enum CompressRom {
+    Patch,
+}
+
+#[derive(Serialize)]
+struct RandoSettings {
+    rom: PathBuf,
+    output_dir: PathBuf,
+    enable_distribution_file: bool,
+    distribution_file: PathBuf,
+    create_spoiler: bool,
+    create_cosmetics_log: bool,
+    compress_rom: CompressRom,
+}
+
+impl RandoSettings {
+    fn new(rom_path: impl Into<PathBuf>, distribution_path: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) -> RandoSettings {
+        RandoSettings {
+            rom: rom_path.into(),
+            output_dir: output_dir.into(),
+            enable_distribution_file: true,
+            distribution_file: distribution_path.into(),
+            create_spoiler: true,
+            create_cosmetics_log: false,
+            compress_rom: CompressRom::Patch,
+        }
+    }
+}
+
+#[derive(Debug, From, Clone)]
+pub enum GenError {
+    Io(Arc<io::Error>),
+    Json(Arc<serde_json::Error>),
+    MissingHomeDir,
+    Reqwest(Arc<reqwest::Error>),
+    TriesExceeded,
+    #[from]
+    Weights(WeightedError),
+    Zip(Arc<ZipError>),
+}
+
+macro_rules! from_arc {
+    ($($from:ty => $to:ty, $variant:ident,)*) => {
+        $(
+            impl From<$from> for $to {
+                fn from(e: $from) -> $to {
+                    <$to>::$variant(Arc::new(e))
+                }
+            }
+        )*
+    };
+}
+
+from_arc! {
+    io::Error => GenError, Io,
+    serde_json::Error => GenError, Json,
+    reqwest::Error => GenError, Reqwest,
+    ZipError => GenError, Zip,
+}
+
+impl fmt::Display for GenError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            GenError::Io(e) => write!(f, "I/O error: {}", e),
+            GenError::Json(e) => write!(f, "JSON error: {}", e),
+            GenError::MissingHomeDir => write!(f, "failed to locate home directory"),
+            GenError::Reqwest(e) => if let Some(url) = e.url() {
+                write!(f, "HTTP error at {}: {}", url, e)
+            } else {
+                write!(f, "HTTP error: {}", e)
+            },
+            GenError::TriesExceeded => write!(f, "{} settings each tried {} times, all failed", NUM_RANDO_RANDO_TRIES, NUM_TRIES_PER_SETTINGS),
+            GenError::Weights(e) => e.fmt(f),
+            GenError::Zip(e) => e.fmt(f),
+        }
+    }
+}
+
+pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> {
+    let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").ok_or(GenError::MissingHomeDir)?;
+    let cache_dir = project_dirs.cache_dir();
+    let distribution_path = cache_dir.join("plando.json");
+    // ensure the correct randomizer version is installed
+    let rando_path = cache_dir.join(if let GenOptions::League = options { "ootr-league" } else { "ootr-latest" });
+    let repo_ref = if let GenOptions::League = options { LEAGUE_COMMIT_HASH } else { "Dev-R" };
+    if rando_path.join("version.py").exists() {
+        let mut version_string = String::default();
+        File::open(rando_path.join("version.py")).await?.read_to_string(&mut version_string).await?;
+        if let GenOptions::League = options {
+            if version_string.trim() != format!("__version__ = '{}'", LEAGUE_VERSION) {
+                tokio::fs::remove_dir_all(&rando_path).await?;
+            }
+        } else {
+            //TODO check and warn for outdated versions
+        }
+    }
+    if !rando_path.exists() {
+        let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, repo_ref)).await?
+            .bytes().await?;
+        ZipArchive::new(Cursor::new(rando_download))?.extract(&cache_dir)?; //TODO async
+        tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, repo_ref)), &rando_path).await?;
+    }
+    // write base rando settings to a file to be used as parameter later
+    let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir))?; //TODO async-json
+    let settings_path = cache_dir.join("settings.json");
+    File::create(&settings_path).await?.write_all(&buf).await?;
+    // generate seed
+    let weights = match options {
+        GenOptions::League => serde_json::from_str(include_str!("../../../assets/weights/rsl.json"))?,
+        GenOptions::Preset { preset, options } => {
+            let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json"))?;
+            match preset {
+                Preset::Solo => {}
+                Preset::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json"))?,
+                Preset::Multiworld => weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json"))?,
+            }
+            match (options.standard_tricks, options.rsl_tricks) {
+                (true, true) => {}
+                (true, false) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json"))?),
+                (false, true) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json"))?),
+                (false, false) => weights.allowed_tricks = Some(Vec::default()),
+            }
+            if !options.random_starting_items { weights.random_starting_items = false }
+            //TODO apply world count
+            weights
+        }
+        GenOptions::Custom(weights) => weights,
+    };
+    #[cfg(unix)] let python = "python3";
+    #[cfg(all(windows, debug_assertions))] let python = "python";
+    #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";
+    for _ in 0..NUM_RANDO_RANDO_TRIES {
+        let buf = serde_json::to_vec_pretty(&weights.gen(&mut thread_rng())?)?; //TODO async-json
+        File::create(&distribution_path).await?.write_all(&buf).await?;
+        for _ in 0..NUM_TRIES_PER_SETTINGS {
+            if tokio::process::Command::new(python).arg("OoTRandomizer.py").arg("--settings").arg(&settings_path).current_dir(&rando_path).status().await?.success() { return Ok(()) }
+        }
+    }
+    Err(GenError::TriesExceeded)
 }
