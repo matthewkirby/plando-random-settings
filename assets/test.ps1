@@ -10,5 +10,5 @@ $env:PYO3_PYTHON = "python"
 cargo check --package=rsl-cli
 ThrowOnNativeFailure
 
-cargo run
+cargo run --package=rsl-gui
 ThrowOnNativeFailure

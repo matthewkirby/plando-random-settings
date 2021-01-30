@@ -16,7 +16,7 @@ smart-default = "0.6"
 
 [dependencies.enum-iterator]
 git = "https://github.com/dasgefolge/enum-iterator"
-branch = "fields"
+branch = "fields" #TODO finish this PR
 
 [dependencies.iced]
 git = "https://github.com/hecrj/iced" #TODO go back to the version on crates.io once it's compatible with tokio 1
@@ -31,7 +31,10 @@ path = "../rsl"
 
 [dependencies.tokio]
 version = "1"
-features = ["fs", "process"]
+features = ["fs", "process", "time"]
+
+[target.'cfg(windows)'.dependencies]
+tokio-stream = "0.1"
 
 [target.'cfg(windows)'.dependencies.reqwest]
 version = "0.11"

@@ -76,15 +76,12 @@ use {
     },
 };
 #[cfg(windows)] use {
-    std::{
-        io,
-        sync::Arc,
-    },
     tokio::{
         fs::File,
         io::AsyncWriteExt,
-        stream::StreamExt,
+        time::sleep,
     },
+    tokio_stream::StreamExt,
     rsl::{
         cache_dir,
         from_arc,
@@ -264,7 +261,9 @@ impl WeightsState {
         for (idx, (rule, state)) in self.data.weights.iter().zip(&mut self.weights).enumerate() {
             col = col.push(state.view(idx, rule));
         }
-        col.push(Button::new(&mut self.add_btn, Text::new("Add Setting")).on_press(Message::AddSetting))
+        col
+            .push(Rule::horizontal(16))
+            .push(Button::new(&mut self.add_btn, Text::new("Add Setting")).on_press(Message::AddSetting))
             .spacing(16).height(Length::Fill)
     }
 }
@@ -934,7 +933,7 @@ async fn install_python() -> Result<(), PyInstallError> {
             installer_file.write_all(chunk.as_ref()).await?;
         }
     }
-    tokio::time::delay_for(std::time::Duration::from_secs(1)).await; // to make sure the download is closed
+    sleep(std::time::Duration::from_secs(1)).await; // to make sure the download is closed
     if !tokio::process::Command::new(installer_path).arg("/passive").arg("PrependPath=1").status().await?.success() {
         return Err(PyInstallError::InstallerExit)
     }
