@@ -9,10 +9,10 @@ edition = "2018"
 
 [dependencies]
 directories = "3"
-enum-iterator = "0.6"
 rand = "0.8"
 rand_distr = "0.4"
 serde_json = "1"
+serde_plain = "0.3"
 smart-default = "0.6"
 structopt = "0.3"
 zip = "0.5"
@@ -22,18 +22,22 @@ version = "0.99"
 default-features = false
 features = ["from"]
 
+[dependencies.enum-iterator]
+git = "https://github.com/dasgefolge/enum-iterator"
+branch = "fields"
+
 [dependencies.ootr]
 path = "../ootr"
 
 [dependencies.reqwest]
-version = "0.10" #TODO update to 0.11 once iced supports tokio 1.0
+version = "0.11"
 default-features = false
-features = ["rustls-tls"]
+features = ["json", "rustls-tls"]
 
 [dependencies.serde]
 version = "1"
 features = ["derive"]
 
 [dependencies.tokio]
-version = "0.2" #TODO upgrade to 1 once supported by iced
+version = "1"
 features = ["fs", "process"]

@@ -9,6 +9,7 @@ proc-macro = true
 
 [dependencies]
 directories = "3"
+proc-macro2 = "1"
 pyo3 = "0.13"
 quote = "1"
 zip = "0.5"

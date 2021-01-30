@@ -1,4 +1,5 @@
-#![deny(rust_2018_idioms, unused, unused_import_braces, unused_qualifications, unused_crate_dependencies, warnings)]
+#![deny(rust_2018_idioms, unused, unused_crate_dependencies, unused_import_braces, unused_qualifications, warnings)]
+#![forbid(unsafe_code)]
 
 use {
     std::{
@@ -40,10 +41,14 @@ use {
         Value as Json,
         json,
     },
+    serde_plain::forward_display_to_serde,
     smart_default::SmartDefault,
     structopt::StructOpt,
     tokio::{
-        fs::File,
+        fs::{
+            self,
+            File,
+        },
         io::{
             AsyncReadExt,
             AsyncWriteExt,
@@ -60,7 +65,7 @@ ootr::uses!();
 pub const NUM_RANDO_RANDO_TRIES: u8 = 20;
 pub const NUM_TRIES_PER_SETTINGS: u8 = 3;
 
-#[derive(Debug, Clone, Copy, IntoEnumIterator, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, IntoEnumIterator, PartialEq, Eq, Deserialize, Serialize)]
 pub enum HashIcon {
     #[serde(rename = "Deku Stick")]
     DekuStick,
@@ -122,7 +127,9 @@ impl HashIcon {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+forward_display_to_serde!(HashIcon);
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Conditional {
     pub setting: String,
@@ -130,24 +137,31 @@ pub struct Conditional {
     pub values: BTreeMap<String, u64>,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize)]
+#[derive(Debug, Clone, Copy, IntoEnumIterator, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Distribution {
     Uniform,
     Geometric,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+impl fmt::Display for Distribution {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Distribution::Uniform => write!(f, "Uniform"),
+            Distribution::Geometric => write!(f, "Geometric"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(untagged, deny_unknown_fields, rename_all = "camelCase")]
 pub enum WeightsRule {
-    Simple {
+    Custom {
         setting: String,
-        values: BTreeMap<String, u64>,
-    },
-    Conditional {
-        setting: String,
+        #[serde(default)]
         conditionals: Vec<Conditional>,
-        default: BTreeMap<String, u64>,
+        #[serde(alias = "default")]
+        values: BTreeMap<String, u64>,
     },
     Range {
         setting: String,
@@ -158,10 +172,17 @@ pub enum WeightsRule {
 }
 
 impl WeightsRule {
-    fn setting(&self) -> &str {
+    pub fn setting(&self) -> &String {
         match self {
-            WeightsRule::Simple { setting, .. }
-            | WeightsRule::Conditional { setting, .. }
+            WeightsRule::Custom { setting, .. }
+            | WeightsRule::Range { setting, .. }
+            => setting,
+        }
+    }
+
+    pub fn setting_mut(&mut self) -> &mut String {
+        match self {
+            WeightsRule::Custom { setting, .. }
             | WeightsRule::Range { setting, .. }
             => setting,
         }
@@ -170,18 +191,23 @@ impl WeightsRule {
 
 fn one() -> u8 { 1 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Weights {
     pub hash: [HashIcon; 2],
     #[serde(default = "one")]
     pub world_count: u8,
-    pub disabled_locations: Option<Vec<String>>,
-    pub allowed_tricks: Option<Vec<String>>,
+    #[serde(default)]
+    pub disabled_locations: BTreeSet<String>,
+    #[serde(default)]
+    pub allowed_tricks: BTreeSet<String>,
     pub random_starting_items: bool,
-    pub starting_items: Option<BTreeSet<String>>,
-    pub starting_songs: Option<BTreeSet<String>>,
-    pub starting_equipment: Option<BTreeSet<String>>,
+    #[serde(default)]
+    pub starting_items: BTreeSet<String>,
+    #[serde(default)]
+    pub starting_songs: BTreeSet<String>,
+    #[serde(default)]
+    pub starting_equipment: BTreeSet<String>,
     pub weights: Vec<WeightsRule>,
 }
 
@@ -208,26 +234,19 @@ impl Weights {
     pub fn gen(&self, rng: &mut impl Rng) -> Result<Plando, WeightedError> {
         let mut settings = BTreeMap::default();
         settings.insert(format!("world_count"), json!(self.world_count));
-        if let Some(ref disabled_locations) = self.disabled_locations {
-            settings.insert(format!("disabled_locations"), json!(disabled_locations));
-        }
-        if let Some(ref allowed_tricks) = self.allowed_tricks {
-            settings.insert(format!("allowed_tricks"), json!(allowed_tricks));
-        }
+        settings.insert(format!("disabled_locations"), json!(self.disabled_locations));
+        settings.insert(format!("allowed_tricks"), json!(self.allowed_tricks));
         if self.random_starting_items {
-            settings.insert(format!("starting_items"), Weights::draw_choices_from_pool(rng, &ootr::inventory!()));
-            settings.insert(format!("starting_songs"), Weights::draw_choices_from_pool(rng, &ootr::songs!()));
-            settings.insert(format!("starting_equipment"), Weights::draw_choices_from_pool(rng, &ootr::equipment!()));
+            settings.insert(format!("starting_items"), Weights::draw_choices_from_pool(rng, INVENTORY));
+            settings.insert(format!("starting_songs"), Weights::draw_choices_from_pool(rng, SONGS));
+            settings.insert(format!("starting_equipment"), Weights::draw_choices_from_pool(rng, EQUIPMENT));
         }
-        if let Some(ref starting_items) = self.starting_items { settings.entry(format!("starting_items")).or_default().as_array_mut().expect("starting_items setting was not an array").extend(starting_items.iter().map(|item| json!(item))) }
-        if let Some(ref starting_songs) = self.starting_songs { settings.entry(format!("starting_songs")).or_default().as_array_mut().expect("starting_songs setting was not an array").extend(starting_songs.iter().map(|item| json!(item))) }
-        if let Some(ref starting_equipment) = self.starting_equipment { settings.entry(format!("starting_equipment")).or_default().as_array_mut().expect("starting_equipment setting was not an array").extend(starting_equipment.iter().map(|item| json!(item))) }
+        settings.entry(format!("starting_items")).or_default().as_array_mut().expect("starting_items setting was not an array").extend(self.starting_items.iter().map(|item| json!(item)));
+        settings.entry(format!("starting_songs")).or_default().as_array_mut().expect("starting_songs setting was not an array").extend(self.starting_songs.iter().map(|item| json!(item)));
+        settings.entry(format!("starting_equipment")).or_default().as_array_mut().expect("starting_equipment setting was not an array").extend(self.starting_equipment.iter().map(|item| json!(item)));
         for rule in &self.weights {
             match rule {
-                WeightsRule::Simple { setting, values } => {
-                    settings.insert(setting.to_owned(), Weights::resolve_simple(rng, values)?);
-                }
-                WeightsRule::Conditional { setting, conditionals, default } => {
+                WeightsRule::Custom { setting, conditionals, values: default } => {
                     if let Some(Conditional { values, .. }) = conditionals.iter().find(|Conditional { setting, conditions, .. }| settings.get(setting).map_or(false, |value| conditions.contains(value))) {
                         settings.insert(setting.to_owned(), Weights::resolve_simple(rng, values)?);
                     } else {
@@ -272,9 +291,9 @@ pub struct Override {
 
 impl AddAssign<Override> for Weights {
     fn add_assign(&mut self, mut rhs: Override) {
-        if let Some(starting_items) = rhs.starting_items { self.starting_items = Some(starting_items) }
-        if let Some(starting_songs) = rhs.starting_songs { self.starting_songs = Some(starting_songs) }
-        if let Some(starting_equipment) = rhs.starting_equipment { self.starting_equipment = Some(starting_equipment) }
+        if let Some(starting_items) = rhs.starting_items { self.starting_items = starting_items }
+        if let Some(starting_songs) = rhs.starting_songs { self.starting_songs = starting_songs }
+        if let Some(starting_equipment) = rhs.starting_equipment { self.starting_equipment = starting_equipment }
         for rule in &mut self.weights {
             if let Some(new_rule_pos) = rhs.weights.iter().position(|new_rule| rule.setting() == new_rule.setting()) {
                 *rule = rhs.weights.remove(new_rule_pos);
@@ -344,6 +363,32 @@ pub enum GenOptions {
         options: PresetOptions,
     },
     Custom(Weights),
+}
+
+impl From<GenOptions> for Weights {
+    fn from(options: GenOptions) -> Weights {
+        match options {
+            GenOptions::League => serde_json::from_str(include_str!("../../../assets/weights/rsl.json")).expect("failed to load RSL weights"),
+            GenOptions::Preset { preset, options } => {
+                let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json")).expect("failed to load RSL weights");
+                match preset {
+                    Preset::Solo => {}
+                    Preset::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json")).expect("failed to load co-op overrides"),
+                    Preset::Multiworld => weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json")).expect("failed to load multiworld overrides"),
+                }
+                match (options.standard_tricks, options.rsl_tricks) {
+                    (true, true) => {}
+                    (true, false) => weights.allowed_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json")).expect("failed to load Standard tricks"),
+                    (false, true) => weights.allowed_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json")).expect("failed to load RSL tricks"),
+                    (false, false) => weights.allowed_tricks = BTreeSet::default(),
+                }
+                if !options.random_starting_items { weights.random_starting_items = false }
+                weights.world_count = options.world_count;
+                weights
+            }
+            GenOptions::Custom(weights) => weights,
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -448,7 +493,16 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
                 tokio::fs::remove_dir_all(&rando_path).await?;
             }
         } else {
-            //TODO check and warn for outdated versions
+            let client = reqwest::Client::builder()
+                .user_agent(concat!("ootr.fenhl.net/", env!("CARGO_PKG_VERSION")))
+                .build()?;
+            let remote_version_string = client.get("https://ootr.fenhl.net/dev-r-version.py")
+                .send().await?
+                .text().await?;
+            let local_version_string = fs::read_to_string(rando_path.join("version.py")).await?;
+            if remote_version_string.trim() != local_version_string.trim() {
+                fs::remove_dir_all(&rando_path).await?;
+            }
         }
     }
     if !rando_path.exists() {
@@ -463,27 +517,7 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
     let settings_path = cache_dir.join("settings.json");
     File::create(&settings_path).await?.write_all(&buf).await?;
     // generate seed
-    let weights = match options {
-        GenOptions::League => serde_json::from_str(include_str!("../../../assets/weights/rsl.json"))?,
-        GenOptions::Preset { preset, options } => {
-            let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json"))?;
-            match preset {
-                Preset::Solo => {}
-                Preset::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json"))?,
-                Preset::Multiworld => weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json"))?,
-            }
-            match (options.standard_tricks, options.rsl_tricks) {
-                (true, true) => {}
-                (true, false) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json"))?),
-                (false, true) => weights.allowed_tricks = Some(serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json"))?),
-                (false, false) => weights.allowed_tricks = Some(Vec::default()),
-            }
-            if !options.random_starting_items { weights.random_starting_items = false }
-            weights.world_count = options.world_count;
-            weights
-        }
-        GenOptions::Custom(weights) => weights,
-    };
+    let weights = Weights::from(options);
     #[cfg(unix)] let python = "python3";
     #[cfg(all(windows, debug_assertions))] let python = "python";
     #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";

@@ -2,12 +2,21 @@ use {
     std::{
         marker::PhantomData,
         path::PathBuf,
+        pin::Pin,
+    },
+    futures::future::{
+        Future,
+        FutureExt as _,
     },
     iced::{
         Element,
         widget::{
             Row,
-            button,
+            Text,
+            button::{
+                self,
+                Button,
+            },
             text_input::{
                 self,
                 TextInput,
@@ -15,11 +24,7 @@ use {
         },
     },
     itertools::Itertools as _,
-    rfd::DialogOptions,
-};
-#[cfg(not(target_os = "macos"))] use iced::widget::{
-    Button,
-    Text,
+    rfd::AsyncFileDialog,
 };
 
 pub(crate) trait Kind {
@@ -27,7 +32,7 @@ pub(crate) trait Kind {
 
     fn parse(path_str: String) -> Option<Self::Data>;
     fn format(data: &Option<Self::Data>) -> String;
-    fn pick<'a>(opt: impl Into<Option<DialogOptions<'a>>>) -> Option<Self::Data>;
+    fn pick() -> Pin<Box<dyn Future<Output = Option<Self::Data>> + Send>>;
 }
 
 pub(crate) enum File {}
@@ -47,8 +52,9 @@ impl Kind for File {
         data.as_ref().map(|data| format!("{}", data.display())).unwrap_or_default()
     }
 
-    fn pick<'a>(opt: impl Into<Option<DialogOptions<'a>>>) -> Option<PathBuf> {
-        rfd::pick_file(opt)
+    fn pick() -> Pin<Box<dyn Future<Output = Option<PathBuf>> + Send>> {
+        Box::pin(AsyncFileDialog::new().pick_file()
+            .map(|handle| handle.map(|handle| handle.path().to_owned())))
     }
 }
 
@@ -69,8 +75,9 @@ impl Kind for Files {
         data.iter().flatten().map(|path| path.display()).join(",")
     }
 
-    fn pick<'a>(opt: impl Into<Option<DialogOptions<'a>>>) -> Option<Vec<PathBuf>> {
-        rfd::pick_files(opt)
+    fn pick() -> Pin<Box<dyn Future<Output = Option<Vec<PathBuf>>> + Send>> {
+        Box::pin(AsyncFileDialog::new().pick_files()
+            .map(|handles| handles.map(|handles| handles.into_iter().map(|handle| handle.path().to_owned()).collect())))
     }
 }
 
@@ -91,8 +98,9 @@ impl Kind for Folder {
         data.as_ref().map(|data| format!("{}", data.display())).unwrap_or_default()
     }
 
-    fn pick<'a>(opt: impl Into<Option<DialogOptions<'a>>>) -> Option<PathBuf> {
-        rfd::pick_folder(opt)
+    fn pick() -> Pin<Box<dyn Future<Output = Option<PathBuf>> + Send>> {
+        Box::pin(AsyncFileDialog::new().pick_folder()
+            .map(|handle| handle.map(|handle| handle.path().to_owned())))
     }
 }
 
@@ -113,12 +121,12 @@ impl Kind for Save {
         data.as_ref().map(|data| format!("{}", data.display())).unwrap_or_default()
     }
 
-    fn pick<'a>(opt: impl Into<Option<DialogOptions<'a>>>) -> Option<PathBuf> {
-        rfd::save_file(opt)
+    fn pick() -> Pin<Box<dyn Future<Output = Option<PathBuf>> + Send>> {
+        Box::pin(AsyncFileDialog::new().save_file()
+            .map(|handle| handle.map(|handle| handle.path().to_owned())))
     }
 }
 
-#[cfg_attr(target_os = "macos", allow(unused))]
 pub(crate) struct FilePicker<K: Kind, M: Clone + 'static> {
     _phantom: PhantomData<K>,
     pub(crate) data: Option<K::Data>,
@@ -140,18 +148,15 @@ impl<K: Kind, M: Clone + 'static> FilePicker<K, M> {
         }
     }
 
-    pub(crate) fn browse(&mut self) {
-        if let Some(data) = K::pick(None) { self.data = Some(data) } //TODO allow options?
-    }
-
     pub(crate) fn set(&mut self, path_str: String) {
         self.data = K::parse(path_str);
     }
 
     pub(crate) fn view(&mut self) -> Element<'_, M> {
-        let row = Row::new().push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change));
-        // rfd currently hangs on macOS
-        #[cfg(not(target_os = "macos"))] let row = row.push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()));
-        row.spacing(16).into()
+        Row::new()
+            .push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change))
+            .push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()))
+            .spacing(16)
+            .into()
     }
 }

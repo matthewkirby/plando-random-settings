@@ -13,15 +13,16 @@ Pre-built downloads coming soon. Until then, the program must be built from sour
     * On Windows, download and run [rustup-init.exe](https://win.rustup.rs/) and follow its instructions.
     * On other platforms, please see [the Rust website](https://www.rust-lang.org/learn/get-started) for instructions.
 2. (Skip this step if you're not on Windows.) If you're on Windows, you'll also need to download and install [Visual Studio](https://visualstudio.microsoft.com/vs/) (the Community edition should work). On the “Workloads” screen of the installer, make sure “Desktop development with C++” is selected. (Note that [Visual Studio Code](https://code.visualstudio.com/) is not the same thing as Visual Studio. You need VS, not VS Code.)
-3. Open a command line:
+3. Install [Python](https://python.org/) version 3.6 or higher.
+4. Open a command line:
     * On Windows, right-click the start button, then click “Windows PowerShell” or “Command Prompt”.
     * On other platforms, look for an app named “Terminal” or similar.
-4. In the command line, run the following command. Depending on your computer, this may take a while.
+5. In the command line, run the following command. Depending on your computer, this may take a while.
 
     ```
     cargo install --git=https://github.com/fenhl/plando-random-settings --branch=riir
     ```
-5. You can now launch the app by running the command `rsl-gui`, or use the command-line version `rsl` (see `rsl --help` for details).
+6. You can now launch the app by running the command `rsl-gui`, or use the command-line version `rsl` (see `rsl --help` for details).
 
 ## Usage
 

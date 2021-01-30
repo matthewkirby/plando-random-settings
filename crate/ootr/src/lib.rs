@@ -1,4 +1,5 @@
-#![deny(rust_2018_idioms, unused, unused_import_braces, unused_qualifications, unused_crate_dependencies, warnings)]
+#![deny(rust_2018_idioms, unused, unused_crate_dependencies, unused_import_braces, unused_qualifications, warnings)]
+#![forbid(unsafe_code)]
 
 use {
     std::{
@@ -13,7 +14,10 @@ use {
     },
     directories::ProjectDirs,
     proc_macro::TokenStream,
-    pyo3::prelude::*,
+    pyo3::{
+        prelude::*,
+        types::PyDict,
+    },
     quote::quote,
     zip::ZipArchive,
 };
@@ -21,21 +25,6 @@ use {
 const REPO_NAME: &str = "OoT-Randomizer";
 const LEAGUE_COMMIT_HASH: &str = "b670183e9aff520c20ac2ee65aa55e3740c5f4b4";
 const LEAGUE_VERSION: &str = "5.2.117 R-1";
-
-#[proc_macro]
-pub fn uses(_: TokenStream) -> TokenStream {
-    let py_version = Python::with_gil(|py| {
-        let v = py.version_info();
-        format!("{}.{}.{}", v.major, v.minor, v.patch)
-    });
-    TokenStream::from(quote! {
-        const REPO_NAME: &str = #REPO_NAME;
-        const LEAGUE_COMMIT_HASH: &str = #LEAGUE_COMMIT_HASH;
-        const LEAGUE_VERSION: &str = #LEAGUE_VERSION;
-        const MAX_WORLDS: u8 = 255; //TODO pull from SettingsList.py
-        const PY_VERSION: &str = #py_version;
-    })
-}
 
 fn import<'p>(py: Python<'p>, module: &str) -> PyResult<&'p PyModule> {
     let project_dirs = ProjectDirs::from("net", "Fenhl", "RSL").expect("missing home directory");
@@ -65,13 +54,51 @@ fn import<'p>(py: Python<'p>, module: &str) -> PyResult<&'p PyModule> {
     py.import(module)
 }
 
-fn starting_item_list(attr_name: &str) -> TokenStream {
+fn starting_item_list(attr_name: &str) -> proc_macro2::TokenStream {
     let items = Python::with_gil(|py| {
         PyResult::Ok(import(py, "StartingItems")?.get(attr_name)?.iter()?.map(|elt| elt.and_then(|elt| elt.extract())).collect::<PyResult<Vec<String>>>()?)
     }).expect("failed to read starting items from Python");
-    quote!(vec![#(#items,)*]).into()
+    quote!(&[#(#items,)*]).into()
 }
 
-#[proc_macro] pub fn inventory(_: TokenStream) -> TokenStream { starting_item_list("inventory") }
-#[proc_macro] pub fn songs(_: TokenStream) -> TokenStream { starting_item_list("songs") }
-#[proc_macro] pub fn equipment(_: TokenStream) -> TokenStream { starting_item_list("equipment") }
+#[proc_macro]
+pub fn uses(_: TokenStream) -> TokenStream {
+    let (py_version, locations, tricks) = Python::with_gil(|py| {
+        let v = py.version_info();
+        let location_table = import(py, "Location")?.get("location_table")?;
+        let mut locations = Vec::default();
+        for loc in location_table.call_method0("items")?.iter()? {
+            let (loc_name, (_, _, _, _, categories)) = loc?.extract::<(String, (&PyAny, &PyAny, &PyAny, &PyAny, Option<&PyAny>))>()?;
+            if categories.is_some() {
+                locations.push(loc_name);
+            }
+        }
+        let logic_tricks = import(py, "SettingsList")?.get("logic_tricks")?;
+        let mut tricks = Vec::default();
+        for trick in logic_tricks.call_method0("items")?.iter()? {
+            let (_ /*display_name*/, data) = trick?.extract::<(String, &PyDict)>()?;
+            let name = data.get_item("name").expect("missing trick name").extract::<String>()?;
+            tricks.push(name);
+        }
+        PyResult::Ok((
+            format!("{}.{}.{}", v.major, v.minor, v.patch),
+            locations,
+            tricks,
+        ))
+    }).expect("failed to get data from Python");
+    let inventory = starting_item_list("inventory");
+    let songs = starting_item_list("songs");
+    let equipment = starting_item_list("equipment");
+    TokenStream::from(quote! {
+        const REPO_NAME: &str = #REPO_NAME;
+        const LEAGUE_COMMIT_HASH: &str = #LEAGUE_COMMIT_HASH;
+        const LEAGUE_VERSION: &str = #LEAGUE_VERSION;
+        const MAX_WORLDS: u8 = 255; //TODO pull from SettingsList.py
+        const LOCATIONS: &[&str] = &[#(#locations,)*];
+        const TRICKS: &[&str] = &[#(#tricks,)*];
+        const PY_VERSION: &str = #py_version;
+        const INVENTORY: &[&str] = #inventory;
+        const SONGS: &[&str] = #songs;
+        const EQUIPMENT: &[&str] = #equipment;
+    })
+}
