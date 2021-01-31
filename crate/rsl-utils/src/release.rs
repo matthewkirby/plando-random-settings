@@ -205,18 +205,10 @@ async fn build_macos(config: &Config, client: &reqwest::Client, repo: &Repo, rel
     Command::new("ssh").arg(&config.mac_hostname).arg("zsh").arg("-c").arg(format!("'cd {} && git pull --ff-only'", shlex::quote(&config.mac_repo_path))).check("ssh", verbose).await?;
     eprintln!("running build script on Mac");
     Command::new("ssh").arg(&config.mac_hostname).arg(format!("{}/assets/release.sh", shlex::quote(&config.mac_repo_path))).arg(if verbose { "--verbose" } else { "" }).check("ssh", true).await?;
-    eprintln!("downloading rsl-mac-intel.dmg from Mac");
-    Command::new("scp").arg(format!("{}:{}/assets/rsl-mac-intel.dmg", config.mac_hostname, config.mac_repo_path)).arg("assets/rsl-mac-intel.dmg").check("scp", verbose).await?;
-    eprintln!("uploading rsl-mac-intel.dmg");
-    repo.release_attach(client, release, "rsl-mac-intel.dmg", "application/x-apple-diskimage", fs::read("assets/rsl-mac-intel.dmg").await?).await?;
-
-    /*
-    eprintln!("downloading rsl-mac-arm.dmg from Mac");
-    Command::new("scp").arg(format!("{}:{}/assets/rsl-mac-arm.dmg", config.mac_hostname, config.mac_repo_path)).arg("assets/rsl-mac-arm.dmg").check("scp", verbose).await?;
-    eprintln!("uploading rsl-mac-arm.dmg");
-    repo.release_attach(client, release, "rsl-mac-arm.dmg", "application/x-apple-diskimage", fs::read("assets/rsl-mac-arm.dmg").await?).await?;
-    */
-
+    eprintln!("downloading rsl-mac.dmg from Mac");
+    Command::new("scp").arg(format!("{}:{}/assets/rsl-mac.dmg", config.mac_hostname, config.mac_repo_path)).arg("assets/rsl-mac.dmg").check("scp", verbose).await?;
+    eprintln!("uploading rsl-mac.dmg");
+    repo.release_attach(client, release, "rsl-mac.dmg", "application/x-apple-diskimage", fs::read("assets/rsl-mac.dmg").await?).await?;
     Ok(())
 }
 
@@ -248,22 +240,15 @@ struct Args {
 #[cfg(target_os = "macos")]
 #[wheel::main]
 async fn main(args: Args) -> Result<(), Error> {
-    eprintln!("building rsl-mac-intel.app");
-    Command::new("cargo").arg("build").arg("--release").arg("--package=rsl-gui").check("cargo", args.verbose).await?;
-    fs::create_dir("assets/macos/RSL.app/Contents/MacOS").await.exist_ok()?;
-    fs::copy("target/release/rsl-gui", "assets/macos/RSL.app/Contents/MacOS/rsl-gui").await?;
-    eprintln!("packing rsl-mac-intel.dmg");
-    Command::new("hdiutil").arg("create").arg("assets/rsl-mac-intel.dmg").arg("-volname").arg("RSL").arg("-srcfolder").arg("assets/macos").arg("-ov").check("hdiutil", args.verbose).await?;
-
-    /*
-    eprintln!("building rsl-mac-arm.app");
+    eprintln!("building rsl-mac.app for x86_64");
+    Command::new("cargo").arg("build").arg("--release").arg("--target=x86_64-apple-darwin").arg("--package=rsl-gui").check("cargo", args.verbose).await?;
+    eprintln!("building rsl-mac.app for aarch64");
     Command::new("cargo").arg("build").arg("--release").arg("--target=aarch64-apple-darwin").arg("--package=rsl-gui").check("cargo", args.verbose).await?;
+    eprintln!("creating Universal macOS binary");
     fs::create_dir("assets/macos/RSL.app/Contents/MacOS").await.exist_ok()?;
-    fs::copy("target/aarch64-apple-darwin/release/rsl-gui", "assets/macos/RSL.app/Contents/MacOS/rsl-gui").await?;
-    eprintln!("packing rsl-mac-arm.dmg");
-    Command::new("hdiutil").arg("create").arg("assets/rsl-mac-arm.dmg").arg("-volname").arg("RSL").arg("-srcfolder").arg("assets/macos").arg("-ov").check("hdiutil", args.verbose).await?;
-    */
-
+    Command::new("lipo").arg("-create").arg("target/aarch64-apple-darwin/release/rsl-gui").arg("target/x86_64-apple-darwin/release/rsl-gui").arg("-output").arg("assets/macos/RSL.app/Contents/MacOS/rsl-gui").check("lipo", args.verbose).await?;
+    eprintln!("packing rsl-mac.dmg");
+    Command::new("hdiutil").arg("create").arg("assets/rsl-mac.dmg").arg("-volname").arg("RSL").arg("-srcfolder").arg("assets/macos").arg("-ov").check("hdiutil", args.verbose).await?;
     Ok(())
 }
 

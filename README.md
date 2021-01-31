@@ -6,7 +6,7 @@ This program allows us to blindly randomize anything and (nearly) everything in 
 ## Download
 
 * [Windows (64-bit)](https://github.com/matthewkirby/plando-random-settings/releases/latest/download/rsl-win64.exe)
-* [macOS (Intel)](https://github.com/matthewkirby/plando-random-settings/releases/latest/download/rsl-mac-intel.dmg)
+* [macOS (Universal)](https://github.com/matthewkirby/plando-random-settings/releases/latest/download/rsl-mac.dmg)
 * For other platforms, [request support](https://github.com/matthewkirby/plando-random-settings/issues/new) or [build from source](#building-from-source).
 
 ## Usage
@@ -39,13 +39,13 @@ When opening the app, you will see the following from top to bottom:
 5. In the command line, run the following command. Depending on your computer, this may take a while.
 
     ```
-    cargo install --git=https://github.com/fenhl/plando-random-settings --branch=riir
+    cargo install --git=https://github.com/matthewkirby/plando-random-settings --branch=master
     ```
 6. You can now launch the app by running the command `rsl-gui`, or use the command-line version `rsl` (see `rsl --help` for details).
 
 ## Releasing a new version
 
-You will need a 64-bit Windows PC and an Intel Mac.
+You will need a 64-bit Windows PC and a Mac.
 
 1. Bump the version number in:
     * `assets/macos/RSL.app/Contents/Info.plist` (also increment `CFBundleVersion`)
@@ -57,8 +57,13 @@ You will need a 64-bit Windows PC and an Intel Mac.
 2. Push the changes
 3. On macOS:
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
-    2. Clone this repo.
-    3. In System Preferences → Sharing, make sure Remote Login is enabled and you have access.
+    2. Make sure your Rust compiler can build for both Intel and ARM:
+        ```sh
+        rustup target add x86_64-apple-darwin
+        rustup target add aarch64-apple-darwin
+        ```
+    3. Clone this repo.
+    4. In System Preferences → Sharing, make sure Remote Login is enabled and you have access.
 4. On Windows:
     1. [Create a GitHub personal access token](https://github.com/settings/tokens/new) with the public_repo scope.
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
