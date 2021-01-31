@@ -1,0 +1,59 @@
+[package]
+name = "rsl-utils"
+version = "6.0.13"
+authors = [
+    "Matthew Kirby <xoparr@gmail.com>",
+    "Fenhl <fenhl@fenhl.net>"
+]
+edition = "2018"
+
+[[bin]]
+name = "rsl-release"
+path = "src/release.rs"
+
+[dependencies]
+async-trait = "0.1"
+
+[dependencies.derive_more]
+version = "0.99"
+default-features = false
+features = ["from"]
+
+[dependencies.structopt]
+version = "0.3"
+features = ["paw"]
+
+[dependencies.tokio]
+version = "1"
+features = ["fs", "process"]
+
+[dependencies.wheel]
+git = "https://github.com/fenhl/wheel"
+branch = "main"
+
+[target.'cfg(windows)'.dependencies]
+dir-lock = "0.3"
+itertools = "0.10"
+plist = "1"
+serde_json = "1"
+shlex = "0.1"
+tempfile = "3"
+
+[target.'cfg(windows)'.dependencies.ootr]
+path = "../ootr"
+
+[target.'cfg(windows)'.dependencies.reqwest]
+version = "0.11"
+default-features = false
+features = ["rustls-tls", "stream"]
+
+[target.'cfg(windows)'.dependencies.rsl]
+path = "../rsl"
+
+[target.'cfg(windows)'.dependencies.semver]
+version = "0.11"
+features = ["serde"]
+
+[target.'cfg(windows)'.dependencies.serde]
+version = "1"
+features = ["derive"]

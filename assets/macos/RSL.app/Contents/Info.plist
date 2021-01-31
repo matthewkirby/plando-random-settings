@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+        <key>CFBundleDisplayName</key>
+        <string>RSL</string>
+        <key>CFBundleExecutable</key>
+        <string>rsl-gui</string>
+        <!--
+        <key>CFBundleIconFile</key>
+        <string>AppIcon.icns</string>
+        --> <!--TODO app icon-->
+        <key>CFBundleIdentifier</key>
+        <string>net.fenhl.ootr.rsl</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>RSL</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>6.0.13</string>
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+            <string>MacOSX</string>
+        </array>
+        <!--TODO make sure this is incremented each time the crate version is incremented-->
+        <key>CFBundleVersion</key>
+        <string>1</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
+        <key>NSMainNibFile</key>
+        <string></string>
+        <key>NSRequiresAquaSystemAppearance</key>
+        <string>NO</string>
+        <key>NSSupportsAutomaticGraphicsSwitching</key>
+        <true />
+    </dict>
+</plist>

@@ -33,6 +33,7 @@ use {
         Distribution as _,
         StandardGeometric,
     },
+    semver::Version,
     serde::{
         Deserialize,
         Serialize,
@@ -536,4 +537,8 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
         }
     }
     Err(GenError::TriesExceeded)
+}
+
+pub fn version() -> Version {
+    Version::parse(env!("CARGO_PKG_VERSION")).expect("failed to parse current version")
 }

@@ -1,5 +1,5 @@
-blind_random_settings.json
-my_weights.json
-__pycache__
-ERRORLOG.TXT
+/assets/macos/RSL.app/Contents/MacOS/rsl-gui
+/assets/rsl-mac-arm.dmg
+/assets/rsl-mac-intel.dmg
+/assets/release-config.json
 /target
