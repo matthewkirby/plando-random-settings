@@ -233,7 +233,6 @@ impl Weights {
 
     pub fn gen(&self, rng: &mut impl Rng) -> Result<Plando, WeightedError> {
         let mut settings = BTreeMap::default();
-        settings.insert(format!("world_count"), json!(self.world_count));
         settings.insert(format!("disabled_locations"), json!(self.disabled_locations));
         settings.insert(format!("allowed_tricks"), json!(self.allowed_tricks));
         if self.random_starting_items {
@@ -374,7 +373,10 @@ impl From<GenOptions> for Weights {
                 match preset {
                     Preset::Solo => {}
                     Preset::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json")).expect("failed to load co-op overrides"),
-                    Preset::Multiworld => weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json")).expect("failed to load multiworld overrides"),
+                    Preset::Multiworld => {
+                        weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json")).expect("failed to load multiworld overrides");
+                        weights.world_count = options.world_count;
+                    }
                 }
                 match (options.standard_tricks, options.rsl_tricks) {
                     (true, true) => {}
@@ -383,7 +385,6 @@ impl From<GenOptions> for Weights {
                     (false, false) => weights.allowed_tricks = BTreeSet::default(),
                 }
                 if !options.random_starting_items { weights.random_starting_items = false }
-                weights.world_count = options.world_count;
                 weights
             }
             GenOptions::Custom(weights) => weights,
@@ -405,11 +406,13 @@ struct RandoSettings {
     create_spoiler: bool,
     create_cosmetics_log: bool,
     compress_rom: CompressRom,
+    world_count: u8,
 }
 
 impl RandoSettings {
-    fn new(rom_path: impl Into<PathBuf>, distribution_path: impl Into<PathBuf>, output_dir: impl Into<PathBuf>) -> RandoSettings {
+    fn new(rom_path: impl Into<PathBuf>, distribution_path: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, world_count: u8) -> RandoSettings {
         RandoSettings {
+            world_count,
             rom: rom_path.into(),
             output_dir: output_dir.into(),
             enable_distribution_file: true,
@@ -496,7 +499,7 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
             let client = reqwest::Client::builder()
                 .user_agent(concat!("ootr.fenhl.net/", env!("CARGO_PKG_VERSION")))
                 .build()?;
-            let remote_version_string = client.get("https://ootr.fenhl.net/dev-r-version.py")
+            let remote_version_string = client.get("https://ootr.fenhl.net/dev-r-version.py") // since GitHub's GraphQL API requires an OAuth token for all requests, even public data, this is a simple proxy for the contents of https://github.com/Roman971/OoT-Randomizer/blob/Dev-R/version.py
                 .send().await?
                 .text().await?;
             let local_version_string = fs::read_to_string(rando_path.join("version.py")).await?;
@@ -513,11 +516,11 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
         tokio::fs::rename(cache_dir.join(format!("{}-{}", REPO_NAME, repo_ref)), &rando_path).await?;
     }
     // write base rando settings to a file to be used as parameter later
-    let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir))?; //TODO async-json
+    let weights = Weights::from(options);
+    let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir, weights.world_count))?; //TODO async-json
     let settings_path = cache_dir.join("settings.json");
     File::create(&settings_path).await?.write_all(&buf).await?;
     // generate seed
-    let weights = Weights::from(options);
     #[cfg(unix)] let python = "python3";
     #[cfg(all(windows, debug_assertions))] let python = "python";
     #[cfg(all(windows, not(debug_assertions)))] let python = "pythonw";
