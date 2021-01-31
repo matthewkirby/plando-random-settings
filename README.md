@@ -47,11 +47,19 @@ When opening the app, you will see the following from top to bottom:
 
 You will need a 64-bit Windows PC and an Intel Mac.
 
-1. On macOS:
+1. Bump the version number in:
+    * `assets/macos/RSL.app/Contents/Info.plist` (also increment `CFBundleVersion`)
+    * `crate/ootr/Cargo.toml`
+    * `crate/rsl/Cargo.toml`
+    * `crate/rsl-cli/Cargo.toml`
+    * `crate/rsl-gui/Cargo.toml`
+    * `crate/rsl-utils/Cargo.toml`
+2. Push the changes
+3. On macOS:
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Clone this repo.
     3. In System Preferences → Sharing, make sure Remote Login is enabled and you have access.
-2. On Windows:
+4. On Windows:
     1. [Create a GitHub personal access token](https://github.com/settings/tokens/new) with the public_repo scope.
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Clone this repo.

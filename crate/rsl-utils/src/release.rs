@@ -10,7 +10,10 @@ use {
     async_trait::async_trait,
     derive_more::From,
     structopt::StructOpt,
-    tokio::fs,
+    tokio::{
+        fs,
+        process::Command,
+    },
 };
 #[cfg(windows)] use {
     std::{
@@ -28,7 +31,6 @@ use {
     },
     serde::Deserialize,
     tempfile::NamedTempFile,
-    tokio::process::Command,
     crate::github::{
         Release,
         Repo,
@@ -103,9 +105,9 @@ impl IoResultExt for io::Result<()> {
     }
 }
 
-fn default_release_notes_editor() -> String { format!("C:\\Program Files\\Microsoft VS Code\\bin\\code.cmd") }
-fn default_repo_owner() -> String { format!("matthewkirby") }
-fn default_repo_name() -> String { format!("plando-random-settings") }
+#[cfg(windows)] fn default_release_notes_editor() -> String { format!("C:\\Program Files\\Microsoft VS Code\\bin\\code.cmd") }
+#[cfg(windows)] fn default_repo_owner() -> String { format!("matthewkirby") }
+#[cfg(windows)] fn default_repo_name() -> String { format!("plando-random-settings") }
 
 #[cfg(windows)]
 #[derive(Deserialize)]
@@ -202,7 +204,7 @@ async fn build_macos(config: &Config, client: &reqwest::Client, repo: &Repo, rel
     eprintln!("updating repo on Mac");
     Command::new("ssh").arg(&config.mac_hostname).arg("zsh").arg("-c").arg(format!("'cd {} && git pull --ff-only'", shlex::quote(&config.mac_repo_path))).check("ssh", verbose).await?;
     eprintln!("running build script on Mac");
-    Command::new("ssh").arg(&config.mac_hostname).arg(format!("{}/assets/release.sh", shlex::quote(&config.mac_repo_path))).check("ssh", verbose).await?;
+    Command::new("ssh").arg(&config.mac_hostname).arg(format!("{}/assets/release.sh", shlex::quote(&config.mac_repo_path))).arg(if verbose { "--verbose" } else { "" }).check("ssh", true).await?;
     eprintln!("downloading rsl-mac-intel.dmg from Mac");
     Command::new("scp").arg(format!("{}:{}/assets/rsl-mac-intel.dmg", config.mac_hostname, config.mac_repo_path)).arg("assets/rsl-mac-intel.dmg").check("scp", verbose).await?;
     eprintln!("uploading rsl-mac-intel.dmg");
