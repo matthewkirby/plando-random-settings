@@ -22,9 +22,29 @@ When opening the app, you will see the following from top to bottom:
     * **Co-op:** Limits the maximum number of required skull tokens to 50, disables Master Quest, and fixes the damage multiplier to normal.
     * **Multiworld:** This disables settings that can cause seeds to take a long time, such as closed Door of Time, Overworld entrance randomizer, or useless hints. It also disables Skip Child Zelda to avoid [this bug](https://github.com/TestRunnerSRL/OoT-Randomizer/issues/1210).
     * **Custom:** Allows you to fully customize the weights.
-5. For League weights, there are no further options, to avoid accidental misconfigurations. For other presets, you can now optionally remove tricks from logic and/or turn off the possibility of starting with random items. For custom weights, configure them to your liking. You can also export them to a file, or import weights from a file.
+5. For League weights, there are no further options, to avoid accidental misconfigurations. For other presets, you can now optionally remove tricks from logic and/or turn off the possibility of starting with random items. For custom weights, configure them to your liking. You can also export them to a file, or import weights from a file (see [the next section](#weights-files) for details on these files).
 6. For Multiworld weights, select the number of players (also called the world count) using the slider or text box.
 7. Click “Generate Seed”. This can occasionally take a while, since it makes 60 attempts at generating a seed (20 distributions, each tried 3 times). Once done, the output directory will contain the patch file that you can send to the players (or apply the patch for yourself with [the randomizer](https://ootrandomizer.com/generator) by selecting “Generate From Patch File”), as well as the spoiler log and a copy of the settings distributions (which is also considered a spoiler in the Random Settings League).
+
+## Weights files
+
+A weights file is a configuration file for the app. See [the league weights file](https://github.com/matthewkirby/plando-random-settings/blob/master/assets/weights/rsl.json) for an example. It is a [JSON](https://json.org/) object with the following entries:
+
+* `"hash"`: An array of two strings representing the hash icon prefix. The accepted names are the same as those in spoiler logs.
+* `"worldCount"`: For multiworld, the number of worlds to generate. Defaults to `1`.
+* `"disabledLocations"`: An array of excluded location names, same format as in spoiler logs.
+* `"allowedTricks"`: An array of logically allowed tricks, same format as in spoiler logs.
+* `"randomStartingItems"`: Whether or not to add random starting items (in addition to `"startingItems"`, `"startingSongs"`, and `"startingEquipment"`, if specified). The number of random starting items will follow a geometric distribution: 50% chance of no random starting items, 25% chance of 1, 12.5% chance of 2, etc.
+* `"startingItems"`: An array of main starting items, same format as in spoiler logs.
+* `"startingSongs"`: An array of starting songs, same format as in spoiler logs.
+* `"startingEquipment"`: An array of starting equipment, same format as in spoiler logs.
+* `"weights"`: An array of weights rules. A weights rule is an object containing the entry `"setting"` specifying the spoiler log name for the setting this rule will generate, as well as one of the following:
+    * To randomize the setting to a number, use the entries `"min"` and `"max"` to specify the range (both inclusive), as well as the entry `"distribution"` which should be `"uniform"` to make each number in the range equally likely or `"geometric"` to give the lowest number a 50% chance, the next a 25% chance, and so on (the two highest numbers will be equally likely).
+    * For any other kind of setting, use the entry `"values"` containing an object with each possible value of the setting mapped to an integer indicating how likely it should be relative to the other values. For example, `{"true": 1, "false": 6}` gives a simple on/off setting a 1/7 chance to be enabled.
+        * An optional entry `"conditionals"` allows generating different weights depending on the values of settings that have already been generated (which means the must be above this setting in the `"weights"` array). The entry is an array of objects, each with the following entries:
+            * `"setting"`: The name of the setting whose value to check.
+            * `"conditions"`: An array of values of that setting for which this conditional will be used.
+            * `"values"`: The weights to use if any of the condition is met, in the same format as the base `"values"` entry (which will be used if no conditionals apply).
 
 ## Building from source
 
@@ -32,30 +52,40 @@ When opening the app, you will see the following from top to bottom:
     * On Windows, download and run [rustup-init.exe](https://win.rustup.rs/) and follow its instructions.
     * On other platforms, please see [the Rust website](https://www.rust-lang.org/learn/get-started) for instructions.
 2. (Skip this step if you're not on Windows.) If you're on Windows, you'll also need to download and install [Visual Studio](https://visualstudio.microsoft.com/vs/) (the Community edition should work). On the “Workloads” screen of the installer, make sure “Desktop development with C++” is selected. (Note that [Visual Studio Code](https://code.visualstudio.com/) is not the same thing as Visual Studio. You need VS, not VS Code.)
-3. Install [Python](https://python.org/) version 3.6 or higher.
-4. Open a command line:
-    * On Windows, right-click the start button, then click “Windows PowerShell” or “Command Prompt”.
-    * On other platforms, look for an app named “Terminal” or similar.
-5. In the command line, run the following command. Depending on your computer, this may take a while.
+3. Install [Python](https://python.org/) version 3.6 or higher, making sure to check the “add to PATH” option.
+4. Download and extract [this repository](https://github.com/matthewkirby/plando-random-settings/archive/master.zip)
+5. Open a command line in the extracted folder:
+    * On Windows, locate the folder in File Explorer, then right-click it while holding shift and select “Open PowerShell window here” or “Open command prompt here”.
+    * On other platforms, open a command line and navigate to the folder using `cd`.
+6. In the command line, run one of the following commands. Depending on your computer, this may take a while.
 
+    To install the command-line version:
+
+    ```sh
+    cargo install --path=crate/rsl-cli
     ```
-    cargo install --git=https://github.com/matthewkirby/plando-random-settings --branch=master
+
+    To install the main app:
+
+    ```sh
+    cargo install --path=crate/rsl-gui
     ```
-6. You can now launch the app by running the command `rsl-gui`, or use the command-line version `rsl` (see `rsl --help` for details).
+7. You can now launch the app by running the command `rsl-gui`, and/or use the command-line version `rsl` (see `rsl --help` for details).
 
 ## Releasing a new version
 
 You will need a 64-bit Windows PC and a Mac.
 
-1. Bump the version number in:
+1. If the randomizer version for league seeds should be updated, change the constants `LEAGUE_COMMIT_HASH` and `LEAGUE_VERSION` in `crate/ootr/src/lib.rs` accordingly
+2. Bump the version number in:
     * `assets/macos/RSL.app/Contents/Info.plist` (also increment `CFBundleVersion`)
     * `crate/ootr/Cargo.toml`
     * `crate/rsl/Cargo.toml`
     * `crate/rsl-cli/Cargo.toml`
     * `crate/rsl-gui/Cargo.toml`
     * `crate/rsl-utils/Cargo.toml`
-2. Push the changes
-3. On macOS:
+3. Push the changes
+4. On macOS:
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Make sure your Rust compiler can build for both Intel and ARM:
         ```sh
@@ -64,11 +94,11 @@ You will need a 64-bit Windows PC and a Mac.
         ```
     3. Clone this repo.
     4. In System Preferences → Sharing, make sure Remote Login is enabled and you have access.
-4. On Windows:
+5. On Windows:
     1. [Create a GitHub personal access token](https://github.com/settings/tokens/new) with the public_repo scope.
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Clone this repo.
-    3. In the repo clone, create a [JSON](https://json.org/) file at `assets\release-config.json` with the following entries:
+    3. In the repo clone, create a [JSON](https://json.org/) object at `assets\release-config.json` with the following entries:
         * `"githubToken"`: The personal access token from step 1
         * `"macHostname"`: A hostname or IP address at which your Mac is reachable via SSH (and if necessary the username, in `"username@hostname"` form)
         * `"macRepoPath"`: The path to the clone of this repo on your Mac
