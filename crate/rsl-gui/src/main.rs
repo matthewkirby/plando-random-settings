@@ -9,14 +9,12 @@ use {
             BTreeMap,
             BTreeSet,
         },
-        convert::Infallible as Never,
         env,
         fmt,
         io,
         path::PathBuf,
         sync::Arc,
     },
-    derive_more::From,
     enum_iterator::IntoEnumIterator,
     iced::{
         Application,
@@ -56,10 +54,6 @@ use {
     },
     itertools::Itertools as _,
     rfd::AsyncFileDialog,
-    semver::{
-        SemVerError,
-        Version,
-    },
     serde_json::{
         Value as Json,
         json,
@@ -86,7 +80,6 @@ use {
         Weights,
         WeightsRule,
         from_arc,
-        github::Repo,
     },
     crate::{
         config::Config,
@@ -96,14 +89,24 @@ use {
         },
     },
 };
-#[cfg(unix)] use std::time::Duration;
+#[cfg(feature = "self-update")] use {
+    std::convert::Infallible as Never,
+    derive_more::From,
+    semver::{
+        SemVerError,
+        Version,
+    },
+    rsl::github::Repo,
+};
 #[cfg(windows)] use rsl::cache_dir;
+#[cfg(any(all(unix, feature = "self-update"), windows))] use std::time::Duration;
 
 mod config;
 mod file;
 
 ootr::uses!();
 
+#[cfg(feature = "self-update")]
 #[cfg(target_os = "macos")]
 const PLATFORM_SUFFIX: &str = "-mac.app";
 
@@ -127,11 +130,13 @@ enum Message {
     ChangeSettingValue(usize, Option<usize>, String, String),
     ChangeSettingWeight(usize, Option<usize>, String, String),
     DisabledLocations(SetViewMessage),
+    #[cfg(feature = "self-update")]
     DismissUpdateError,
     GenError(GenError),
     Generate,
     #[cfg(windows)]
     InstallPython,
+    #[cfg(feature = "self-update")]
     InstallUpdate,
     LoadConfig(Config),
     LoadFile,
@@ -148,6 +153,7 @@ enum Message {
     SaveFile,
     SaveFileError(Arc<io::Error>),
     SeedDone,
+    #[cfg(feature = "self-update")]
     SetAutoUpdateCheck(bool),
     SetBaseRom(PathBuf),
     SetHashIcon0(HashIcon),
@@ -162,11 +168,15 @@ enum Message {
     ToggleRandomStartingItems(bool),
     ToggleRslTricks(bool),
     ToggleStandardTricks(bool),
+    #[cfg(feature = "self-update")]
     UpdateCheck,
+    #[cfg(feature = "self-update")]
     UpdateCheckComplete(Option<Version>),
+    #[cfg(feature = "self-update")]
     UpdateCheckError(UpdateCheckError),
 }
 
+#[cfg(feature = "self-update")]
 #[derive(SmartDefault)]
 enum UpdateCheckState {
     #[default]
@@ -188,6 +198,7 @@ enum UpdateCheckState {
     Installing,
 }
 
+#[cfg(feature = "self-update")]
 impl UpdateCheckState {
     fn view(&mut self) -> Element<'_, Message> {
         match self {
@@ -643,6 +654,7 @@ impl GenState {
 struct App {
     #[default(reqwest::Client::builder().user_agent(concat!("rsl/", env!("CARGO_PKG_VERSION"))).build().expect("failed to create reqwest client"))]
     client: reqwest::Client,
+    #[cfg(feature = "self-update")]
     update_check: UpdateCheckState,
     #[default(FilePicker::new(format!("Base ROM"), Message::ChangeBaseRom, Message::BrowseBaseRom))]
     base_rom: FilePicker<file::File, Message>,
@@ -767,6 +779,7 @@ impl Application for App {
                 }
             },
             Message::DisabledLocations(msg) => self.weights.disabled_locations.update(&mut self.weights.data.disabled_locations, msg),
+            #[cfg(feature = "self-update")]
             Message::DismissUpdateError => self.update_check = UpdateCheckState::Unknown(button::State::default()),
             Message::GenError(e) => self.gen = if let GenError::PyNotFound = e {
                 GenState::PyNotFound {
@@ -808,6 +821,7 @@ impl Application for App {
                     }
                 }.into()
             }
+            #[cfg(feature = "self-update")]
             Message::InstallUpdate => {
                 self.update_check = UpdateCheckState::Installing;
                 let client = self.client.clone();
@@ -818,14 +832,17 @@ impl Application for App {
                     }
                 }.into()
             }
-            Message::LoadConfig(Config { auto_update_check }) => match auto_update_check {
-                Some(true) => {
-                    self.update_check = UpdateCheckState::Checking;
-                    return async { Message::UpdateCheck }.into()
+            #[cfg_attr(not(feature = "self-update"), allow(unused))]
+            Message::LoadConfig(Config { auto_update_check }) => {
+                #[cfg(feature = "self-update")] match auto_update_check {
+                    Some(true) => {
+                        self.update_check = UpdateCheckState::Checking;
+                        return async { Message::UpdateCheck }.into()
+                    }
+                    Some(false) => self.update_check = UpdateCheckState::Unknown(button::State::default()),
+                    None => {}
                 }
-                Some(false) => self.update_check = UpdateCheckState::Unknown(button::State::default()),
-                None => {}
-            },
+            }
             Message::LoadFile => {
                 let picker = AsyncFileDialog::new().pick_file(); //TODO picker options?
                 return async move {
@@ -893,6 +910,7 @@ impl Application for App {
             }
             Message::SaveFileError(e) => panic!("error saving file: {}", e), //TODO display error message without crashing
             Message::SeedDone => self.gen = GenState::default(),
+            #[cfg(feature = "self-update")]
             Message::SetAutoUpdateCheck(enable) => {
                 self.update_check = if enable { UpdateCheckState::Checking } else { UpdateCheckState::Unknown(button::State::default()) };
                 return async move {
@@ -927,6 +945,7 @@ impl Application for App {
             },
             Message::ToggleRslTricks(checked) => self.options.rsl_tricks = checked,
             Message::ToggleStandardTricks(checked) => self.options.standard_tricks = checked,
+            #[cfg(feature = "self-update")]
             Message::UpdateCheck => {
                 self.update_check = UpdateCheckState::Checking;
                 let client = self.client.clone();
@@ -937,11 +956,14 @@ impl Application for App {
                     }
                 }.into()
             }
+            #[cfg(feature = "self-update")]
             Message::UpdateCheckComplete(Some(new_ver)) => self.update_check = UpdateCheckState::UpdateAvailable {
                 new_ver,
                 update_btn: button::State::default(),
             },
+            #[cfg(feature = "self-update")]
             Message::UpdateCheckComplete(None) => self.update_check = UpdateCheckState::NoUpdateAvailable,
+            #[cfg(feature = "self-update")]
             Message::UpdateCheckError(e) => self.update_check = UpdateCheckState::Error {
                 e,
                 reset_btn: button::State::default(),
@@ -962,7 +984,10 @@ impl Application for App {
             None
         };
         Column::new()
-            .push(self.update_check.view())
+            .push({
+                #[cfg(feature = "self-update")] { self.update_check.view() }
+                #[cfg(not(feature = "self-update"))] { Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — built from source")) }
+            })
             .push(self.base_rom.view())
             .push(self.output_dir.view())
             .push(self.tab.view())
@@ -995,6 +1020,7 @@ impl Application for App {
     }
 }
 
+#[cfg(feature = "self-update")]
 #[derive(Debug, Clone, From)]
 enum UpdateCheckError {
     Config(config::Error),
@@ -1009,11 +1035,13 @@ enum UpdateCheckError {
     SemVer(SemVerError),
 }
 
+#[cfg(feature = "self-update")]
 from_arc! {
     io::Error => UpdateCheckError, Io,
     reqwest::Error => UpdateCheckError, Reqwest,
 }
 
+#[cfg(feature = "self-update")]
 impl fmt::Display for UpdateCheckError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -1034,6 +1062,7 @@ impl fmt::Display for UpdateCheckError {
     }
 }
 
+#[cfg(feature = "self-update")]
 async fn check_for_updates(client: &reqwest::Client) -> Result<Option<Version>, UpdateCheckError> {
     let repo = Repo::new("matthewkirby", "plando-random-settings");
     if let Some(release) = repo.latest_release(client).await? {
@@ -1044,6 +1073,7 @@ async fn check_for_updates(client: &reqwest::Client) -> Result<Option<Version>, 
     }
 }
 
+#[cfg(feature = "self-update")]
 async fn run_updater(#[cfg_attr(windows, allow(unused))] client: &reqwest::Client) -> Result<Never, UpdateCheckError> {
     #[cfg(unix)] { //TODO use Sparkle or similar on macOS? The current code only replaces the executable, not the entire app
         let current_exe = env::current_exe()?;
@@ -1120,7 +1150,7 @@ async fn install_python() -> Result<(), PyInstallError> {
             installer_file.write_all(chunk.as_ref()).await?;
         }
     }
-    sleep(std::time::Duration::from_secs(1)).await; // to make sure the download is closed
+    sleep(Duration::from_secs(1)).await; // to make sure the download is closed
     if !tokio::process::Command::new(installer_path).arg("/passive").arg("PrependPath=1").status().await?.success() {
         return Err(PyInstallError::InstallerExit)
     }

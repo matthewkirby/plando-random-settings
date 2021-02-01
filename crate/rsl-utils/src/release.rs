@@ -193,7 +193,7 @@ async fn build_windows(client: &reqwest::Client, repo: &Repo, release: &Release,
     eprintln!("building rsl-updater.exe");
     Command::new("cargo").arg("build").arg("--release").arg("--target=x86_64-pc-windows-mvc").arg("--package=rsl-updater").check("cargo build --package=rsl-updater", verbose).await?;
     eprintln!("building rsl-win64.exe");
-    Command::new("cargo").arg("build").arg("--release").arg("--package=rsl-gui").check("cargo build --package=rsl-gui", verbose).await?;
+    Command::new("cargo").arg("build").arg("--release").arg("--package=rsl-gui").arg("--manifest-path=crate/rsl-gui/Cargo.toml").check("cargo build --package=rsl-gui", verbose).await?;
     eprintln!("uploading rsl-win64.exe");
     repo.release_attach(client, release, "rsl-win64.exe", "application/vnd.microsoft.portable-executable", fs::read("target/release/rsl-gui.exe").await?).await?;
     Ok(())
@@ -241,9 +241,9 @@ struct Args {
 #[wheel::main]
 async fn main(args: Args) -> Result<(), Error> {
     eprintln!("building rsl-mac.app for x86_64");
-    Command::new("cargo").arg("build").arg("--release").arg("--target=x86_64-apple-darwin").arg("--package=rsl-gui").check("cargo", args.verbose).await?;
+    Command::new("cargo").arg("build").arg("--release").arg("--target=x86_64-apple-darwin").arg("--manifest-path=crate/rsl-gui/Cargo.toml").arg("--features=self-update").check("cargo", args.verbose).await?;
     eprintln!("building rsl-mac.app for aarch64");
-    Command::new("cargo").arg("build").arg("--release").arg("--target=aarch64-apple-darwin").arg("--package=rsl-gui").check("cargo", args.verbose).await?;
+    Command::new("cargo").arg("build").arg("--release").arg("--target=aarch64-apple-darwin").arg("--manifest-path=crate/rsl-gui/Cargo.toml").arg("--features=self-update").check("cargo", args.verbose).await?;
     eprintln!("creating Universal macOS binary");
     fs::create_dir("assets/macos/RSL.app/Contents/MacOS").await.exist_ok()?;
     Command::new("lipo").arg("-create").arg("target/aarch64-apple-darwin/release/rsl-gui").arg("target/x86_64-apple-darwin/release/rsl-gui").arg("-output").arg("assets/macos/RSL.app/Contents/MacOS/rsl-gui").check("lipo", args.verbose).await?;

@@ -16,6 +16,7 @@ use {
 pub(crate) enum Error {
     Io(Arc<io::Error>),
     Json(Arc<serde_json::Error>),
+    #[cfg(feature = "self-update")]
     MissingHomeDir,
 }
 
@@ -29,6 +30,7 @@ impl fmt::Display for Error {
         match self {
             Error::Io(e) => write!(f, "I/O error: {}", e),
             Error::Json(e) => write!(f, "JSON error: {}", e),
+            #[cfg(feature = "self-update")]
             Error::MissingHomeDir => write!(f, "failed to locate home directory"),
         }
     }
@@ -54,6 +56,7 @@ impl Config {
         serde_json::from_str(&buf).unwrap_or_default() //TODO async-json
     }
 
+    #[cfg(feature = "self-update")]
     pub(crate) async fn save(&self) -> Result<(), Error> {
         let cache_dir = rsl::cache_dir().ok_or(Error::MissingHomeDir)?; //TODO use config dir instead
         let config_path = cache_dir.join("config.json");
