@@ -1001,6 +1001,7 @@ enum UpdateCheckError {
     Io(Arc<io::Error>),
     #[cfg(unix)]
     MissingAsset,
+    #[cfg(windows)]
     MissingHomeDir,
     NoReleases,
     Reqwest(Arc<reqwest::Error>),
@@ -1020,6 +1021,7 @@ impl fmt::Display for UpdateCheckError {
             UpdateCheckError::Io(e) => write!(f, "I/O error: {}", e),
             #[cfg(unix)]
             UpdateCheckError::MissingAsset => write!(f, "release does not have a download for this platform"),
+            #[cfg(windows)]
             UpdateCheckError::MissingHomeDir => write!(f, "failed to locate home directory"),
             UpdateCheckError::NoReleases => write!(f, "there are no released versions"),
             UpdateCheckError::Reqwest(e) => if let Some(url) = e.url() {
@@ -1049,7 +1051,7 @@ async fn run_updater(#[cfg_attr(windows, allow(unused))] client: &reqwest::Clien
         let release = Repo::new("matthewkirby", "plando-random-settings").latest_release(&client).await?.ok_or(UpdateCheckError::NoReleases)?;
         let (asset,) = release.assets.into_iter()
             .filter(|asset| asset.name.ends_with(PLATFORM_SUFFIX))
-            .collect_tuple().ok_or(Error::MissingAsset)?;
+            .collect_tuple().ok_or(UpdateCheckError::MissingAsset)?;
         let response = client.get(asset.browser_download_url).send().await?.error_for_status()?;
         {
             let mut data = response.bytes_stream();
