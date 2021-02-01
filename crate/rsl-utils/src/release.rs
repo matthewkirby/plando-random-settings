@@ -31,13 +31,11 @@ use {
     },
     serde::Deserialize,
     tempfile::NamedTempFile,
-    crate::github::{
+    rsl::github::{
         Release,
         Repo,
     },
 };
-
-#[cfg(windows)] mod github;
 
 #[derive(Debug, From)]
 enum Error {
@@ -192,6 +190,8 @@ async fn setup(config: &Config, verbose: bool) -> Result<(reqwest::Client, Repo)
 
 #[cfg(windows)]
 async fn build_windows(client: &reqwest::Client, repo: &Repo, release: &Release, verbose: bool) -> Result<(), Error> {
+    eprintln!("building rsl-updater.exe");
+    Command::new("cargo").arg("build").arg("--release").arg("--target=x86_64-pc-windows-mvc").arg("--package=rsl-updater").check("cargo build --package=rsl-updater", verbose).await?;
     eprintln!("building rsl-win64.exe");
     Command::new("cargo").arg("build").arg("--release").arg("--package=rsl-gui").check("cargo build --package=rsl-gui", verbose).await?;
     eprintln!("uploading rsl-win64.exe");

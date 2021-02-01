@@ -9,11 +9,14 @@ use {
             BTreeMap,
             BTreeSet,
         },
+        convert::Infallible as Never,
+        env,
         fmt,
         io,
         path::PathBuf,
         sync::Arc,
     },
+    derive_more::From,
     enum_iterator::IntoEnumIterator,
     iced::{
         Application,
@@ -53,12 +56,25 @@ use {
     },
     itertools::Itertools as _,
     rfd::AsyncFileDialog,
+    semver::{
+        SemVerError,
+        Version,
+    },
     serde_json::{
         Value as Json,
         json,
     },
     smart_default::SmartDefault,
-    tokio::fs,
+    structopt::StructOpt,
+    tokio::{
+        fs::{
+            self,
+            File,
+        },
+        io::AsyncWriteExt,
+        time::sleep,
+    },
+    tokio_stream::StreamExt,
     rsl::{
         Conditional,
         Distribution,
@@ -69,28 +85,27 @@ use {
         PresetOptions,
         Weights,
         WeightsRule,
-    },
-    crate::file::{
-        FilePicker,
-        Kind as _,
-    },
-};
-#[cfg(windows)] use {
-    tokio::{
-        fs::File,
-        io::AsyncWriteExt,
-        time::sleep,
-    },
-    tokio_stream::StreamExt,
-    rsl::{
-        cache_dir,
         from_arc,
+        github::Repo,
+    },
+    crate::{
+        config::Config,
+        file::{
+            FilePicker,
+            Kind as _,
+        },
     },
 };
+#[cfg(unix)] use std::time::Duration;
+#[cfg(windows)] use rsl::cache_dir;
 
+mod config;
 mod file;
 
 ootr::uses!();
+
+#[cfg(target_os = "macos")]
+const PLATFORM_SUFFIX: &str = "-mac.app";
 
 #[derive(Debug, Clone)]
 enum Message {
@@ -112,10 +127,13 @@ enum Message {
     ChangeSettingValue(usize, Option<usize>, String, String),
     ChangeSettingWeight(usize, Option<usize>, String, String),
     DisabledLocations(SetViewMessage),
+    DismissUpdateError,
     GenError(GenError),
     Generate,
     #[cfg(windows)]
     InstallPython,
+    InstallUpdate,
+    LoadConfig(Config),
     LoadFile,
     LoadFileError(Arc<io::Error>),
     LoadWeights(Weights),
@@ -130,6 +148,7 @@ enum Message {
     SaveFile,
     SaveFileError(Arc<io::Error>),
     SeedDone,
+    SetAutoUpdateCheck(bool),
     SetBaseRom(PathBuf),
     SetHashIcon0(HashIcon),
     SetHashIcon1(HashIcon),
@@ -143,23 +162,59 @@ enum Message {
     ToggleRandomStartingItems(bool),
     ToggleRslTricks(bool),
     ToggleStandardTricks(bool),
-    UpdateCheckComplete(bool),
+    UpdateCheck,
+    UpdateCheckComplete(Option<Version>),
+    UpdateCheckError(UpdateCheckError),
 }
 
 #[derive(SmartDefault)]
 enum UpdateCheckState {
     #[default]
+    AskSetting {
+        yes_btn: button::State,
+        no_btn: button::State,
+    },
+    Unknown(button::State),
     Checking,
-    UpdateAvailable,
+    Error {
+        e: UpdateCheckError,
+        reset_btn: button::State,
+    },
+    UpdateAvailable {
+        new_ver: Version,
+        update_btn: button::State,
+    },
     NoUpdateAvailable,
+    Installing,
 }
 
-impl fmt::Display for UpdateCheckState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl UpdateCheckState {
+    fn view(&mut self) -> Element<'_, Message> {
         match self {
-            UpdateCheckState::Checking => write!(f, "checking for updates…"),
-            UpdateCheckState::UpdateAvailable => write!(f, "update available"),
-            UpdateCheckState::NoUpdateAvailable => write!(f, "up to date"),
+            UpdateCheckState::AskSetting { yes_btn, no_btn } => Row::new()
+                .push(Text::new("Check for updates on launch?"))
+                .push(Button::new(yes_btn, Text::new("Yes")).on_press(Message::SetAutoUpdateCheck(true)))
+                .push(Button::new(no_btn, Text::new("No")).on_press(Message::SetAutoUpdateCheck(false)))
+                .spacing(16)
+                .into(),
+            UpdateCheckState::Unknown(check_btn) => Row::new()
+                .push(Text::new(concat!("version ", env!("CARGO_PKG_VERSION"))))
+                .push(Button::new(check_btn, Text::new("Check for Updates")).on_press(Message::UpdateCheck))
+                .spacing(16)
+                .into(),
+            UpdateCheckState::Checking => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — checking for updates…")).into(),
+            UpdateCheckState::Error { e, reset_btn } => Row::new()
+                .push(Text::new(format!("error checking for updates: {}", e)))
+                .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::DismissUpdateError))
+                .spacing(16)
+                .into(),
+            UpdateCheckState::UpdateAvailable { new_ver, update_btn } => Row::new()
+                .push(Text::new(format!("{} is available — you have {}", new_ver, env!("CARGO_PKG_VERSION"))))
+                .push(Button::new(update_btn, Text::new("Update")).on_press(Message::InstallUpdate))
+                .spacing(16)
+                .into(),
+            UpdateCheckState::NoUpdateAvailable => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — up to date")).into(),
+            UpdateCheckState::Installing => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — Installing update…")).into(),
         }
     }
 }
@@ -584,39 +639,10 @@ impl GenState {
     }
 }
 
-#[cfg(windows)]
-#[derive(Debug, Clone)]
-enum PyInstallError {
-    InstallerExit,
-    Io(Arc<io::Error>),
-    MissingHomeDir,
-    Reqwest(Arc<reqwest::Error>),
-}
-
-#[cfg(windows)]
-from_arc! {
-    io::Error => PyInstallError, Io,
-    reqwest::Error => PyInstallError, Reqwest,
-}
-
-#[cfg(windows)]
-impl fmt::Display for PyInstallError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            PyInstallError::InstallerExit => write!(f, "the installer exited with an error status"),
-            PyInstallError::Io(e) => write!(f, "I/O error: {}", e),
-            PyInstallError::MissingHomeDir => write!(f, "failed to locate home directory"),
-            PyInstallError::Reqwest(e) => if let Some(url) = e.url() {
-                write!(f, "HTTP error at {}: {}", url, e)
-            } else {
-                write!(f, "HTTP error: {}", e)
-            },
-        }
-    }
-}
-
 #[derive(SmartDefault)]
 struct App {
+    #[default(reqwest::Client::builder().user_agent(concat!("rsl/", env!("CARGO_PKG_VERSION"))).build().expect("failed to create reqwest client"))]
+    client: reqwest::Client,
     update_check: UpdateCheckState,
     #[default(FilePicker::new(format!("Base ROM"), Message::ChangeBaseRom, Message::BrowseBaseRom))]
     base_rom: FilePicker<file::File, Message>,
@@ -638,7 +664,10 @@ impl Application for App {
     type Message = Message;
     type Flags = ();
 
-    fn new((): ()) -> (App, Command<Message>) { (App::default(), check_for_updates().into()) }
+    fn new((): ()) -> (App, Command<Message>) {
+        (App::default(), async { Message::LoadConfig(Config::new().await) }.into())
+    }
+
     fn title(&self) -> String { format!("Ocarina of Time Randomizer — Random Settings Generator") }
 
     fn update(&mut self, msg: Message) -> Command<Message> {
@@ -738,6 +767,7 @@ impl Application for App {
                 }
             },
             Message::DisabledLocations(msg) => self.weights.disabled_locations.update(&mut self.weights.data.disabled_locations, msg),
+            Message::DismissUpdateError => self.update_check = UpdateCheckState::Unknown(button::State::default()),
             Message::GenError(e) => self.gen = if let GenError::PyNotFound = e {
                 GenState::PyNotFound {
                     install_btn: button::State::default(),
@@ -751,6 +781,7 @@ impl Application for App {
             },
             Message::Generate => {
                 self.gen = GenState::Generating;
+                let client = self.client.clone();
                 let base_rom = self.base_rom.data.as_ref().expect("generate button should be disabled if no base rom is given").clone();
                 let output_dir = self.output_dir.data.as_ref().expect("generate button should be disabled if no output dir is given").clone();
                 let options = match self.tab {
@@ -761,7 +792,7 @@ impl Application for App {
                     Tab::Custom => GenOptions::Custom(self.weights.data.clone()),
                 };
                 return async move {
-                    match rsl::generate(base_rom, output_dir, options).await {
+                    match rsl::generate(&client, base_rom, output_dir, options).await {
                         Ok(()) => Message::SeedDone, //TODO button to open output dir
                         Err(e) => Message::GenError(e),
                     }
@@ -777,6 +808,24 @@ impl Application for App {
                     }
                 }.into()
             }
+            Message::InstallUpdate => {
+                self.update_check = UpdateCheckState::Installing;
+                let client = self.client.clone();
+                return async move {
+                    match run_updater(&client).await {
+                        Ok(never) => match never {},
+                        Err(e) => Message::UpdateCheckError(e),
+                    }
+                }.into()
+            }
+            Message::LoadConfig(Config { auto_update_check }) => match auto_update_check {
+                Some(true) => {
+                    self.update_check = UpdateCheckState::Checking;
+                    return async { Message::UpdateCheck }.into()
+                }
+                Some(false) => self.update_check = UpdateCheckState::Unknown(button::State::default()),
+                None => {}
+            },
             Message::LoadFile => {
                 let picker = AsyncFileDialog::new().pick_file(); //TODO picker options?
                 return async move {
@@ -844,6 +893,17 @@ impl Application for App {
             }
             Message::SaveFileError(e) => panic!("error saving file: {}", e), //TODO display error message without crashing
             Message::SeedDone => self.gen = GenState::default(),
+            Message::SetAutoUpdateCheck(enable) => {
+                self.update_check = if enable { UpdateCheckState::Checking } else { UpdateCheckState::Unknown(button::State::default()) };
+                return async move {
+                    let mut config = Config::new().await;
+                    config.auto_update_check = Some(enable);
+                    match config.save().await {
+                        Ok(()) => if enable { Message::UpdateCheck } else { Message::Nop },
+                        Err(e) => Message::UpdateCheckError(UpdateCheckError::Config(e)),
+                    }
+                }.into()
+            }
             Message::SetBaseRom(path) => self.base_rom.data = Some(path),
             Message::SetHashIcon0(icon) => self.weights.data.hash[0] = icon,
             Message::SetHashIcon1(icon) => self.weights.data.hash[1] = icon,
@@ -867,8 +927,25 @@ impl Application for App {
             },
             Message::ToggleRslTricks(checked) => self.options.rsl_tricks = checked,
             Message::ToggleStandardTricks(checked) => self.options.standard_tricks = checked,
-            Message::UpdateCheckComplete(true) => self.update_check = UpdateCheckState::UpdateAvailable,
-            Message::UpdateCheckComplete(false) => self.update_check = UpdateCheckState::NoUpdateAvailable,
+            Message::UpdateCheck => {
+                self.update_check = UpdateCheckState::Checking;
+                let client = self.client.clone();
+                return async move {
+                    match check_for_updates(&client).await {
+                        Ok(update_available) => Message::UpdateCheckComplete(update_available),
+                        Err(e) => Message::UpdateCheckError(e),
+                    }
+                }.into()
+            }
+            Message::UpdateCheckComplete(Some(new_ver)) => self.update_check = UpdateCheckState::UpdateAvailable {
+                new_ver,
+                update_btn: button::State::default(),
+            },
+            Message::UpdateCheckComplete(None) => self.update_check = UpdateCheckState::NoUpdateAvailable,
+            Message::UpdateCheckError(e) => self.update_check = UpdateCheckState::Error {
+                e,
+                reset_btn: button::State::default(),
+            },
         }
         Command::none()
     }
@@ -879,10 +956,13 @@ impl Application for App {
         } else if self.output_dir.data.is_none() {
             Some("output directory is required")
         } else {
+            //TODO if on custom tab, check to make sure:
+            // * for Custom weights: the sum of the weights is greater than 0
+            // * for Range weights: the range is non-empty (end >= start, since it's an inclusive range)
             None
         };
         Column::new()
-            .push(Text::new(format!("version {} — {}", env!("CARGO_PKG_VERSION"), self.update_check)))
+            .push(self.update_check.view())
             .push(self.base_rom.view())
             .push(self.output_dir.view())
             .push(self.tab.view())
@@ -915,8 +995,113 @@ impl Application for App {
     }
 }
 
-async fn check_for_updates() -> Message {
-    Message::UpdateCheckComplete(false) //TODO
+#[derive(Debug, Clone, From)]
+enum UpdateCheckError {
+    Config(config::Error),
+    Io(Arc<io::Error>),
+    #[cfg(unix)]
+    MissingAsset,
+    MissingHomeDir,
+    NoReleases,
+    Reqwest(Arc<reqwest::Error>),
+    #[from]
+    SemVer(SemVerError),
+}
+
+from_arc! {
+    io::Error => UpdateCheckError, Io,
+    reqwest::Error => UpdateCheckError, Reqwest,
+}
+
+impl fmt::Display for UpdateCheckError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            UpdateCheckError::Config(e) => write!(f, "error saving preferences: {}", e),
+            UpdateCheckError::Io(e) => write!(f, "I/O error: {}", e),
+            #[cfg(unix)]
+            UpdateCheckError::MissingAsset => write!(f, "release does not have a download for this platform"),
+            UpdateCheckError::MissingHomeDir => write!(f, "failed to locate home directory"),
+            UpdateCheckError::NoReleases => write!(f, "there are no released versions"),
+            UpdateCheckError::Reqwest(e) => if let Some(url) = e.url() {
+                write!(f, "HTTP error at {}: {}", url, e)
+            } else {
+                write!(f, "HTTP error: {}", e)
+            },
+            UpdateCheckError::SemVer(e) => e.fmt(f),
+        }
+    }
+}
+
+async fn check_for_updates(client: &reqwest::Client) -> Result<Option<Version>, UpdateCheckError> {
+    let repo = Repo::new("matthewkirby", "plando-random-settings");
+    if let Some(release) = repo.latest_release(client).await? {
+        let new_ver = release.version()?;
+        Ok(if new_ver > Version::parse(env!("CARGO_PKG_VERSION"))? { Some(new_ver) } else { None })
+    } else {
+        Err(UpdateCheckError::NoReleases)
+    }
+}
+
+async fn run_updater(#[cfg_attr(windows, allow(unused))] client: &reqwest::Client) -> Result<Never, UpdateCheckError> {
+    #[cfg(unix)] { //TODO use Sparkle or similar on macOS? The current code only replaces the executable, not the entire app
+        let current_exe = env::current_exe()?;
+        fs::remove_file(&current_exe).await?;
+        let release = Repo::new("matthewkirby", "plando-random-settings").latest_release(&client).await?.ok_or(UpdateCheckError::NoReleases)?;
+        let (asset,) = release.assets.into_iter()
+            .filter(|asset| asset.name.ends_with(PLATFORM_SUFFIX))
+            .collect_tuple().ok_or(Error::MissingAsset)?;
+        let response = client.get(asset.browser_download_url).send().await?.error_for_status()?;
+        {
+            let mut data = response.bytes_stream();
+            let mut exe_file = File::create(&current_exe).await?;
+            while let Some(chunk) = data.try_next().await? {
+                exe_file.write_all(chunk.as_ref()).await?;
+            }
+        }
+        sleep(Duration::from_secs(1)).await; // to make sure the download is closed
+        std::process::Command::new(current_exe).spawn()?;
+        std::process::exit(0)
+    }
+    #[cfg(windows)] {
+        let cache_dir = cache_dir().ok_or(UpdateCheckError::MissingHomeDir)?;
+        fs::create_dir_all(&cache_dir).await?;
+        let updater_path = cache_dir.join("updater.exe");
+        #[cfg(target_arch = "x86_64")] let updater_data = include_bytes!("../../../target/x86_64-pc-windows-msvc/release/rsl-updater.exe");
+        fs::write(&updater_path, updater_data).await?;
+        let _ = std::process::Command::new(updater_path).arg(env::current_exe()?).spawn()?;
+        std::process::exit(0)
+    }
+}
+
+#[cfg(windows)]
+#[derive(Debug, Clone)]
+enum PyInstallError {
+    InstallerExit,
+    Io(Arc<io::Error>),
+    MissingHomeDir,
+    Reqwest(Arc<reqwest::Error>),
+}
+
+#[cfg(windows)]
+from_arc! {
+    io::Error => PyInstallError, Io,
+    reqwest::Error => PyInstallError, Reqwest,
+}
+
+#[cfg(windows)]
+impl fmt::Display for PyInstallError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PyInstallError::InstallerExit => write!(f, "the installer exited with an error status"),
+            PyInstallError::Io(e) => write!(f, "I/O error: {}", e),
+            PyInstallError::MissingHomeDir => write!(f, "failed to locate home directory"),
+            PyInstallError::Reqwest(e) => if let Some(url) = e.url() {
+                write!(f, "HTTP error at {}: {}", url, e)
+            } else {
+                write!(f, "HTTP error: {}", e)
+            },
+        }
+    }
 }
 
 #[cfg(windows)]
@@ -940,7 +1125,11 @@ async fn install_python() -> Result<(), PyInstallError> {
     Ok(())
 }
 
-fn main() -> iced::Result {
+#[derive(StructOpt)]
+struct Args {}
+
+#[wheel::main]
+fn main(Args {}: Args) -> iced::Result {
     let size = (602, 396);
     App::run(Settings {
         window: window::Settings {

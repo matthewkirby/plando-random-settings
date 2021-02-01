@@ -1,10 +1,12 @@
 #!/bin/zsh
 
 verbose=
+quiet_verbose=--quiet
 for arg in "$@"; do
     case "$arg" in
         --verbose)
             verbose=--verbose
+            quiet_verbose=--verbose
             ;;
         *)
             ;;
@@ -33,8 +35,8 @@ function unlock {
 }
 
 lock
-rustup $verbose update stable || exit $?
+rustup $quiet_verbose update stable || exit $?
 unlock
 
-git $verbose pull --ff-only || exit $?
-cargo $verbose run --release --package=rsl-utils --bin=rsl-release -- $verbose || exit $?
+git $quiet_verbose pull --ff-only || exit $?
+cargo $quiet_verbose run --release --package=rsl-utils --bin=rsl-release -- $verbose || exit $?

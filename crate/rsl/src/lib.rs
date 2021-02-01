@@ -61,6 +61,8 @@ use {
     },
 };
 
+pub mod github;
+
 ootr::uses!();
 
 pub const NUM_RANDO_RANDO_TRIES: u8 = 20;
@@ -483,7 +485,7 @@ pub fn cache_dir() -> Option<PathBuf> {
     Some(project_dirs.cache_dir().to_owned())
 }
 
-pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> {
+pub async fn generate(client: &reqwest::Client, base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> {
     let cache_dir = cache_dir().ok_or(GenError::MissingHomeDir)?;
     let distribution_path = cache_dir.join("plando.json");
     // ensure the correct randomizer version is installed
@@ -497,9 +499,6 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
                 tokio::fs::remove_dir_all(&rando_path).await?;
             }
         } else {
-            let client = reqwest::Client::builder()
-                .user_agent(concat!("ootr.fenhl.net/", env!("CARGO_PKG_VERSION")))
-                .build()?;
             let remote_version_string = client.get("https://ootr.fenhl.net/dev-r-version.py") // since GitHub's GraphQL API requires an OAuth token for all requests, even public data, this is a simple proxy for the contents of https://github.com/Roman971/OoT-Randomizer/blob/Dev-R/version.py
                 .send().await?
                 .text().await?;
@@ -518,7 +517,8 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
     }
     // write base rando settings to a file to be used as parameter later
     let weights = Weights::from(options);
-    let buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir, weights.world_count))?; //TODO async-json
+    let mut buf = serde_json::to_vec_pretty(&RandoSettings::new(base_rom, &distribution_path, output_dir, weights.world_count))?; //TODO async-json
+    buf.push(b'\n');
     let settings_path = cache_dir.join("settings.json");
     File::create(&settings_path).await?.write_all(&buf).await?;
     // generate seed
@@ -530,7 +530,8 @@ pub async fn generate(base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBu
         Err(e) => return Err(if e.kind() == io::ErrorKind::NotFound { GenError::PyNotFound } else { e.into() }),
     }
     for _ in 0..NUM_RANDO_RANDO_TRIES {
-        let buf = serde_json::to_vec_pretty(&weights.gen(&mut thread_rng())?)?; //TODO async-json
+        let mut buf = serde_json::to_vec_pretty(&weights.gen(&mut thread_rng())?)?; //TODO async-Json
+        buf.push(b'\n');
         File::create(&distribution_path).await?.write_all(&buf).await?;
         for _ in 0..NUM_TRIES_PER_SETTINGS {
             if tokio::process::Command::new(python).arg("OoTRandomizer.py").arg("--settings").arg(&settings_path).current_dir(&rando_path).status().await?.success() { return Ok(()) }

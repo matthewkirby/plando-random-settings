@@ -68,7 +68,7 @@ You will need a 64-bit Windows PC and a Mac.
     1. [Create a GitHub personal access token](https://github.com/settings/tokens/new) with the public_repo scope.
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Clone this repo.
-    3. In the repo clone, create a [JSON](https://json.org/) file at `assets/release-config.json` with the following entries:
+    3. In the repo clone, create a [JSON](https://json.org/) file at `assets\release-config.json` with the following entries:
         * `"githubToken"`: The personal access token from step 1
         * `"macHostname"`: A hostname or IP address at which your Mac is reachable via SSH (and if necessary the username, in `"username@hostname"` form)
         * `"macRepoPath"`: The path to the clone of this repo on your Mac

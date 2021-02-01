@@ -1,5 +1,5 @@
 [package]
-name = "rsl-gui"
+name = "rsl-updater"
 version = "6.0.13"
 authors = [
     "Matthew Kirby <xoparr@gmail.com>",
@@ -10,30 +10,13 @@ license = "MIT"
 readme = "../../README.md"
 
 [dependencies]
-futures = "0.3"
 itertools = "0.10"
-rfd = "0.1"
-semver = "0.11"
-serde_json = "1"
-smart-default = "0.6"
 tokio-stream = "0.1"
 
 [dependencies.derive_more]
 version = "0.99"
 default-features = false
 features = ["from"]
-
-[dependencies.enum-iterator]
-git = "https://github.com/dasgefolge/enum-iterator"
-branch = "fields" #TODO finish this PR
-
-[dependencies.iced]
-git = "https://github.com/hecrj/iced" #TODO go back to the version on crates.io once it's compatible with tokio 1
-rev = "8d882d787e6b7fd7c2435f42f82933e2ed904edf"
-features = ["tokio"]
-
-[dependencies.ootr]
-path = "../ootr"
 
 [dependencies.reqwest]
 version = "0.11"
@@ -43,17 +26,13 @@ features = ["rustls-tls", "stream"]
 [dependencies.rsl]
 path = "../rsl"
 
-[dependencies.serde]
-version = "1"
-features = ["derive"]
-
 [dependencies.structopt]
 version = "0.3"
 features = ["paw"]
 
 [dependencies.tokio]
 version = "1"
-features = ["fs", "process", "time"]
+features = ["fs", "time"]
 
 [dependencies.wheel]
 git = "https://github.com/fenhl/wheel"

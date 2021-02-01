@@ -2953,6 +2953,7 @@ dependencies = [
  "smart-default",
  "structopt",
  "tokio",
+ "url",
  "zip",
 ]
 
@@ -2962,6 +2963,7 @@ version = "6.0.13"
 dependencies = [
  "derive_more",
  "ootr",
+ "reqwest",
  "rsl",
  "serde_json",
  "structopt",
@@ -2972,6 +2974,7 @@ dependencies = [
 name = "rsl-gui"
 version = "6.0.13"
 dependencies = [
+ "derive_more",
  "enum-iterator",
  "futures",
  "iced",
@@ -2980,10 +2983,28 @@ dependencies = [
  "reqwest",
  "rfd",
  "rsl",
+ "semver 0.11.0",
+ "serde",
  "serde_json",
  "smart-default",
+ "structopt",
  "tokio",
  "tokio-stream",
+ "wheel",
+]
+
+[[package]]
+name = "rsl-updater"
+version = "6.0.13"
+dependencies = [
+ "derive_more",
+ "itertools 0.10.0",
+ "reqwest",
+ "rsl",
+ "structopt",
+ "tokio",
+ "tokio-stream",
+ "wheel",
 ]
 
 [[package]]
@@ -3745,6 +3766,7 @@ dependencies = [
  "idna",
  "matches",
  "percent-encoding",
+ "serde",
 ]
 
 [[package]]

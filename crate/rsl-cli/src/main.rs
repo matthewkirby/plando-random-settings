@@ -44,6 +44,7 @@ enum Error {
     Io(io::Error),
     Json(serde_json::Error),
     PresetAndWeights,
+    Reqwest(reqwest::Error),
     WorldCount,
 }
 
@@ -54,6 +55,11 @@ impl fmt::Display for Error {
             Error::Io(e) => write!(f, "I/O error: {}", e),
             Error::Json(e) => write!(f, "JSON error: {}", e),
             Error::PresetAndWeights => write!(f, "the `--preset` and `--weights` options are mutually exclusive"),
+            Error::Reqwest(e) => if let Some(url) = e.url() {
+                write!(f, "HTTP error at {}: {}", url, e)
+            } else {
+                write!(f, "HTTP error: {}", e)
+            },
             Error::WorldCount => write!(f, "`--world-count` must be at least 1 and at most 255"),
         }
     }
@@ -61,6 +67,9 @@ impl fmt::Display for Error {
 
 #[wheel::main]
 async fn main(args: Args) -> Result<(), Error> {
+    let client = reqwest::Client::builder()
+        .user_agent(concat!("rsl/", env!("CARGO_PKG_VERSION")))
+        .build()?;
     let options = match (args.preset, args.weights) {
         (Some(_), Some(_)) => return Err(Error::PresetAndWeights),
         (Some(preset), None) => GenOptions::Preset {
@@ -75,6 +84,6 @@ async fn main(args: Args) -> Result<(), Error> {
         (None, Some(weights_path)) => GenOptions::Custom(serde_json::from_reader(File::open(weights_path)?)?),
         (None, None) => GenOptions::League,
     };
-    rsl::generate(args.base_rom, args.output_dir, options).await?;
+    rsl::generate(&client, args.base_rom, args.output_dir, options).await?;
     Ok(())
 }
