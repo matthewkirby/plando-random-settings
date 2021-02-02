@@ -60,15 +60,7 @@ use {
     },
     smart_default::SmartDefault,
     structopt::StructOpt,
-    tokio::{
-        fs::{
-            self,
-            File,
-        },
-        io::AsyncWriteExt,
-        time::sleep,
-    },
-    tokio_stream::StreamExt,
+    tokio::fs,
     rsl::{
         Conditional,
         Distribution,
@@ -79,7 +71,6 @@ use {
         PresetOptions,
         Weights,
         WeightsRule,
-        from_arc,
     },
     crate::{
         config::Config,
@@ -89,6 +80,7 @@ use {
         },
     },
 };
+#[cfg(not(any(feature = "self-update", windows)))] use tokio_stream as _;
 #[cfg(feature = "self-update")] use {
     std::convert::Infallible as Never,
     derive_more::From,
@@ -99,7 +91,16 @@ use {
     rsl::github::Repo,
 };
 #[cfg(windows)] use rsl::cache_dir;
-#[cfg(any(all(unix, feature = "self-update"), windows))] use std::time::Duration;
+#[cfg(any(feature = "self-update", windows))] use {
+    std::time::Duration,
+    tokio::{
+        fs::File,
+        io::AsyncWriteExt as _,
+        time::sleep,
+    },
+    tokio_stream::StreamExt as _,
+    rsl::from_arc,
+};
 
 mod config;
 mod file;
