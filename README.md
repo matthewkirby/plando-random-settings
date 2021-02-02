@@ -24,11 +24,11 @@ When opening the app, you will see the following from top to bottom:
     * **Custom:** Allows you to fully customize the weights.
 5. For League weights, there are no further options, to avoid accidental misconfigurations. For other presets, you can now optionally remove tricks from logic and/or turn off the possibility of starting with random items. For custom weights, configure them to your liking. You can also export them to a file, or import weights from a file (see [the next section](#weights-files) for details on these files).
 6. For Multiworld weights, select the number of players (also called the world count) using the slider or text box.
-7. Click “Generate Seed”. This can occasionally take a while, since it makes 60 attempts at generating a seed (20 distributions, each tried 3 times). Once done, the output directory will contain the patch file that you can send to the players (or apply the patch for yourself with [the randomizer](https://ootrandomizer.com/generator) by selecting “Generate From Patch File”), as well as the spoiler log and a copy of the settings distributions (which is also considered a spoiler in the Random Settings League).
+7. Click “Generate Seed”. This can occasionally take a while, since it makes up to 60 attempts at generating a seed of the randomizer crashes (20 distributions, each tried 3 times). Once done, the output directory will contain the patch file that you can send to the players (or apply the patch for yourself with [the randomizer](https://ootrandomizer.com/generator) by selecting “Generate From Patch File”), as well as the spoiler log and a copy of the settings distributions (which is also considered a spoiler in the Random Settings League).
 
 ## Weights files
 
-A weights file is a configuration file for the app. See [the league weights file](https://github.com/matthewkirby/plando-random-settings/blob/master/assets/weights/rsl.json) for an example. It is a [JSON](https://json.org/) object with the following entries:
+A weights file is a configuration file for the app. See [the league weights file](https://github.com/matthewkirby/plando-random-settings/blob/master/assets/weights/rsl.json) for an example. You can also generate them using the Save File button in the Custom tab. Here's a detailed file format spec: It is a [JSON](https://json.org/) object with the following entries:
 
 * `"hash"`: An array of two strings representing the hash icon prefix. The accepted names are the same as those in spoiler logs.
 * `"worldCount"`: For multiworld, the number of worlds to generate. Defaults to `1`.
@@ -83,6 +83,7 @@ You will need a 64-bit Windows PC and a Mac.
     * `crate/rsl/Cargo.toml`
     * `crate/rsl-cli/Cargo.toml`
     * `crate/rsl-gui/Cargo.toml`
+    * `crate/rsl-updater/Cargo.toml`
     * `crate/rsl-utils/Cargo.toml`
 3. Push the changes
 4. On macOS:
