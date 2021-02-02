@@ -5,8 +5,15 @@ use {
     std::{
         fmt,
         fs::File,
-        io,
-        path::PathBuf,
+        io::{
+            self,
+            Read,
+            stdin,
+        },
+        path::{
+            Path,
+            PathBuf,
+        },
     },
     derive_more::From,
     structopt::StructOpt,
@@ -22,18 +29,26 @@ ootr::uses!();
 
 #[derive(StructOpt)]
 struct Args {
+    /// The path to the base OoT rom
     base_rom: PathBuf,
+    /// The path where the patch file and spoiler log will be saved
     output_dir: PathBuf,
+    /// A preset from which to generate the seed: `solo`, `co-op`, or `multiworld`. If not specified, a league seed will be generated.
     #[structopt(short, long)]
     preset: Option<Preset>,
+    /// A custom weights JSON file from which to generate the seed
     #[structopt(short, long)]
     weights: Option<PathBuf>,
+    /// When using a preset, logically disable Standard tricks. No effect on league or custom weights.
     #[structopt(long)]
     no_standard_tricks: bool,
+    /// When using a preset, logically disable RSL tricks. No effect on league or custom weights.
     #[structopt(long)]
     no_rsl_tricks: bool,
+    /// When using a preset, don't add random starting items. No effect on league or custom weights.
     #[structopt(long)]
     no_random_starting_items: bool,
+    /// When using the `multiworld` preset, the number of worlds (players)
     #[structopt(short = "n", long, default_value = "1")]
     world_count: u8,
 }
@@ -81,7 +96,14 @@ async fn main(args: Args) -> Result<(), Error> {
                 world_count: if (1..=MAX_WORLDS).contains(&args.world_count) { args.world_count } else { return Err(Error::WorldCount) },
             },
         },
-        (None, Some(weights_path)) => GenOptions::Custom(serde_json::from_reader(File::open(weights_path)?)?),
+        (None, Some(weights_path)) => {
+            let file = if weights_path == Path::new("-") {
+                Box::new(stdin()) as Box<dyn Read>
+            } else {
+                Box::new(File::open(weights_path)?)
+            };
+            GenOptions::Custom(serde_json::from_reader(file)?)
+        }
         (None, None) => GenOptions::League,
     };
     rsl::generate(&client, args.base_rom, args.output_dir, options).await?;
