@@ -243,9 +243,9 @@ impl Weights {
             settings.insert(format!("starting_songs"), Weights::draw_choices_from_pool(rng, SONGS));
             settings.insert(format!("starting_equipment"), Weights::draw_choices_from_pool(rng, EQUIPMENT));
         }
-        settings.entry(format!("starting_items")).or_default().as_array_mut().expect("starting_items setting was not an array").extend(self.starting_items.iter().map(|item| json!(item)));
-        settings.entry(format!("starting_songs")).or_default().as_array_mut().expect("starting_songs setting was not an array").extend(self.starting_songs.iter().map(|item| json!(item)));
-        settings.entry(format!("starting_equipment")).or_default().as_array_mut().expect("starting_equipment setting was not an array").extend(self.starting_equipment.iter().map(|item| json!(item)));
+        settings.entry(format!("starting_items")).or_insert_with(|| json!([])).as_array_mut().expect("starting_items setting was not an array").extend(self.starting_items.iter().map(|item| json!(item)));
+        settings.entry(format!("starting_songs")).or_insert_with(|| json!([])).as_array_mut().expect("starting_songs setting was not an array").extend(self.starting_songs.iter().map(|item| json!(item)));
+        settings.entry(format!("starting_equipment")).or_insert_with(|| json!([])).as_array_mut().expect("starting_equipment setting was not an array").extend(self.starting_equipment.iter().map(|item| json!(item)));
         for rule in &self.weights {
             match rule {
                 WeightsRule::Custom { setting, conditionals, values: default } => {
