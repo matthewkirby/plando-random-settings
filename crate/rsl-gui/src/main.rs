@@ -789,7 +789,7 @@ impl Application for App {
                 }.into()
             }
             Message::BrowseOutputDir => {
-                let picker = file::Save::pick();
+                let picker = file::Folder::pick();
                 return async move {
                     if let Some(data) = picker.await {
                         Message::SetOutputDir(data)
