@@ -2327,7 +2327,7 @@ checksum = "13bd41f508810a131401606d54ac32a467c97172d74ba7662562ebba5ad07fa0"
 
 [[package]]
 name = "ootr"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "directories",
  "proc-macro2",
@@ -2914,7 +2914,7 @@ dependencies = [
 
 [[package]]
 name = "rsl"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "derive_more",
  "directories",
@@ -2936,7 +2936,7 @@ dependencies = [
 
 [[package]]
 name = "rsl-cli"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "derive_more",
  "ootr",
@@ -2949,7 +2949,7 @@ dependencies = [
 
 [[package]]
 name = "rsl-gui"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "derive_more",
  "enum-iterator",
@@ -2972,7 +2972,7 @@ dependencies = [
 
 [[package]]
 name = "rsl-updater"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "derive_more",
  "itertools 0.10.0",
@@ -2986,7 +2986,7 @@ dependencies = [
 
 [[package]]
 name = "rsl-utils"
-version = "6.0.13"
+version = "2.0.0"
 dependencies = [
  "async-trait",
  "derive_more",
