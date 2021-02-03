@@ -23,6 +23,7 @@ use {
         Element,
         Length,
         Settings,
+        VerticalAlignment,
         widget::{
             Checkbox,
             Column,
@@ -210,29 +211,29 @@ impl UpdateCheckState {
     fn view(&mut self) -> Element<'_, Message> {
         match self {
             UpdateCheckState::AskSetting { yes_btn, no_btn } => Row::new()
-                .push(Text::new("Check for updates on launch?"))
+                .push(Text::new("Check for updates on launch?").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(yes_btn, Text::new("Yes")).on_press(Message::SetAutoUpdateCheck(true)))
                 .push(Button::new(no_btn, Text::new("No")).on_press(Message::SetAutoUpdateCheck(false)))
                 .spacing(16)
                 .into(),
             UpdateCheckState::Unknown(check_btn) => Row::new()
-                .push(Text::new(concat!("version ", env!("CARGO_PKG_VERSION"))))
+                .push(Text::new(concat!("version ", env!("CARGO_PKG_VERSION"))).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(check_btn, Text::new("Check for Updates")).on_press(Message::UpdateCheck))
                 .spacing(16)
                 .into(),
-            UpdateCheckState::Checking => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — checking for updates…")).into(),
+            UpdateCheckState::Checking => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — checking for updates…")).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center).into(),
             UpdateCheckState::Error { e, reset_btn } => Row::new()
-                .push(Text::new(format!("error checking for updates: {}", e)))
+                .push(Text::new(format!("error checking for updates: {}", e)).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::DismissUpdateError))
                 .spacing(16)
                 .into(),
             UpdateCheckState::UpdateAvailable { new_ver, update_btn } => Row::new()
-                .push(Text::new(format!("{} is available — you have {}", new_ver, env!("CARGO_PKG_VERSION"))))
+                .push(Text::new(format!("{} is available — you have {}", new_ver, env!("CARGO_PKG_VERSION"))).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(update_btn, Text::new("Update")).on_press(Message::InstallUpdate))
                 .spacing(16)
                 .into(),
-            UpdateCheckState::NoUpdateAvailable => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — up to date")).into(),
-            UpdateCheckState::Installing => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — Installing update…")).into(),
+            UpdateCheckState::NoUpdateAvailable => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — up to date")).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center).into(),
+            UpdateCheckState::Installing => Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — Installing update…")).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center).into(),
         }
     }
 }
@@ -315,15 +316,15 @@ impl WeightsState {
             )
             .push(Rule::horizontal(16))
             .push(Row::new()
-                .push(Text::new("Hash Prefix:"))
+                .push(Text::new("Hash Prefix:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(PickList::new(&mut self.hash_icon0, HashIcon::into_enum_iter().collect_vec(), Some(self.data.hash[0]), Message::SetHashIcon0))
                 .push(PickList::new(&mut self.hash_icon1, HashIcon::into_enum_iter().collect_vec(), Some(self.data.hash[1]), Message::SetHashIcon1))
                 .spacing(16)
             )
             .push(Rule::horizontal(16))
             .push(Row::new()
-                .push(Text::new("Player Count:"))
-                .push(Slider::new(worlds_slider, 1..=MAX_WORLDS, self.data.world_count, Message::SetWorldCount))
+                .push(Text::new("Player Count:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                .push(Slider::new(worlds_slider, 1..=MAX_WORLDS, self.data.world_count, Message::SetWorldCount).height(30))
                 .push(TextInput::new(worlds_text, "", &self.data.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
                 .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                 .spacing(16)
@@ -393,12 +394,12 @@ impl SetView {
         Column::new()
             .push(Rule::horizontal(16))
             .push(Row::new()
-                .push(Text::new(self.label))
-                .push(Text::new(if data.is_empty() { "(none)" } else { "" }))
+                .push(Text::new(self.label).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                .push(Text::new(if data.is_empty() { "(none)" } else { "" }).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .spacing(16)
             )
             .push(Column::with_children(data.iter().zip(&mut self.remove_btns).map(|(elt, btn)| Row::new()
-                .push(Text::new(elt.clone())) //TODO remove this clone
+                .push(Text::new(elt.clone()).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center)) //TODO remove this clone
                 .push(Button::new(btn, Text::new('-')).on_press(msg(SetViewMessage::Remove(elt.clone())))) //TODO remove this clone
                 .spacing(16)
                 .into()
@@ -488,14 +489,14 @@ impl WeightsRuleState {
                 let mut col = col;
                 for (cond_idx, (Conditional { setting, conditions, values }, (setting_state, remove_btn, add_cond_btn, cond_states, add_val_btn, val_states))) in conditionals.iter().zip(&mut self.conditionals).enumerate() {
                     col = col.push(Row::new()
-                        .push(Text::new("If the setting:"))
+                        .push(Text::new("If the setting:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                         .push(TextInput::new(setting_state, "Setting", setting, move |new_val| Message::ChangeConditionalSetting(idx, cond_idx, new_val)).padding(5).style(TextInputStyle))
                         .push(Button::new(remove_btn, Text::new('-')).on_press(Message::RemoveConditional(idx, cond_idx)))
                         .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                         .spacing(16)
                     );
                     col = col.push(Row::new()
-                        .push(Text::new("Has one of these values:"))
+                        .push(Text::new("Has one of these values:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                         .push(Button::new(add_cond_btn, Text::new("Add Value")).on_press(Message::AddCondition(idx, cond_idx)))
                         .spacing(16)
                     );
@@ -513,7 +514,7 @@ impl WeightsRuleState {
                         );
                     }
                     col = col.push(Row::new()
-                        .push(Text::new("Use these weights:"))
+                        .push(Text::new("Use these weights:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                         .push(Button::new(add_val_btn, Text::new("Add Value")).on_press(Message::AddSettingValue(idx, Some(cond_idx))))
                         .spacing(16)
                     );
@@ -525,10 +526,10 @@ impl WeightsRuleState {
                         let val_clone3 = value.clone();
                         col = col.push(Row::new()
                             .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, Some(cond_idx), val_clone1.clone(), new_val)).padding(5).style(TextInputStyle))
-                            .push(Text::new(':'))
+                            .push(Text::new(':').height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                             .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, Some(cond_idx), val_clone2.clone(), new_val)).padding(5).style(TextInputStyle))
-                            .push(Text::new('/'))
-                            .push(Text::new(&total))
+                            .push(Text::new('/').height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                            .push(Text::new(&total).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                             .push(Button::new(del_btn_state, Text::new('-')).on_press(Message::RemoveSettingValue(idx, Some(cond_idx), val_clone3)))
                             .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                             .spacing(16)
@@ -536,7 +537,7 @@ impl WeightsRuleState {
                     }
                 }
                 if !conditionals.is_empty() {
-                    col = col.push(Text::new("Otherwise, use these weights:"));
+                    col = col.push(Text::new("Otherwise, use these weights:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center));
                 }
                 let total = values.values().sum::<u64>().to_string();
                 for ((value, weight), (value_state, weight_state, del_btn_state)) in values.iter().zip(&mut self.values) {
@@ -546,10 +547,10 @@ impl WeightsRuleState {
                     let val_clone3 = value.clone();
                     col = col.push(Row::new()
                         .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, None, val_clone1.clone(), new_val)).padding(5).style(TextInputStyle))
-                        .push(Text::new(':'))
+                        .push(Text::new(':').height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                         .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, None, val_clone2.clone(), new_val)).padding(5).style(TextInputStyle))
-                        .push(Text::new('/'))
-                        .push(Text::new(&total))
+                        .push(Text::new('/').height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                        .push(Text::new(&total).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                         .push(Button::new(del_btn_state, Text::new('-')).on_press(Message::RemoveSettingValue(idx, None, val_clone3)))
                         .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                         .spacing(16)
@@ -563,9 +564,9 @@ impl WeightsRuleState {
             }
             WeightsRule::Range { min, max, .. } => {
                 col.push(Row::new()
-                    .push(Text::new("Range:"))
+                    .push(Text::new("Range:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                     .push(TextInput::new(&mut self.min, "min", &min.to_string(), move |new_val| Message::ChangeRangeMin(idx, new_val)).padding(5).style(TextInputStyle))
-                    .push(Text::new('–'))
+                    .push(Text::new('–').height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                     .push(TextInput::new(&mut self.max, "max", &max.to_string(), move |new_val| Message::ChangeRangeMax(idx, new_val)).padding(5).style(TextInputStyle))
                     .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                     .spacing(16)
@@ -635,21 +636,21 @@ impl GenState {
             GenState::Idle(gen_btn) => if let Some(disabled_reason) = disabled_reason {
                 Row::new()
                     .push(Button::new(gen_btn, Text::new("Generate Seed")))
-                    .push(Text::new(format!("({})", disabled_reason)))
+                    .push(Text::new(format!("({})", disabled_reason)).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                     .spacing(16)
                     .into()
             } else {
                 Button::new(gen_btn, Text::new("Generate Seed")).on_press(Message::Generate).into()
             },
-            GenState::Generating => Text::new("Generating…").into(),
+            GenState::Generating => Text::new("Generating…").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center).into(),
             GenState::Error { e, reset_btn } => Row::new()
-                .push(Text::new(format!("error generating seed: {}", e)))
+                .push(Text::new(format!("error generating seed: {}", e)).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone))
                 .spacing(16)
                 .into(),
             #[cfg_attr(not(windows), allow(unused))]
             GenState::PyNotFound { install_btn, reset_btn } => {
-                let mut row = Row::new().push(Text::new("Python not found"));
+                let mut row = Row::new().push(Text::new("Python not found").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center));
                 #[cfg(windows)] {
                     row = row.push(Button::new(install_btn, Text::new("Install")).on_press(Message::InstallPython));
                 }
@@ -657,10 +658,10 @@ impl GenState {
                 row.spacing(16).into()
             }
             #[cfg(windows)]
-            GenState::InstallingPython => Text::new("Installing Python…").into(),
+            GenState::InstallingPython => Text::new("Installing Python…").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center).into(),
             #[cfg(windows)]
             GenState::PyInstallError { e, reset_btn } => Row::new()
-                .push(Text::new(format!("error installing Python: {}", e)))
+                .push(Text::new(format!("error installing Python: {}", e)).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
                 .push(Button::new(reset_btn, Text::new("Dismiss")).on_press(Message::SeedDone))
                 .spacing(16)
                 .into(),
@@ -1051,7 +1052,7 @@ impl Application for App {
         Column::new()
             .push({
                 #[cfg(feature = "self-update")] { self.update_check.view() }
-                #[cfg(not(feature = "self-update"))] { Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — built from source")) }
+                #[cfg(not(feature = "self-update"))] { Text::new(concat!("version ", env!("CARGO_PKG_VERSION"), " — built from source")).height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center) }
             })
             .push(self.base_rom.view())
             .push(self.output_dir.view())
@@ -1070,8 +1071,8 @@ impl Application for App {
                         .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems));
                     if let Tab::Multiworld = self.tab {
                         col.push(Row::new()
-                            .push(Text::new("Player Count:"))
-                            .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.options.world_count, Message::SetWorldCount))
+                            .push(Text::new("Player Count:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                            .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.options.world_count, Message::SetWorldCount).height(30))
                             .push(TextInput::new(&mut self.worlds_text, "", &self.options.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
                             .spacing(16)
                         )
@@ -1230,7 +1231,7 @@ struct Args {}
 
 #[wheel::main]
 fn main(Args {}: Args) -> iced::Result {
-    let size = (604, 420);
+    let size = (604, 430);
     App::run(Settings {
         window: window::Settings {
             size,
