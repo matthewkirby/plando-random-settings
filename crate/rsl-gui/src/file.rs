@@ -154,7 +154,7 @@ impl<K: Kind, M: Clone + 'static> FilePicker<K, M> {
 
     pub(crate) fn view(&mut self) -> Element<'_, M> {
         Row::new()
-            .push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change))
+            .push(TextInput::new(&mut self.text_state, &self.placeholder, &K::format(&self.data), self.on_text_change).padding(5).style(crate::TextInputStyle))
             .push(Button::new(&mut self.browse_btn, Text::new("Browse…")).on_press(self.browse_msg.clone()))
             .spacing(16)
             .into()

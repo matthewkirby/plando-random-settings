@@ -18,6 +18,7 @@ use {
     enum_iterator::IntoEnumIterator,
     iced::{
         Application,
+        Color,
         Command,
         Element,
         Length,
@@ -28,10 +29,15 @@ use {
             Radio,
             Row,
             Rule,
+            Space,
             Text,
             button::{
                 self,
                 Button,
+            },
+            container::{
+                self,
+                Container,
             },
             pick_list::{
                 self,
@@ -307,20 +313,24 @@ impl WeightsState {
                 .push(Button::new(&mut self.save_file_btn, Text::new("Save File")).on_press(Message::SaveFile))
                 .spacing(16)
             )
+            .push(Rule::horizontal(16))
             .push(Row::new()
                 .push(Text::new("Hash Prefix:"))
                 .push(PickList::new(&mut self.hash_icon0, HashIcon::into_enum_iter().collect_vec(), Some(self.data.hash[0]), Message::SetHashIcon0))
                 .push(PickList::new(&mut self.hash_icon1, HashIcon::into_enum_iter().collect_vec(), Some(self.data.hash[1]), Message::SetHashIcon1))
                 .spacing(16)
             )
+            .push(Rule::horizontal(16))
             .push(Row::new()
                 .push(Text::new("Player Count:"))
                 .push(Slider::new(worlds_slider, 1..=MAX_WORLDS, self.data.world_count, Message::SetWorldCount))
-                .push(TextInput::new(worlds_text, "", &self.data.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)))
+                .push(TextInput::new(worlds_text, "", &self.data.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
+                .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                 .spacing(16)
             )
             .push(self.disabled_locations.view(&self.data.disabled_locations))
             .push(self.allowed_tricks.view(&self.data.allowed_tricks))
+            .push(Rule::horizontal(16))
             .push(Checkbox::new(self.data.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems))
             .push(self.starting_items.view(&self.data.starting_items))
             .push(self.starting_songs.view(&self.data.starting_songs))
@@ -331,7 +341,6 @@ impl WeightsState {
         col
             .push(Rule::horizontal(16))
             .push(Button::new(&mut self.add_btn, Text::new("Add Setting")).on_press(Message::AddSetting))
-            .spacing(16).height(Length::Fill)
     }
 }
 
@@ -382,6 +391,7 @@ impl SetView {
         let available = self.all.iter().filter(|&&elt| !data.contains(elt)).copied().collect_vec();
         let msg = self.message;
         Column::new()
+            .push(Rule::horizontal(16))
             .push(Row::new()
                 .push(Text::new(self.label))
                 .push(Text::new(if data.is_empty() { "(none)" } else { "" }))
@@ -396,6 +406,7 @@ impl SetView {
             .push(Row::new()
                 .push(PickList::new(&mut self.pick, available, self.new_item, move |elt| msg(SetViewMessage::Pick(elt))).width(Length::Fill))
                 .push(Button::new(&mut self.add_btn, Text::new('+')).on_press(msg(SetViewMessage::Add)).width(Length::Units(21)))
+                .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                 .spacing(16)
             )
             .spacing(16)
@@ -467,8 +478,9 @@ impl WeightsRuleState {
         let col = Column::new()
             .push(Rule::horizontal(16))
             .push(Row::new()
-                .push(TextInput::new(&mut self.setting, "Setting", rule.setting(), move |new_val| Message::ChangeSettingName(idx, new_val)))
+                .push(TextInput::new(&mut self.setting, "Setting", rule.setting(), move |new_val| Message::ChangeSettingName(idx, new_val)).padding(5).style(TextInputStyle))
                 .push(PickList::new(&mut self.kind, WeightsRuleKind::into_enum_iter().collect::<Vec<_>>(), Some(rule.into()), move |new_val| Message::ChangeSettingKind(idx, new_val)))
+                .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                 .spacing(16)
             );
         match rule {
@@ -477,8 +489,9 @@ impl WeightsRuleState {
                 for (cond_idx, (Conditional { setting, conditions, values }, (setting_state, remove_btn, add_cond_btn, cond_states, add_val_btn, val_states))) in conditionals.iter().zip(&mut self.conditionals).enumerate() {
                     col = col.push(Row::new()
                         .push(Text::new("If the setting:"))
-                        .push(TextInput::new(setting_state, "Setting", setting, move |new_val| Message::ChangeConditionalSetting(idx, cond_idx, new_val)))
+                        .push(TextInput::new(setting_state, "Setting", setting, move |new_val| Message::ChangeConditionalSetting(idx, cond_idx, new_val)).padding(5).style(TextInputStyle))
                         .push(Button::new(remove_btn, Text::new('-')).on_press(Message::RemoveConditional(idx, cond_idx)))
+                        .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                         .spacing(16)
                     );
                     col = col.push(Row::new()
@@ -493,8 +506,9 @@ impl WeightsRuleState {
                                 Json::Number(val) => val.to_string(),
                                 Json::String(val) => val.to_owned(),
                                 _ => unimplemented!("null/array/object setting values not implemented"),
-                            }, move |new_val| Message::ChangeCondition(idx, cond_idx, val_idx, new_val)))
+                            }, move |new_val| Message::ChangeCondition(idx, cond_idx, val_idx, new_val)).padding(5).style(TextInputStyle))
                             .push(Button::new(remove_btn, Text::new('-')).on_press(Message::RemoveCondition(idx, cond_idx, val_idx)))
+                            .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                             .spacing(16)
                         );
                     }
@@ -510,12 +524,13 @@ impl WeightsRuleState {
                         let val_clone2 = value.clone();
                         let val_clone3 = value.clone();
                         col = col.push(Row::new()
-                            .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, Some(cond_idx), val_clone1.clone(), new_val)))
+                            .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, Some(cond_idx), val_clone1.clone(), new_val)).padding(5).style(TextInputStyle))
                             .push(Text::new(':'))
-                            .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, Some(cond_idx), val_clone2.clone(), new_val)))
+                            .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, Some(cond_idx), val_clone2.clone(), new_val)).padding(5).style(TextInputStyle))
                             .push(Text::new('/'))
                             .push(Text::new(&total))
                             .push(Button::new(del_btn_state, Text::new('-')).on_press(Message::RemoveSettingValue(idx, Some(cond_idx), val_clone3)))
+                            .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                             .spacing(16)
                         );
                     }
@@ -530,12 +545,13 @@ impl WeightsRuleState {
                     let val_clone2 = value.clone();
                     let val_clone3 = value.clone();
                     col = col.push(Row::new()
-                        .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, None, val_clone1.clone(), new_val)))
+                        .push(TextInput::new(value_state, "value", value, move |new_val| Message::ChangeSettingValue(idx, None, val_clone1.clone(), new_val)).padding(5).style(TextInputStyle))
                         .push(Text::new(':'))
-                        .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, None, val_clone2.clone(), new_val)))
+                        .push(TextInput::new(weight_state, "weight", &weight.to_string(), move |new_val| Message::ChangeSettingWeight(idx, None, val_clone2.clone(), new_val)).padding(5).style(TextInputStyle))
                         .push(Text::new('/'))
                         .push(Text::new(&total))
                         .push(Button::new(del_btn_state, Text::new('-')).on_press(Message::RemoveSettingValue(idx, None, val_clone3)))
+                        .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                         .spacing(16)
                     );
                 }
@@ -548,9 +564,10 @@ impl WeightsRuleState {
             WeightsRule::Range { min, max, .. } => {
                 col.push(Row::new()
                     .push(Text::new("Range:"))
-                    .push(TextInput::new(&mut self.min, "min", &min.to_string(), move |new_val| Message::ChangeRangeMin(idx, new_val)))
+                    .push(TextInput::new(&mut self.min, "min", &min.to_string(), move |new_val| Message::ChangeRangeMin(idx, new_val)).padding(5).style(TextInputStyle))
                     .push(Text::new('–'))
-                    .push(TextInput::new(&mut self.max, "max", &max.to_string(), move |new_val| Message::ChangeRangeMax(idx, new_val)))
+                    .push(TextInput::new(&mut self.max, "max", &max.to_string(), move |new_val| Message::ChangeRangeMax(idx, new_val)).padding(5).style(TextInputStyle))
+                    .push(Space::with_width(Length::Shrink)) // to avoid overlap with the scrollbar
                     .spacing(16)
                 )
             }
@@ -649,6 +666,53 @@ impl GenState {
                 .into(),
         }
     }
+}
+
+struct TabContainerStyle;
+
+impl container::StyleSheet for TabContainerStyle {
+    fn style(&self) -> container::Style {
+        container::Style {
+            border_width: 1.0,
+            border_color: Color::BLACK,
+            ..container::Style::default()
+        }
+    }
+}
+
+pub(crate) struct TextInputStyle;
+
+impl text_input::StyleSheet for TextInputStyle {
+    fn active(&self) -> text_input::Style {
+        text_input::Style {
+            border_radius: 0.0,
+            border_width: 1.0,
+            border_color: Color::BLACK,
+            ..text_input::Style::default()
+        }
+    }
+
+    fn focused(&self) -> text_input::Style {
+        text_input::Style {
+            border_radius: 0.0,
+            border_width: 1.0,
+            border_color: Color::BLACK,
+            ..text_input::Style::default()
+        }
+    }
+
+    fn hovered(&self) -> text_input::Style {
+        text_input::Style {
+            border_radius: 0.0,
+            border_width: 1.0,
+            border_color: Color::BLACK,
+            ..text_input::Style::default()
+        }
+    }
+
+    fn placeholder_color(&self) -> Color { Color::from_rgb(0.5, 0.5, 0.5) }
+    fn value_color(&self) -> Color { Color::BLACK }
+    fn selection_color(&self) -> Color { Color::from_rgb8(0x0d, 0x7a, 0xff) }
 }
 
 #[derive(SmartDefault)]
@@ -992,28 +1056,31 @@ impl Application for App {
             .push(self.base_rom.view())
             .push(self.output_dir.view())
             .push(self.tab.view())
-            .push(match self.tab {
-                Tab::League => Scrollable::new(&mut self.scroll)
-                    .push(Text::new("This will generate a seed with the Random Settings League's season 2 tournament weights. It will use version 5.2.117 R-1 of the randomizer. You can use the tabs above to switch to the latest version and use different weights.")) //TODO after s2, update description
-                    .height(Length::Fill),
+            .push(Container::new(match self.tab {
+                Tab::League => Scrollable::new(&mut self.scroll).push(Text::new(format!(
+                    //TODO after s2, update description (e.g. “season 2 tournament” → “season 3 ladder”?)
+                    "This will generate a seed with the Random Settings League's season 2 tournament weights. It will use version {} of the randomizer. You can use the tabs above to switch to the latest version and use different weights.",
+                    LEAGUE_VERSION,
+                ))),
                 Tab::Solo | Tab::CoOp | Tab::Multiworld => {
-                    let mut col = Scrollable::new(&mut self.scroll)
+                    let col = Scrollable::new(&mut self.scroll)
                         .push(Checkbox::new(self.options.standard_tricks, "Standard Tricks", Message::ToggleStandardTricks))
                         .push(Checkbox::new(self.options.rsl_tricks, "RSL Tricks", Message::ToggleRslTricks))
                         //TODO conditionals toggle?
                         .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems));
                     if let Tab::Multiworld = self.tab {
-                        col = col.push(Row::new()
+                        col.push(Row::new()
                             .push(Text::new("Player Count:"))
                             .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.options.world_count, Message::SetWorldCount))
-                            .push(TextInput::new(&mut self.worlds_text, "", &self.options.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)))
+                            .push(TextInput::new(&mut self.worlds_text, "", &self.options.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
                             .spacing(16)
-                        );
+                        )
+                    } else {
+                        col
                     }
-                    col.spacing(16).height(Length::Fill)
                 }
                 Tab::Custom => self.weights.view(&mut self.scroll, &mut self.worlds_slider, &mut self.worlds_text),
-            })
+            }.spacing(16).height(Length::Fill)).width(Length::Fill).height(Length::Fill).padding(16).style(TabContainerStyle))
             .push(self.gen.view(disabled_reason))
             .spacing(16)
             .padding(16)
@@ -1163,7 +1230,7 @@ struct Args {}
 
 #[wheel::main]
 fn main(Args {}: Args) -> iced::Result {
-    let size = (602, 396);
+    let size = (604, 420);
     App::run(Settings {
         window: window::Settings {
             size,
