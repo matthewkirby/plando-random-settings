@@ -381,12 +381,14 @@ impl From<GenOptions> for Weights {
                         weights.world_count = options.world_count;
                     }
                 }
-                match (options.standard_tricks, options.rsl_tricks) {
-                    (true, true) => {}
-                    (true, false) => weights.allowed_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json")).expect("failed to load Standard tricks"),
-                    (false, true) => weights.allowed_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json")).expect("failed to load RSL tricks"),
-                    (false, false) => weights.allowed_tricks = BTreeSet::default(),
-                }
+                let standard_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json")).expect("failed to load Standard tricks");
+                let rsl_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json")).expect("failed to load RSL tricks");
+                weights.allowed_tricks = match (options.standard_tricks, options.rsl_tricks) {
+                    (true, true) => &standard_tricks | &rsl_tricks,
+                    (true, false) => standard_tricks,
+                    (false, true) => rsl_tricks,
+                    (false, false) => BTreeSet::default(),
+                };
                 if !options.random_starting_items { weights.random_starting_items = false }
                 weights
             }
