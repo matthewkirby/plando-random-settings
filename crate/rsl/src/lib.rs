@@ -496,19 +496,16 @@ pub async fn generate(client: &reqwest::Client, base_rom: impl Into<PathBuf>, ou
     if rando_path.join("version.py").exists() {
         let mut version_string = String::default();
         File::open(rando_path.join("version.py")).await?.read_to_string(&mut version_string).await?;
-        if let GenOptions::League = options {
-            if version_string.trim() != format!("__version__ = '{}'", LEAGUE_VERSION) {
-                tokio::fs::remove_dir_all(&rando_path).await?;
-            }
+        let version_mismatch = if let GenOptions::League = options {
+            version_string.trim() != format!("__version__ = '{}'", LEAGUE_VERSION)
         } else {
             let remote_version_string = client.get("https://ootr.fenhl.net/dev-r-version.py") // since GitHub's GraphQL API requires an OAuth token for all requests, even public data, this is a simple proxy for the contents of https://github.com/Roman971/OoT-Randomizer/blob/Dev-R/version.py
                 .send().await?
                 .text().await?;
             let local_version_string = fs::read_to_string(rando_path.join("version.py")).await?;
-            if remote_version_string.trim() != local_version_string.trim() {
-                fs::remove_dir_all(&rando_path).await?;
-            }
-        }
+            remote_version_string.trim() != local_version_string.trim()
+        };
+        if version_mismatch { fs::remove_dir_all(&rando_path).await? }
     }
     if !rando_path.exists() {
         let rando_download = reqwest::get(&format!("https://github.com/Roman971/{}/archive/{}.zip", REPO_NAME, repo_ref)).await?

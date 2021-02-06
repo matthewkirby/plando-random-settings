@@ -101,8 +101,8 @@ You will need a 64-bit Windows PC and a Mac.
     2. Clone this repo.
     3. In the repo clone, create a [JSON](https://json.org/) object at `assets\release-config.json` with the following entries:
         * `"githubToken"`: The personal access token from step 1
-        * `"macHostname"`: A hostname or IP address at which your Mac is reachable via SSH (and if necessary the username, in `"username@hostname"` form)
-        * `"macRepoPath"`: The path to the clone of this repo on your Mac
+        * `"macHostname"`: A hostname or IP address (and if necessary the username, in `"username@hostname"` form) at which your Mac is reachable via SSH (optional, if not given no macOS app is included in the release)
+        * `"macRepoPath"`: The path to the clone of this repo on your Mac (optional, if not given no macOS app is included in the release)
         * `"releaseNotesEditor"`: A command that will be called with `--wait` and the path to an empty file for writing the release notes (optional, defaults to `"C:\\Program Files\\Microsoft VS Code\\bin\\code.cmd"`)
         * `"repoOwner"`: The GitHub user or org where the release should be published (optional, defaults to `"matthewkirby"`)
         * `"repoName"`: The name of the repository where the release should be published (optional, defaults to `"plando-random-settings"`)

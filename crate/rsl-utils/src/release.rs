@@ -112,8 +112,8 @@ impl IoResultExt for io::Result<()> {
 #[serde(rename_all = "camelCase")]
 struct Config {
     github_token: String,
-    mac_hostname: String,
-    mac_repo_path: String,
+    mac_hostname: Option<String>,
+    mac_repo_path: Option<String>,
     #[serde(default = "default_release_notes_editor")]
     release_notes_editor: String,
     #[serde(default = "default_repo_owner")]
@@ -200,13 +200,13 @@ async fn build_windows(client: &reqwest::Client, repo: &Repo, release: &Release,
 }
 
 #[cfg(windows)]
-async fn build_macos(config: &Config, client: &reqwest::Client, repo: &Repo, release: &Release, verbose: bool) -> Result<(), Error> {
+async fn build_macos(mac_hostname: &str, mac_repo_path: &str, client: &reqwest::Client, repo: &Repo, release: &Release, verbose: bool) -> Result<(), Error> {
     eprintln!("updating repo on Mac");
-    Command::new("ssh").arg(&config.mac_hostname).arg("zsh").arg("-c").arg(format!("'cd {} && git pull --ff-only'", shlex::quote(&config.mac_repo_path))).check("ssh", verbose).await?;
+    Command::new("ssh").arg(mac_hostname).arg("zsh").arg("-c").arg(format!("'cd {} && git pull --ff-only'", shlex::quote(mac_repo_path))).check("ssh", verbose).await?;
     eprintln!("running build script on Mac");
-    Command::new("ssh").arg(&config.mac_hostname).arg(format!("{}/assets/release.sh", shlex::quote(&config.mac_repo_path))).arg(if verbose { "--verbose" } else { "" }).check("ssh", true).await?;
+    Command::new("ssh").arg(mac_hostname).arg(format!("{}/assets/release.sh", shlex::quote(mac_repo_path))).arg(if verbose { "--verbose" } else { "" }).check("ssh", true).await?;
     eprintln!("downloading rsl-mac.dmg from Mac");
-    Command::new("scp").arg(format!("{}:{}/assets/rsl-mac.dmg", config.mac_hostname, config.mac_repo_path)).arg("assets/rsl-mac.dmg").check("scp", verbose).await?;
+    Command::new("scp").arg(format!("{}:{}/assets/rsl-mac.dmg", mac_hostname, mac_repo_path)).arg("assets/rsl-mac.dmg").check("scp", verbose).await?;
     eprintln!("uploading rsl-mac.dmg");
     repo.release_attach(client, release, "rsl-mac.dmg", "application/x-apple-diskimage", fs::read("assets/rsl-mac.dmg").await?).await?;
     Ok(())
@@ -272,14 +272,20 @@ async fn main(args: Args) -> Result<(), Error> {
     let release = repo.create_release(&client, version().await.to_string(), format!("v{}", version().await), release_notes).await?;
     if args.verbose {
         build_windows(&client, &repo, &release, args.verbose).await?;
-        build_macos(&config, &client, &repo, &release, args.verbose).await?;
-    } else {
+        if let (Some(ref mac_hostname), Some(ref mac_repo_path)) = (config.mac_hostname, config.mac_repo_path) {
+            build_macos(mac_hostname, mac_repo_path, &client, &repo, &release, args.verbose).await?;
+        } else {
+            eprintln!("not building for macOS because macHostname and/or macRepoPath are unconfigured");
+        }
+    } else if let (Some(ref mac_hostname), Some(ref mac_repo_path)) = (config.mac_hostname, config.mac_repo_path) {
         let (build_windows_res, build_macos_res) = tokio::join!(
             build_windows(&client, &repo, &release, args.verbose),
-            build_macos(&config, &client, &repo, &release, args.verbose),
+            build_macos(mac_hostname, mac_repo_path, &client, &repo, &release, args.verbose),
         );
         let () = build_windows_res?;
         let () = build_macos_res?;
+    } else {
+        build_windows(&client, &repo, &release, args.verbose).await?;
     }
     if !args.no_publish {
         eprintln!("publishing release");
