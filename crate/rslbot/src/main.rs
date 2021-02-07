@@ -134,7 +134,14 @@ impl RaceHandler for RslHandler {
                     };
                     self.send_message("Rolling seed…").await?;
                     let lock = GEN_LOCK.lock().await; // multiple seeds being generated simultaneously may lead to errors such as the same settings being used for both
-                    rsl::generate(&CLIENT, BASE_ROM_PATH, TEMP_OUTPUT_DIR, options).await.map_err(|e| format!("error generating seed: {}", e))?;
+                    match rsl::generate(&CLIENT, BASE_ROM_PATH, TEMP_OUTPUT_DIR, options).await {
+                        Ok(()) => {}
+                        Err(e) => {
+                            let err_msg = format!("error generating seed: {}", e);
+                            self.send_message(&err_msg).await?;
+                            return Err(Error::Other(err_msg))
+                        }
+                    }
                     let mut patch_files = glob(&format!("{}/*.zpf", TEMP_OUTPUT_DIR)).map_err(|e| format!("error locating patch file: {}", e))?.fuse(); //TODO get filename from `generate` return value
                     let patch_file = match (patch_files.next(), patch_files.next()) {
                         (None, None) => {
