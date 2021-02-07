@@ -2778,7 +2778,8 @@ dependencies = [
 [[package]]
 name = "racetime"
 version = "0.1.0"
-source = "git+https://github.com/fenhl/rust-racetime?branch=main#588c722b892f6568716ad57b2822414799003860"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c5b52b358c9ab2b2d2f3adb96e4f5b46566bc430c7e5939ef9b30a8473dcce99"
 dependencies = [
  "async-trait",
  "collect-mac",

@@ -15,11 +15,8 @@ collect-mac = "0.1"
 glob = "0.3"
 itertools = "0.10"
 lazy_static = "1"
+racetime = "0.1"
 serde_json = "1"
-
-[dependencies.racetime]
-git = "https://github.com/fenhl/rust-racetime" #TODO publish to crates.io after testing
-branch = "main"
 
 [dependencies.reqwest]
 version = "0.11"
