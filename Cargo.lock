@@ -2727,7 +2727,7 @@ dependencies = [
 [[package]]
 name = "racetime"
 version = "0.1.0"
-source = "git+https://github.com/fenhl/rust-racetime?branch=main#a2d92e2cfab3fc3db3dbd4c9ca49a8c5be98a2a9"
+source = "git+https://github.com/fenhl/rust-racetime?branch=main#9ec1eda4922c5348c3460ba2f16368e2c5829383"
 dependencies = [
  "async-trait",
  "collect-mac",
