@@ -1,0 +1,15 @@
+[Unit]
+Description=racetime.gg bot for the Ocarina of Time Randomizer's Random Settings League
+Documentation=https://github.com/matthewkirby/plando-random-settings
+After=network.target
+
+[Service]
+Restart=always
+ExecStartPre=/usr/bin/git pull --ff-only
+ExecStart=/home/fenhl/.cargo/bin/cargo run --release --package=rslbot
+User=fenhl
+Group=fenhl
+WorkingDirectory=/opt/git/github.com/matthewkirby/plando-random-settings/master
+
+[Install]
+WantedBy=multi-user.target

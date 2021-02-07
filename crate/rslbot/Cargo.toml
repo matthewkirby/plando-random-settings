@@ -1,0 +1,46 @@
+[package]
+name = "rslbot"
+version = "2.0.0"
+authors = [
+    "Matthew Kirby <xoparr@gmail.com>",
+    "Fenhl <fenhl@fenhl.net>"
+]
+edition = "2018"
+license = "MIT"
+readme = "../../README.md"
+
+[dependencies]
+async-trait = "0.1"
+collect-mac = "0.1"
+glob = "0.3"
+itertools = "0.10"
+lazy_static = "1"
+serde_json = "1"
+
+[dependencies.racetime]
+git = "https://github.com/fenhl/rust-racetime" #TODO publish to crates.io after testing
+branch = "main"
+
+[dependencies.reqwest]
+version = "0.11"
+default-features = false
+features = ["rustls-tls"]
+
+[dependencies.rsl]
+path = "../rsl"
+
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+
+[dependencies.structopt]
+version = "0.3"
+features = ["paw"]
+
+[dependencies.tokio]
+version = "1"
+features = ["fs", "sync"]
+
+[dependencies.wheel]
+git = "https://github.com/fenhl/wheel"
+branch = "main"

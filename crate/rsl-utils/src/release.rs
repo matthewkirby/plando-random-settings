@@ -161,6 +161,7 @@ async fn version() -> Version {
     assert_eq!(version, rsl::version());
     check_cli_version("rsl-cli", &version).await;
     check_cli_version("rsl-gui", &version).await;
+    check_cli_version("rslbot", &version).await;
     version
 }
 

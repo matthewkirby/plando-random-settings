@@ -487,7 +487,7 @@ pub fn cache_dir() -> Option<PathBuf> {
     Some(project_dirs.cache_dir().to_owned())
 }
 
-pub async fn generate(client: &reqwest::Client, base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> {
+pub async fn generate(client: &reqwest::Client, base_rom: impl Into<PathBuf>, output_dir: impl Into<PathBuf>, options: GenOptions) -> Result<(), GenError> { //TODO parse filenames from output and return them
     let cache_dir = cache_dir().ok_or(GenError::MissingHomeDir)?;
     let distribution_path = cache_dir.join("plando.json");
     // ensure the correct randomizer version is installed
