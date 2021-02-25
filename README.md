@@ -74,19 +74,20 @@ A weights file is a configuration file for the app. See [the league weights file
 
 ## Releasing a new version
 
-You will need a 64-bit Windows PC and a Mac.
+You will need a 64-bit Windows PC. To release the version for macOS as well, you will also need a Mac.
 
-1. If the randomizer version for league seeds should be updated, change the constants `LEAGUE_COMMIT_HASH` and `LEAGUE_VERSION` in `crate/ootr/src/lib.rs` accordingly
+1. If the randomizer version for league seeds should be updated, change the constants `LEAGUE_COMMIT_HASH` and `LEAGUE_VERSION` in `crate/ootr/src/lib.rs` accordingly. `LEAGUE_COMMIT_HASH` is the commit hash for the Dev-R version to be used, which can be copied using the clipboard button at <https://github.com/Roman971/OoT-Randomizer/commits/Dev-R>, and `LEAGUE_VERSION` is the contents of the `__version__` variable in `version.py` in that commit.
 2. Bump the version number in:
-    * `assets/macos/RSL.app/Contents/Info.plist` (also increment `CFBundleVersion`)
+    * `assets/macos/RSL.app/Contents/Info.plist` (change `CFBundleShortVersionString` to the new version number and increment `CFBundleVersion` by 1)
     * `crate/ootr/Cargo.toml`
     * `crate/rsl/Cargo.toml`
     * `crate/rsl-cli/Cargo.toml`
     * `crate/rsl-gui/Cargo.toml`
     * `crate/rsl-updater/Cargo.toml`
     * `crate/rsl-utils/Cargo.toml`
+    * `crate/rslbot/Cargo.toml`
 3. Push the changes
-4. On macOS:
+4. On macOS (if releasing for macOS):
     1. Install [Rust](https://rust-lang.org/) and [Python](https://python.org/).
     2. Make sure your Rust compiler can build for both Intel and ARM:
         ```sh
