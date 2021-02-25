@@ -107,6 +107,6 @@ You will need a 64-bit Windows PC. To release the version for macOS as well, you
         * `"releaseNotesEditor"`: A command that will be called with `--wait` and the path to an empty file for writing the release notes (optional, defaults to `"C:\\Program Files\\Microsoft VS Code\\bin\\code.cmd"`)
         * `"repoOwner"`: The GitHub user or org where the release should be published (optional, defaults to `"matthewkirby"`)
         * `"repoName"`: The name of the repository where the release should be published (optional, defaults to `"plando-random-settings"`)
-    4. In the repo, run `cargo run --release --package=rsl-utils --bin=rsl-release`. You can add the following command-line options, but must separate them with a `--` (so they're interpreted as `rsl-release` options, not `cargo` options):
+    4. In the repo, run `cargo run --release --package=rsl-utils --bin=rsl-release`. You can add the following command-line options, but must separate them from the required options with a single `--` (so they're interpreted as `rsl-release` options, not `cargo` options):
         * To see output of build commands as they are happening, use `--verbose`. Note that this may considerably slow down the release script since it won't run multiple build commands in parallel.
         * To create the GitHub release as a draft but not publish it, use `--no-publish`.
