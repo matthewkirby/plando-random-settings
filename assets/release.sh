@@ -38,5 +38,5 @@ lock
 rustup $quiet_verbose update stable || exit $?
 unlock
 
-git $quiet_verbose pull --ff-only || exit $?
+git pull $quiet_verbose --ff-only || exit $?
 cargo $quiet_verbose run --release --package=rsl-utils --bin=rsl-release -- $verbose || exit $?
