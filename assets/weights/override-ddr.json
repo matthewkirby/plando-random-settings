@@ -1,0 +1,11 @@
+{
+    "weights": [
+        {
+            "setting": "useful_cutscenes",
+            "values": {
+                "true": 1,
+                "false": 0
+            }
+        }
+    ]
+}

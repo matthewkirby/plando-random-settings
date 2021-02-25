@@ -3,13 +3,12 @@
 
 use {
     std::{
-        collections::HashMap,
         convert::Infallible as Never,
         ffi::OsString,
         path::Path,
     },
     async_trait::async_trait,
-    collect_mac::collect,
+    enum_iterator::IntoEnumIterator as _,
     glob::glob,
     itertools::Itertools as _,
     lazy_static::lazy_static,
@@ -33,9 +32,10 @@ use {
         GenOptions,
         HashIcon,
         Preset,
-        PresetOptions,
     },
 };
+
+ootr::uses!();
 
 const BASE_ROM_PATH: &str = "/usr/local/share/fenhl/rslbot/oot-ntscu-1.0.z64";
 const BASE_URI: &str = "https://ootr.fenhl.net/seed/";
@@ -63,15 +63,6 @@ struct RslHandler {
 }
 
 impl RslHandler {
-    fn presets(&self) -> HashMap<&'static str, GenOptions> {
-        collect![
-            "league" => GenOptions::League,
-            "solo" => GenOptions::Preset { preset: Preset::Solo, options: PresetOptions::default() },
-            "coop" => GenOptions::Preset { preset: Preset::CoOp, options: PresetOptions::default() },
-            //TODO multiworld (need to handle .zpfz files and second argument for world count)
-        ]
-    }
-
     fn race_in_progress(&self) -> bool {
         matches!(self.data.status.value, RaceStatusValue::Pending | RaceStatusValue::InProgress)
     }
@@ -120,14 +111,30 @@ impl RaceHandler for RslHandler {
                 } else {
                     let options = match &args[..] {
                         [] => GenOptions::default(),
-                        [preset] => match self.presets().get(preset) {
-                            Some(options) => options.clone(),
-                            None => {
+                        ["league"] => GenOptions::League,
+                        ["mw"] | ["multiworld"] => {
+                            self.send_message("Please specify the number of worlds in this seed, for example !seed mw 2").await?;
+                            return Ok(())
+                        }
+                        [preset] => match preset.parse() {
+                            Ok(preset) => GenOptions::Preset(preset),
+                            Err(_) => {
                                 self.send_message(&format!("Sorry {}, I don't recognize that preset. Use !presets to see what is available.", message.user.as_ref().map_or("friend", |user| &user.name))).await?;
                                 return Ok(())
                             }
                         },
-                        [_, _, ..] => {
+                        ["mw", world_count] | ["multiworld", world_count] => match world_count.parse() {
+                            Ok(world_count) if (2..=MAX_WORLDS).contains(&world_count) => GenOptions::Multiworld(world_count),
+                            _ => {
+                                self.send_message("could not parse world count").await?;
+                                return Ok(())
+                            }
+                        },
+                        [_, _] => {
+                            self.send_message("only the multiworld preset takes a second argument").await?;
+                            return Ok(())
+                        }
+                        [_, _, _, ..] => {
                             self.send_message("too many !roll arguments").await?;
                             return Ok(())
                         }
@@ -175,13 +182,11 @@ impl RaceHandler for RslHandler {
             },
             ("presets", _) => if !self.race_in_progress() {
                 self.send_message("Available presets:").await?;
-                for (name, _) in self.presets() {
-                    if name == "league" {
-                        self.send_message("league (default)").await?;
-                    } else {
-                        self.send_message(name).await?;
-                    }
+                self.send_message("league — Random Settings League (default)").await?;
+                for preset in Preset::into_enum_iter() {
+                    self.send_message(&preset.to_string()).await?;
                 }
+                self.send_message("mw <world count> — Random Settings Multiworld").await?;
             },
             ("fpa", _) => match &args[..] {
                 [] => if self.fpa {

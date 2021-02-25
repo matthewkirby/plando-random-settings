@@ -13,13 +13,6 @@
             "max": 50
         },
         {
-            "setting": "mq_dungeons_random",
-            "values": {
-                "true": 0,
-                "false": 1
-            }
-        },
-        {
             "setting": "mq_dungeons",
             "values": {
                 "0": 1

@@ -75,7 +75,6 @@ use {
         GenOptions,
         HashIcon,
         Preset,
-        PresetOptions,
         Weights,
         WeightsRule,
     },
@@ -167,6 +166,7 @@ enum Message {
     SetHashIcon0(HashIcon),
     SetHashIcon1(HashIcon),
     SetOutputDir(PathBuf),
+    SetSoloPreset(Preset),
     SetWorldCount(u8),
     SetWorldCountStr(String),
     StartingEquipment(SetViewMessage),
@@ -174,8 +174,6 @@ enum Message {
     StartingSongs(SetViewMessage),
     Tab(Tab),
     ToggleRandomStartingItems(bool),
-    ToggleRslTricks(bool),
-    ToggleStandardTricks(bool),
     #[cfg(feature = "self-update")]
     UpdateCheck,
     #[cfg(feature = "self-update")]
@@ -271,9 +269,9 @@ impl fmt::Display for Tab {
 struct WeightsState {
     data: Weights,
     //load_preset_btn: button::State,
-    //save_preset_btn: button::State,
     load_file_btn: button::State,
     save_file_btn: button::State,
+    //save_override_btn: button::State,
     hash_icon0: pick_list::State<HashIcon>,
     hash_icon1: pick_list::State<HashIcon>,
     disabled_locations: SetView,
@@ -728,8 +726,10 @@ struct App {
     output_dir: FilePicker<file::Folder, Message>,
     tab: Tab,
     scroll: scrollable::State,
-    #[default(PresetOptions { world_count: 2, ..PresetOptions::default() })]
-    options: PresetOptions,
+    #[default(Preset::LeaguePreview)]
+    solo_preset: Preset,
+    #[default = 2]
+    world_count: u8,
     worlds_slider: slider::State,
     worlds_text: text_input::State,
     #[default(WeightsState::from(GenOptions::League))]
@@ -865,9 +865,9 @@ impl Application for App {
                 let output_dir = self.output_dir.data.as_ref().expect("generate button should be disabled if no output dir is given").clone();
                 let options = match self.tab {
                     Tab::League => GenOptions::League,
-                    Tab::Solo => GenOptions::Preset { preset: Preset::Solo, options: PresetOptions { world_count: 1, ..self.options } },
-                    Tab::CoOp => GenOptions::Preset { preset: Preset::CoOp, options: PresetOptions { world_count: 1, ..self.options } },
-                    Tab::Multiworld => GenOptions::Preset { preset: Preset::Multiworld, options: self.options },
+                    Tab::Solo => GenOptions::Preset(self.solo_preset),
+                    Tab::CoOp => GenOptions::Preset(Preset::CoOp),
+                    Tab::Multiworld => GenOptions::Multiworld(self.world_count),
                     Tab::Custom => GenOptions::Custom(self.weights.data.clone()),
                 };
                 return async move {
@@ -992,8 +992,9 @@ impl Application for App {
             Message::SetHashIcon0(icon) => self.weights.data.hash[0] = icon,
             Message::SetHashIcon1(icon) => self.weights.data.hash[1] = icon,
             Message::SetOutputDir(path) => self.output_dir.data = Some(path),
+            Message::SetSoloPreset(preset) => self.solo_preset = preset,
             Message::SetWorldCount(world_count) => match self.tab {
-                Tab::Multiworld => if (2..=MAX_WORLDS).contains(&world_count) { self.options.world_count = world_count },
+                Tab::Multiworld => if (2..=MAX_WORLDS).contains(&world_count) { self.world_count = world_count },
                 Tab::Custom => if (1..=MAX_WORLDS).contains(&world_count) { self.weights.data.world_count = world_count },
                 _ => {}
             },
@@ -1004,13 +1005,7 @@ impl Application for App {
             Message::StartingItems(msg) => self.weights.starting_items.update(&mut self.weights.data.starting_items, msg),
             Message::StartingSongs(msg) => self.weights.starting_songs.update(&mut self.weights.data.starting_songs, msg),
             Message::Tab(tab) => self.tab = tab,
-            Message::ToggleRandomStartingItems(checked) => if let Tab::Custom = self.tab {
-                self.weights.data.random_starting_items = checked;
-            } else {
-                self.options.random_starting_items = checked;
-            },
-            Message::ToggleRslTricks(checked) => self.options.rsl_tricks = checked,
-            Message::ToggleStandardTricks(checked) => self.options.standard_tricks = checked,
+            Message::ToggleRandomStartingItems(checked) => self.weights.data.random_starting_items = checked,
             #[cfg(feature = "self-update")]
             Message::UpdateCheck => {
                 self.update_check = UpdateCheckState::Checking;
@@ -1063,23 +1058,26 @@ impl Application for App {
                     "This will generate a seed with the Random Settings League's season 2 tournament weights. It will use version {} of the randomizer. You can use the tabs above to switch to the latest version and use different weights.",
                     LEAGUE_VERSION,
                 ))),
-                Tab::Solo | Tab::CoOp | Tab::Multiworld => {
-                    let col = Scrollable::new(&mut self.scroll)
-                        .push(Checkbox::new(self.options.standard_tricks, "Standard Tricks", Message::ToggleStandardTricks))
-                        .push(Checkbox::new(self.options.rsl_tricks, "RSL Tricks", Message::ToggleRslTricks))
-                        //TODO conditionals toggle?
-                        .push(Checkbox::new(self.options.random_starting_items, "Randomize Starting Items", Message::ToggleRandomStartingItems));
-                    if let Tab::Multiworld = self.tab {
-                        col.push(Row::new()
-                            .push(Text::new("Player Count:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
-                            .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.options.world_count, Message::SetWorldCount).height(30))
-                            .push(TextInput::new(&mut self.worlds_text, "", &self.options.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
-                            .spacing(16)
-                        )
-                    } else {
-                        col
-                    }
-                }
+                Tab::Solo => Scrollable::new(&mut self.scroll)
+                    .push(Row::new()
+                        .push(Radio::new(Preset::LeaguePreview, "League Preview", Some(self.solo_preset), Message::SetSoloPreset))
+                        .push(Radio::new(Preset::Ddr, "DDR", Some(self.solo_preset), Message::SetSoloPreset))
+                        .spacing(16)
+                    )
+                    .push(Text::new(match self.solo_preset {
+                        Preset::LeaguePreview => "Like League but on the latest version of the randomizer.",
+                        Preset::Ddr => "Like League Preview but with useful cutscenes for the Dungeon Door Requirement ruleset.",
+                        Preset::CoOp => unreachable!(),
+                    })),
+                Tab::CoOp => Scrollable::new(&mut self.scroll)
+                    .push(Text::new("Weights for giving multiple players the same seed and allowing them to share information. Limits required skulltula tokens to 50, disables Master Quest, and fixes the damage multiplier to normal.")),
+                Tab::Multiworld => Scrollable::new(&mut self.scroll)
+                    .push(Row::new()
+                        .push(Text::new("Player Count:").height(Length::Units(30)).vertical_alignment(VerticalAlignment::Center))
+                        .push(Slider::new(&mut self.worlds_slider, 2..=MAX_WORLDS, self.world_count, Message::SetWorldCount).height(30))
+                        .push(TextInput::new(&mut self.worlds_text, "", &self.world_count.to_string(), Message::SetWorldCountStr).width(Length::Units(32)).padding(5).style(TextInputStyle))
+                        .spacing(16)
+                    ),
                 Tab::Custom => self.weights.view(&mut self.scroll, &mut self.worlds_slider, &mut self.worlds_text),
             }.spacing(16).height(Length::Fill)).width(Length::Fill).height(Length::Fill).padding(16).style(TabContainerStyle))
             .push(self.gen.view(disabled_reason))

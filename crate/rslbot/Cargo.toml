@@ -11,12 +11,18 @@ readme = "../../README.md"
 
 [dependencies]
 async-trait = "0.1"
-collect-mac = "0.1"
 glob = "0.3"
 itertools = "0.10"
 lazy_static = "1"
 racetime = "0.1"
 serde_json = "1"
+
+[dependencies.enum-iterator]
+git = "https://github.com/dasgefolge/enum-iterator"
+branch = "fields"
+
+[dependencies.ootr]
+path = "../ootr"
 
 [dependencies.reqwest]
 version = "0.11"

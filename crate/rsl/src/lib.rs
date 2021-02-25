@@ -285,6 +285,7 @@ pub struct Plando {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Override {
+    pub allowed_tricks: Option<BTreeSet<String>>,
     pub starting_items: Option<BTreeSet<String>>,
     pub starting_songs: Option<BTreeSet<String>>,
     pub starting_equipment: Option<BTreeSet<String>>,
@@ -293,6 +294,7 @@ pub struct Override {
 
 impl AddAssign<Override> for Weights {
     fn add_assign(&mut self, mut rhs: Override) {
+        if let Some(allowed_tricks) = rhs.allowed_tricks { self.allowed_tricks = allowed_tricks }
         if let Some(starting_items) = rhs.starting_items { self.starting_items = starting_items }
         if let Some(starting_songs) = rhs.starting_songs { self.starting_songs = starting_songs }
         if let Some(starting_equipment) = rhs.starting_equipment { self.starting_equipment = starting_equipment }
@@ -314,12 +316,12 @@ impl Add<Override> for Weights {
     }
 }
 
-#[derive(Debug, StructOpt, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, StructOpt, IntoEnumIterator, Clone, Copy, PartialEq, Eq)]
 #[structopt(rename_all = "kebab")]
 pub enum Preset {
-    Solo,
+    LeaguePreview,
+    Ddr,
     CoOp,
-    Multiworld,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -336,34 +338,30 @@ impl FromStr for Preset {
 
     fn from_str(s: &str) -> Result<Preset, PresetParseError> {
         match s {
-            "solo" => Ok(Preset::Solo),
+            "league-preview" | "solo" => Ok(Preset::LeaguePreview),
+            "ddr" => Ok(Preset::Ddr),
             "coop" | "co-op" => Ok(Preset::CoOp),
-            "multiworld" => Ok(Preset::Multiworld),
             _ => Err(PresetParseError),
         }
     }
 }
 
-#[derive(Debug, SmartDefault, Clone, Copy)]
-pub struct PresetOptions {
-    #[default = true]
-    pub standard_tricks: bool,
-    #[default = true]
-    pub rsl_tricks: bool,
-    #[default = true]
-    pub random_starting_items: bool,
-    #[default = 1]
-    pub world_count: u8,
+impl fmt::Display for Preset {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Preset::LeaguePreview => write!(f, "league-preview — like League but on latest Dev-R"),
+            Preset::Ddr => write!(f, "ddr — Random Settings DDR"),
+            Preset::CoOp => write!(f, "coop — Random Settings Co-Op"),
+        }
+    }
 }
 
 #[derive(Debug, SmartDefault, Clone)]
 pub enum GenOptions {
     #[default]
     League,
-    Preset {
-        preset: Preset,
-        options: PresetOptions,
-    },
+    Preset(Preset),
+    Multiworld(u8),
     Custom(Weights),
 }
 
@@ -371,25 +369,19 @@ impl From<GenOptions> for Weights {
     fn from(options: GenOptions) -> Weights {
         match options {
             GenOptions::League => serde_json::from_str(include_str!("../../../assets/weights/rsl.json")).expect("failed to load RSL weights"),
-            GenOptions::Preset { preset, options } => {
+            GenOptions::Preset(preset) => {
                 let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json")).expect("failed to load RSL weights");
                 match preset {
-                    Preset::Solo => {}
+                    Preset::LeaguePreview => {}
+                    Preset::Ddr => weights += serde_json::from_str(include_str!("../../../assets/weights/override-ddr.json")).expect("failed to load DDR overrides"),
                     Preset::CoOp => weights += serde_json::from_str(include_str!("../../../assets/weights/override-coop.json")).expect("failed to load co-op overrides"),
-                    Preset::Multiworld => {
-                        weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json")).expect("failed to load multiworld overrides");
-                        weights.world_count = options.world_count;
-                    }
                 }
-                let standard_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-standard.json")).expect("failed to load Standard tricks");
-                let rsl_tricks = serde_json::from_str(include_str!("../../../assets/weights/tricks-rsl.json")).expect("failed to load RSL tricks");
-                weights.allowed_tricks = match (options.standard_tricks, options.rsl_tricks) {
-                    (true, true) => &standard_tricks | &rsl_tricks,
-                    (true, false) => standard_tricks,
-                    (false, true) => rsl_tricks,
-                    (false, false) => BTreeSet::default(),
-                };
-                if !options.random_starting_items { weights.random_starting_items = false }
+                weights
+            }
+            GenOptions::Multiworld(world_count) => {
+                let mut weights = serde_json::from_str::<Weights>(include_str!("../../../assets/weights/rsl.json")).expect("failed to load RSL weights");
+                weights += serde_json::from_str(include_str!("../../../assets/weights/override-multiworld.json")).expect("failed to load multiworld overrides");
+                weights.world_count = world_count;
                 weights
             }
             GenOptions::Custom(weights) => weights,

@@ -3145,10 +3145,11 @@ name = "rslbot"
 version = "2.0.0"
 dependencies = [
  "async-trait",
- "collect-mac",
+ "enum-iterator",
  "glob",
  "itertools 0.10.0",
  "lazy_static",
+ "ootr",
  "racetime",
  "reqwest",
  "rsl",
