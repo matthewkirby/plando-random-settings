@@ -380,6 +380,7 @@
     "hint_dist": {
         "balanced": 16.666666666666668,
         "bingo": 0,
+        "ddr": 0,
         "scrubs": 0,
         "strong": 16.666666666666668,
         "tournament": 16.666666666666668,
