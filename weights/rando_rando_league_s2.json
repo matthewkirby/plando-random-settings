@@ -237,17 +237,20 @@
         "keysanity": 16.66
     },
     "shuffle_ganon_bosskey": {
-        "remove": 14.28,
-        "vanilla": 14.28,
-        "dungeon": 14.28,
-        "overworld": 4.76,
-        "any_dungeon": 4.76,
-        "keysanity": 4.76,
-        "lacs_vanilla": 3.57,
-        "lacs_medallions": 3.57,
-        "lacs_stones": 3.57,
-        "lacs_dungeons": 3.57,
-        "lacs_tokens": 14.28
+        "remove": 16.66,
+        "vanilla": 16.66,
+        "dungeon": 16.66,
+        "overworld": 5.55,
+        "any_dungeon": 5.55,
+        "keysanity": 5.55,
+        "on_lacs": 33.33
+    },
+    "lacs_condition": {
+        "lacs_vanilla": 12.5,
+        "lacs_medallions": 12.5,
+        "lacs_stones": 12.5,
+        "lacs_dungeons": 12.5,
+        "lacs_tokens": 50
     },
     "lacs_medallions": {
         "1": 10,
@@ -277,9 +280,10 @@
         "true": 50.0,
         "false": 50.0
     },
-    "all_reachable": {
-        "true": 50.0,
-        "false": 50.0
+    "reachable_locations": {
+        "all": 50.0,
+        "goals": 0,
+        "beatable": 50.0
     },
     "logic_no_night_tokens_without_suns_song": {
         "true": 0,
@@ -382,6 +386,10 @@
         "tournament_s3": 16.666666666666668,
         "useless": 16.666666666666668,
         "very_strong": 16.666666666666668
+    },
+    "misc_hints": {
+        "true": 100.0,
+        "false": 0.0
     },
     "text_shuffle": {
         "none": 95,

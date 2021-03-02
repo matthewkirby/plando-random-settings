@@ -1,0 +1,10 @@
+{
+    "useful_cutscenes": {
+        "true": 100,
+        "false": 0
+    },
+    "shuffle_overworld_entrances": {
+        "true": 0,
+        "false": 100
+    }
+}
