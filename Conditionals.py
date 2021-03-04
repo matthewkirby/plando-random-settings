@@ -22,3 +22,11 @@ def disable_fortresskeys_independence(random_settings):
         random_settings['shuffle_fortresskeys'] = 'vanilla'
     else:
         random_settings['shuffle_fortresskeys'] = random_settings['shuffle_smallkeys']
+
+def disable_lacs_condition_ifnot_ganonbosskey(random_settings):
+    """ There is currently no way of knowing the LACs condition without just trial and error. To
+    avoid requiring constant trips every couple skulltula tokens, we are disabling this
+    setting if the ganon boss key is not there (if its there the condition is listed on the
+    Temple of Time pedestal """
+    if random_settings['shuffle_ganon_bosskey'] != 'on_lacs':
+        random_settings['lacs_condition'] = 'lacs_vanilla'

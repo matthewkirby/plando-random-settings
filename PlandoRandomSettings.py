@@ -176,6 +176,7 @@ def main():
         conds.exclude_minimal_triforce_hunt(weight_dict, random_settings)
         conds.exclude_ice_trap_misery(weight_dict, random_settings)
         conds.disable_fortresskeys_independence(random_settings)
+        conds.disable_lacs_condition_ifnot_ganonbosskey(random_settings)
 
 
     # Add the tricks to the plando
