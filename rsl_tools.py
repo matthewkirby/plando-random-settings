@@ -4,7 +4,6 @@ import shutil
 import os
 from version import randomizer_commit, randomizer_version
 
-
 def download_randomizer():
     zippath = 'randomizer.zip'
 
