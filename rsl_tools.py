@@ -52,7 +52,7 @@ def init_randomizer_settings():
         "output_dir": os.path.join(rootdir, 'patches'),
         "compress_rom": "Patch", 
         "enable_distribution_file": "True",
-        "distribution_file": os.path.join(rootdir, "random_settings.json"),
+        "distribution_file": os.path.join(rootdir, "data", "random_settings.json"),
         "create_spoiler": "True",
         "world_count": 1
     }

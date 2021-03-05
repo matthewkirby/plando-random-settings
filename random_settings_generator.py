@@ -1,16 +1,17 @@
 import json, random, sys, os, traceback
-sys.path.append('..')
-from SettingsList import get_settings_from_tab, get_setting_info
-from StartingItems import inventory, songs, equipment
-from Spoiler import HASH_ICONS
+import rsl_tools as tools
 import Conditionals as conds
-from rsl_version import version_hash_1, version_hash_2, VersionError, check_rando_version
-check_rando_version()
+from version import version_hash_1, version_hash_2
+tools.check_version()
+sys.path.append('randomizer')
+from randomizer.SettingsList import get_settings_from_tab, get_setting_info
+from randomizer.StartingItems import inventory, songs, equipment
+from randomizer.Spoiler import HASH_ICONS
 
 # Please set the weights file you with to load
-weights = 'rrl' # The default Rando Rando League Season 2 weights
+weights = 'RSL' # The default Random Settings League Season 2 weights
 # weights = 'full-random' # Every setting with even weights
-# weights = 'coop' # Uses the rrl weights with some extra modifications
+# weights = 'coop' # Uses the RSL weights with some extra modifications
 # weights = 'my_weights.json' # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
 # mw_weights_file = 'rsl_multiworld.json' # If this variable exists, load this file and use it to edit loaded weights
 # mw_weights_file = 'ddr_adjustments.json'
@@ -18,8 +19,8 @@ weights = 'rrl' # The default Rando Rando League Season 2 weights
 
 COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
-RRL_TRICKS = True # Add the extra tricks that we enable for rando rando
-RRL_CONDITIONALS = True # In rando rando we have a couple conditional cases. Ensure that they are met
+RSL_TRICKS = True # Add the extra tricks that we enable for rando rando
+RSL_CONDITIONALS = True # In rando rando we have a couple conditional cases. Ensure that they are met
 STARTING_ITEMS = True # Draw starting items, songs, and equipment from a geometric distribution
 
 BROKEN_SETTINGS = [] # If any settings are broken, add their name here and they will be non-randomized
@@ -91,7 +92,7 @@ def add_standard_tricks(random_settings):
         "logic_lens_shadow_back", "logic_lens_spirit"]
 
 
-def add_rrl_tricks(random_settings):
+def add_rsl_tricks(random_settings):
     """ Add some extra tricks to the plando that are beyond the scope of Standard. """
     random_settings['allowed_tricks'] = random_settings['allowed_tricks'] + ["logic_visible_collisions", 
         "logic_deku_b1_webs_with_bow", "logic_lens_gtg_mq", "logic_lens_jabu_mq", "logic_lens_shadow_mq",
@@ -114,7 +115,7 @@ def load_weights_file(weights_fname):
 
 def main():
     # Delete residual files from previous runs
-    remove_me = ['blind_random_settings.json', 'ERRORLOG.TXT']
+    remove_me = [os.path.join("data", "random_settings.json"), "ERRORLOG.TXT"]
     for file_to_delete in remove_me:
         try:
             os.remove(file_to_delete)
@@ -123,8 +124,8 @@ def main():
 
 
     # Load the weight dictionary
-    if weights in ['rrl', 'coop']:
-        weight_dict = load_weights_file('rando_rando_league_s2.json')
+    if weights in ['RSL', 'coop']:
+        weight_dict = load_weights_file('random_settings_league_s2.json')
         if weight_dict['hash']['obj1'] != version_hash_1 or weight_dict['hash']['obj2'] != version_hash_2:
             raise VersionError("weights file")
         weight_dict.pop('hash')
@@ -171,8 +172,8 @@ def main():
         random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
 
 
-    # Check conditional settings for rrl
-    if RRL_CONDITIONALS:
+    # Check conditional settings for RSL
+    if RSL_CONDITIONALS:
         conds.exclude_minimal_triforce_hunt(weight_dict, random_settings)
         conds.exclude_ice_trap_misery(weight_dict, random_settings)
         conds.disable_fortresskeys_independence(random_settings)
@@ -182,8 +183,8 @@ def main():
     # Add the tricks to the plando
     if STANDARD_TRICKS:
         add_standard_tricks(random_settings)
-    if RRL_TRICKS:
-        add_rrl_tricks(random_settings)
+    if RSL_TRICKS:
+        add_rsl_tricks(random_settings)
 
 
     # Draw the starting items, songs, and equipment
@@ -209,7 +210,7 @@ def main():
         'settings': random_settings,
         'file_hash': [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
     }
-    with open('blind_random_settings.json', 'w') as fp:
+    with open(os.path.join("data", "random_settings.json"), 'w') as fp:
         json.dump(output, fp, indent=4)
 
 
