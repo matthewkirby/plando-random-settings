@@ -113,7 +113,7 @@ def load_weights_file(weights_fname):
     return weight_dict
 
 
-def main():
+def generate_plando():
     # Delete residual files from previous runs
     remove_me = [os.path.join("data", "random_settings.json"), "ERRORLOG.TXT"]
     for file_to_delete in remove_me:
@@ -216,9 +216,14 @@ def main():
     with open(os.path.join("data", "random_settings.json"), 'w') as fp:
         json.dump(output, fp, indent=4)
 
-    # Roll the seed
-    tools.init_randomizer_settings()
-    tools.generate_patch_file()
+
+def main():
+    while(True):
+        generate_plando()
+        tools.init_randomizer_settings()
+        status_code = tools.generate_patch_file()
+        if status_code == 0:
+            break
 
 
 if __name__ == "__main__":
