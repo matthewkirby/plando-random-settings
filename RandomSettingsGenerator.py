@@ -1,6 +1,6 @@
 import json, random, sys, os, traceback, argparse
 import rsl_tools as tools
-import Conditionals as conds
+import conditionals as conds
 from version import version_hash_1, version_hash_2
 tools.check_version()
 sys.path.append("randomizer")
