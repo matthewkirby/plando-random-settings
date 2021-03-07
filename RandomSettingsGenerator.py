@@ -228,7 +228,7 @@ def get_command_line_args():
     # Parse weights override file
     if args.override is not None:
         if not os.path.isfile(os.path.join("weights", args.override)):
-            print("RSL GENERATOR ERROR: CANNOT FIND CLI SPECIFIED OVERRIDE FILE IN DIRECTORY: weights")
+            print("RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY: weights")
             sys.exit(1)
         global override_weights
         override_weights = args.override
@@ -246,10 +246,13 @@ def main():
 
     while(True):
         generate_plando()
-        tools.init_randomizer_settings(worldcount=worldcount)
+        randomizer_settings = tools.init_randomizer_settings(worldcount=worldcount)
         status_code = tools.generate_patch_file() if not no_seed else 0
         if status_code == 0:
             break
+
+    if not no_seed:
+        print(f"RSL GENERATOR: PATCH FILE SAVED IN: {randomizer_settings['output_dir']}")
 
 
 if __name__ == "__main__":

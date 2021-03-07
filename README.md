@@ -5,7 +5,8 @@ This script allows its user to randomize every setting in the Randomizer, not ju
 ## Instructions
 1. Have Python 3.7 (or newer) installed. This is also a requirement of the randomizer.
 2. Download the zip file of the source code from the release page and unzip anywhere: https://github.com/matthewkirby/plando-random-settings/releases
-3. Run the code by double clicking `RandomSettingsGenerator.py` or running `python3 RandomSettingsGenerator.py` via the command line.
+3. Run the code by double clicking `RandomSettingsGenerator.py` or running `python3 RandomSettingsGenerator.py` (or however you run python files on your system) via the command line.
+4. Your patch file will be saved in the `patches` directory.
 
 ## Multiworld/Dungeon Door Requirement (DDR)
 - If you are playing a format besides an official Random Setting League race, you may wish to edit the weights. We also provide presets for multiworld and the DDR ruleset at the moment. To use these presets, open `RandomSettingsGenerator.py` in a text editor and remove the `# ` (including the space after the `#`) from line 16 for multiworld or from line 17 for DDR.
