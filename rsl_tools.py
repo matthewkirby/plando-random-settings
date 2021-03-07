@@ -54,8 +54,12 @@ def check_version():
 # This function will take things from the GUI eventually.
 def init_randomizer_settings(worldcount=1):
     rootdir = os.getcwd()
+
+    with open('path_to_rom.txt', 'r') as fp:
+        path_to_rom = fp.readline()
+
     randomizer_settings = {
-        "rom": os.path.join(rootdir, 'data','ZOOTDEC.z64'),
+        "rom": os.path.join(rootdir, path_to_rom),
         "output_dir": os.path.join(rootdir, 'patches'),
         "compress_rom": "Patch", 
         "enable_distribution_file": "True",
