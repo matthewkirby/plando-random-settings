@@ -13,7 +13,7 @@ This script allows its user to randomize every setting in the Randomizer, not ju
 ## Command Line Interface Options
 If you opt to run the script via the command line, you have several options available to you
 - `--no_seed`: Generates a plando file in the `data` directory but does not generate a patch file
-- `--override <path_to_weights_file>`: Provide a weights override file to be used on top of the default RSL weights. Random settings will be generated using the weights in the override file. Any settings not in the override file will get their weights from the RSL weights.
+- `--override <path_to_weights_file>`: Provide a weights override file to be used on top of the default RSL weights. Random settings will be generated using the weights in the override file. Any settings not in the override file will get their weights from the RSL weights. The file is expected to be in the weights directory at the moment.
 - `--worldcount <integer>`: The number of worlds to generate for generating multiworld patch files. If this is not given, the default is 1.
 
 # FAQ
