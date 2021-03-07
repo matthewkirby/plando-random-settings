@@ -28,7 +28,7 @@ BROKEN_SETTINGS = [] # If any settings are broken, add their name here and they 
 
 # Handle all uncaught exceptions with logging
 def error_handler(type, value, tb):
-    with open("ERRORLOG.TX", 'w') as errout:
+    with open("ERRORLOG.TXT", 'w') as errout:
         traceback.print_exception(type, value, tb, file=errout)
         traceback.print_exception(type, value, tb, file=sys.stdout)
 sys.excepthook = error_handler
