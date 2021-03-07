@@ -1,4 +1,4 @@
-import json, random, sys, os, traceback
+import json, random, sys, os, traceback, argparse
 import rsl_tools as tools
 import Conditionals as conds
 from version import version_hash_1, version_hash_2
@@ -13,9 +13,9 @@ weights = "RSL" # The default Random Settings League Season 2 weights
 # weights = "full-random" # Every setting with even weights
 # weights = "coop" # Uses the RSL weights with some extra modifications
 # weights = "my_weights.json" # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
-# mw_weights_file = "rsl_multiworld.json" # If this variable exists, load this file and use it to edit loaded weights
-# mw_weights_file = "ddr_adjustments.json"
-# mw_weights_file = "beginner_adjustments.json"
+# override_weights = "rsl_multiworld.json" # If this variable exists, load this file and use it to edit loaded weights
+# override_weights = "ddr_adjustments.json"
+# override_weights = "beginner_adjustments.json"
 
 COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
@@ -108,7 +108,6 @@ def load_weights_file(weights_fname):
     except FileNotFoundError:
         generate_balanced_weights(fpath)
         print(f"{fpath} not found.\nCreating with balanced weights.", file=sys.stderr)
-        print(f"Plando not generated, please try again.", file=sys.stderr)
         sys.exit(1)
     return weight_dict
 
@@ -137,8 +136,9 @@ def generate_plando():
 
     # If a multiworld weights file is supplied, make appropriate changes
     start_with = {"starting_items":[], "starting_songs":[], "starting_equipment":[]}
-    if "mw_weights_file" in globals():
-        mw_weights = load_weights_file(mw_weights_file)
+    if "override_weights" in globals():
+        print("RSL GENERATOR: LOADING OVERRIDE WEIGHTS")
+        mw_weights = load_weights_file(override_weights)
         # Check for starting items, songs and equipment
         for key in start_with.keys():
             if key in mw_weights.keys():
@@ -217,11 +217,37 @@ def generate_plando():
         json.dump(output, fp, indent=4)
 
 
+def get_command_line_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no_seed", help="Suppresses the generation of a patch file.", action="store_true")
+    parser.add_argument("--override", help="Use the specified weights file over the default RSL weights.")
+    parser.add_argument("--worldcount", help="Generate a seed with more than 1 world.")
+    
+    args = parser.parse_args()
+
+    # Parse weights override file
+    if args.override is not None:
+        if not os.path.isfile(os.path.join("weights", args.override)):
+            print("RSL GENERATOR ERROR: CANNOT FIND CLI SPECIFIED OVERRIDE FILE IN DIRECTORY: weights")
+            sys.exit(1)
+        global override_weights
+        override_weights = args.override
+
+    # Parse multiworld world count
+    worldcount = 1
+    if args.worldcount is not None:
+        worldcount = int(args.worldcount)
+
+    return args.no_seed, worldcount
+
+
 def main():
+    no_seed, worldcount = get_command_line_args()
+
     while(True):
         generate_plando()
-        tools.init_randomizer_settings()
-        status_code = tools.generate_patch_file()
+        tools.init_randomizer_settings(worldcount=worldcount)
+        status_code = tools.generate_patch_file() if not no_seed else 0
         if status_code == 0:
             break
 

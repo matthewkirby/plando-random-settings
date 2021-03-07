@@ -45,7 +45,7 @@ def check_version():
 
 
 # This function will take things from the GUI eventually.
-def init_randomizer_settings():
+def init_randomizer_settings(worldcount=1):
     rootdir = os.getcwd()
     randomizer_settings = {
         "rom": os.path.join(rootdir, 'data','ZOOTDEC.z64'),
@@ -54,7 +54,7 @@ def init_randomizer_settings():
         "enable_distribution_file": "True",
         "distribution_file": os.path.join(rootdir, "data", "random_settings.json"),
         "create_spoiler": "True",
-        "world_count": 1
+        "world_count": worldcount
     }
 
     with open(os.path.join('data', 'randomizer_settings.json'), 'w') as fp:
