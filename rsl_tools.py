@@ -66,22 +66,21 @@ def init_randomizer_settings(worldcount=1):
 
     with open(os.path.join('data', 'randomizer_settings.json'), 'w') as fp:
         json.dump(randomizer_settings, fp, indent=4)
-    return randomizer_settings
 
 
 def generate_patch_file(max_retries=3):
     retries = 0
     while(True):
         print(f"RSL GENERATOR: RUNNING THE RANDOMIZER - ATTEMPT {retries+1} OF {max_retries}")
-        status_code = subprocess.call(
+        completed_process = subprocess.run(
             [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings", os.path.join("..", "data", "randomizer_settings.json")],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL)
-        if status_code != 0:
+            capture_output=True)
+
+        if completed_process.returncode != 0:
             retries += 1
             if retries < max_retries:
                 continue
-            print(f"RSL GENERATOR ERROR: MAX RETRIES ({max_retries}) REACHED. RESELECTING SETTINGS.")
-            return 1
+            print(f"RSL GENERATOR: MAX RETRIES ({max_retries}) REACHED. RESELECTING SETTINGS.")
+            break
         break
-    return 0
+    return completed_process
