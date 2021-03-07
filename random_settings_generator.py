@@ -216,6 +216,10 @@ def main():
     with open(os.path.join("data", "random_settings.json"), 'w') as fp:
         json.dump(output, fp, indent=4)
 
+    # Roll the seed
+    tools.init_randomizer_settings()
+    tools.generate_patch_file()
+
 
 if __name__ == "__main__":
     main()
