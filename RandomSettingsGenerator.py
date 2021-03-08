@@ -11,13 +11,12 @@ from randomizer.Spoiler import HASH_ICONS
 # Please set the weights file you with to load
 weights = "RSL" # The default Random Settings League Season 2 weights
 # weights = "full-random" # Every setting with even weights
-# weights = "coop" # Uses the RSL weights with some extra modifications
 # weights = "my_weights.json" # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
-# override_weights = "rsl_multiworld.json" # If this variable exists, load this file and use it to edit loaded weights
-# override_weights = "ddr_adjustments.json"
-# override_weights = "beginner_adjustments.json"
+# global_override_fname = "multiworld_override.json"
+# global_override_fname = "ddr_override.json"
+# global_override_fname = "beginner_override.json"
+# global_override_fname = "coop_override.json"
 
-COOP_SETTINGS = False # Change some settings to be more coop friendly
 STANDARD_TRICKS = True # Whether or not to enable all of the tricks in Standard settings
 RSL_TRICKS = True # Add the extra tricks that we enable for rando rando
 RSL_CONDITIONALS = True # In rando rando we have a couple conditional cases. Ensure that they are met
@@ -99,20 +98,20 @@ def add_rsl_tricks(random_settings):
         "logic_lens_shadow_mq_back", "logic_lens_spirit_mq"]
 
 
-def load_weights_file(weights_fname):
+def load_weights_file(weights_fname, override_file=False):
     """ Given a weights filename, open it up. If the file does not exist, make it with even weights """
     fpath = os.path.join("weights", weights_fname)
-    try:
+    if os.path.isfile(fpath):
         with open(fpath) as fin:
             weight_dict = json.load(fin)
-    except FileNotFoundError:
-        generate_balanced_weights(fpath)
+    elif not override_file:
         print(f"{fpath} not found.\nCreating with balanced weights.", file=sys.stderr)
+        generate_balanced_weights(fpath)
         sys.exit(1)
     return weight_dict
 
 
-def generate_plando():
+def generate_plando(override_weights_fname):
     # Delete residual files from previous runs
     remove_me = [os.path.join("data", "random_settings.json"), "ERRORLOG.TXT"]
     for file_to_delete in remove_me:
@@ -121,47 +120,35 @@ def generate_plando():
 
 
     # Load the weight dictionary
-    if weights in ["RSL", "coop"]:
+    if weights == "RSL":
         weight_dict = load_weights_file("random_settings_league_s2.json")
-        if weight_dict["hash"]["obj1"] != version_hash_1 or weight_dict["hash"]["obj2"] != version_hash_2:
-            raise VersionError("weights file")
-        weight_dict.pop("hash")
     elif weights == "full-random":
         weight_dict = generate_balanced_weights(None)
     else:
         weight_dict = load_weights_file(weights)
 
 
-    # If a multiworld weights file is supplied, make appropriate changes
+    # If an override_weights file name is provided, load it
     start_with = {"starting_items":[], "starting_songs":[], "starting_equipment":[]}
-    if "override_weights" in globals():
-        print("RSL GENERATOR: LOADING OVERRIDE WEIGHTS")
-        mw_weights = load_weights_file(override_weights)
+    if override_weights_fname is not None:
+        print(f"RSL GENERATOR: LOADING OVERRIDE WEIGHTS from {override_weights_fname}")
+        override_weights = load_weights_file(override_weights_fname, override_file=True)
         # Check for starting items, songs and equipment
         for key in start_with.keys():
-            if key in mw_weights.keys():
-                start_with[key] = mw_weights[key]
-                mw_weights.pop(key)
+            if key in override_weights.keys():
+                start_with[key] = override_weights[key]
+                override_weights.pop(key)
 
         # Replace the weights
-        for mwkey, mwval in mw_weights.items():
+        for mwkey, mwval in override_weights.items():
             weight_dict[mwkey] = mwval
 
 
-    # If its a co-op seed, make some small changes to weights
-    if weights == "coop":
-        weight_dict["bridge_tokens"] = {i+1: 2.0 for i in range(50)}
-        weight_dict["lacs_tokens"] = {i+1: 2.0 for i in range(50)}
-        weight_dict["mq_dungeons_random"] = {"false": 100}
-        weight_dict["mq_dungeons"] = {"0": 100,}
-        weight_dict["damage_multiplier"] = {"normal": 100}
-
-
-    # Check if bridge_tokens, lacs_tokens, or triforce piece count is set already, if not draw uniformly.
-    number_settings = ["bridge_tokens", "lacs_tokens", "triforce_goal_per_world"]
-    for nset in number_settings:
-        if not nset in weight_dict:
-            weight_dict[nset] = {i+1: 1.0 for i in range(100)}
+    # Generate even weights for tokens and triforce pieces given the max value
+    for nset in ["bridge_tokens", "lacs_tokens", "triforce_goal_per_world"]:
+        nmax = weight_dict[nset + "_max"]
+        weight_dict[nset] = {i+1: 100./nmax for i in range(nmax)}
+        weight_dict.pop(nset + "_max")
 
 
     # Draw the random settings
@@ -226,29 +213,34 @@ def get_command_line_args():
 
     # Parse weights override file
     if args.override is not None:
+        if "global_override_fname" in globals():
+            raise RuntimeError("RSL GENERATOR ERROR: OVERRIDE PROVIDED AS GLOBAL AND VIA COMMAND LINE.")
         if not os.path.isfile(os.path.join("weights", args.override)):
             raise FileNotFoundError("RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY: weights")
-        global override_weights
-        override_weights = args.override
+        override = args.override
+    elif "global_override_fname" in globals():
+        override = global_override_fname
+    else:
+        override = None
 
     # Parse multiworld world count
     worldcount = 1
     if args.worldcount is not None:
         worldcount = int(args.worldcount)
 
-    return args.no_seed, worldcount, args.check_new_settings
+    return args.no_seed, worldcount, override, args.check_new_settings
 
 
 def main():
-    no_seed, worldcount, check_new_settings = get_command_line_args()
+    no_seed, worldcount, override_weights_fname, check_new_settings = get_command_line_args()
 
     if check_new_settings:
         tools.check_for_setting_changes(load_weights_file("random_settings_league_s2.json"), generate_balanced_weights(None))
         return
 
-    max_retries = 10
+    max_retries = 3
     for i in range(max_retries):
-        generate_plando()
+        generate_plando(override_weights_fname)
         tools.init_randomizer_settings(worldcount=worldcount)
         completed_process = tools.generate_patch_file() if not no_seed else None
         if completed_process is None or completed_process.returncode == 0:

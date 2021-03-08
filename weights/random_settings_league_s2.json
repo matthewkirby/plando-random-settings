@@ -1,8 +1,7 @@
 {
-    "hash": {
-        "obj1": "Longshot",
-        "obj2": "Longshot"
-    },
+    "bridge_tokens_max": 100,
+    "lacs_tokens_max": 100,
+    "triforce_goal_per_world_max": 100,
     "logic_rules": {
         "glitchless": 100,
         "glitched": 0,
@@ -19,8 +18,8 @@
         "closed": 33.333333333333336
     },
     "open_door_of_time": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     }, 
     "zora_fountain": {
         "closed": 33.333333333333336,
@@ -65,20 +64,20 @@
         "9": 50
     },
     "triforce_hunt": {
-        "True": 14.28,
-        "False": 85.72
+        "true": 14.28,
+        "false": 85.72
     },
     "bombchus_in_logic": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "one_item_per_dungeon": {
-        "True": 0,
-        "False": 100
+        "true": 0,
+        "false": 100
     },
     "trials_random": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "trials": {
         "0": 14.285714285714286,
@@ -100,16 +99,16 @@
         "all": 33.333333333333336
     },
     "shuffle_grotto_entrances": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_dungeon_entrances": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_overworld_entrances": {
-        "True": 40,
-        "False": 60
+        "true": 40,
+        "false": 60
     },
     "mix_entrance_pools": {
         "all": 0,
@@ -117,24 +116,24 @@
         "off": 60
     },
     "decouple_entrances": {
-        "True": 0,
-        "False": 100
+        "true": 0,
+        "false": 100
     },
     "owl_drops": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "warp_songs": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "spawn_positions": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "mq_dungeons_random": {
-        "True": 0.0,
-        "False": 100
+        "true": 0.0,
+        "false": 100
     },
     "mq_dungeons": {
         "0": 50.0,
@@ -173,8 +172,8 @@
         "random": 16.666
     },
     "shuffle_cows": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_song_items": {
         "song": 33.333333333333336,
@@ -182,28 +181,28 @@
         "any": 33.333333333333336
     },
     "shuffle_kokiri_sword": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_ocarinas": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_weird_egg": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_gerudo_card": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_beans": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_medigoron_carpet_salesman": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "shuffle_mapcompass": {
         "remove": 14.28,
@@ -277,8 +276,8 @@
         "9": 50
     },
     "enhance_map_compass": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "reachable_locations": {
         "all": 50.0,
@@ -286,48 +285,48 @@
         "beatable": 50.0
     },
     "logic_no_night_tokens_without_suns_song": {
-        "True": 0,
-        "False": 100
+        "true": 0,
+        "false": 100
     },
     "skip_child_zelda": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "no_escape_sequence": {
-        "True": 60.0,
-        "False": 40.0
+        "true": 60.0,
+        "false": 40.0
     },
     "no_guard_stealth": {
-        "True": 60.0,
-        "False": 40.0
+        "true": 60.0,
+        "false": 40.0
     },
     "no_epona_race": {
-        "True": 60.0,
-        "False": 40.0
+        "true": 60.0,
+        "false": 40.0
     },
     "skip_some_minigame_phases": {
-        "True": 60.0,
-        "False": 40.0
+        "true": 60.0,
+        "false": 40.0
     },
     "useful_cutscenes": {
-        "True": 0,
-        "False": 100
+        "true": 0,
+        "false": 100
     },
     "fast_chests": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "free_scarecrow": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "chicken_count_random": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "complete_mask_quest": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "chicken_count": {
         "0": 12.5,
@@ -340,8 +339,8 @@
         "7": 12.5
     },
     "big_poe_count_random": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "big_poe_count": {
         "1": 10,
@@ -356,20 +355,20 @@
         "10": 10
     },
     "ocarina_songs": {
-        "True": 0,
-        "False": 100
+        "true": 0,
+        "false": 100
     },
     "correct_chest_sizes": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "fast_bunny_hood": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "clearer_hints": {
-        "True": 100,
-        "False": 0
+        "true": 100,
+        "false": 0
     },
     "hints": {
         "none": 0,
@@ -389,8 +388,8 @@
         "very_strong": 16.666666666666668
     },
     "misc_hints": {
-        "True": 100.0,
-        "False": 0.0
+        "true": 100.0,
+        "false": 0.0
     },
     "text_shuffle": {
         "none": 95,
@@ -405,8 +404,8 @@
         "ohko": 5
     },
     "no_collectible_hearts": {
-        "True": 10,
-        "False": 90
+        "true": 10,
+        "false": 90
     },
     "starting_tod": {
         "default": 10.0,
@@ -463,12 +462,12 @@
         "claim_check": 100
     },
     "start_with_consumables": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "start_with_rupees": {
-        "True": 50.0,
-        "False": 50.0
+        "true": 50.0,
+        "false": 50.0
     },
     "starting_hearts": {
         "3": 50.0,

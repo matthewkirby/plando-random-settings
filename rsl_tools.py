@@ -92,7 +92,8 @@ def generate_patch_file(max_retries=3):
 
 # Compare weights file to settings list to check for changes to the randomizer settings table
 def check_for_setting_changes(weights, randomizer_settings):
-    weights.pop("hash")
+    for ele in ["bridge_tokens_max", "lacs_tokens_max", "triforce_goal_per_world_max"]:
+        weights.pop(ele)
 
     # Find new or changed settings by name
     old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))
@@ -110,7 +111,7 @@ def check_for_setting_changes(weights, randomizer_settings):
     # Find new or changed options
     for setting in weights.keys():
         # Randomizer has appropriate types for each variable but we store options as strings
-        randomizer_settings_strings = set(map(str, list(randomizer_settings[setting].keys())))
+        randomizer_settings_strings = set(map(lambda x:x.lower(), map(str, list(randomizer_settings[setting].keys()))))
         old_options = list(set(weights[setting].keys()) - randomizer_settings_strings)
         new_options = list(randomizer_settings_strings - set(weights[setting].keys()))
         if len(old_options) > 0:

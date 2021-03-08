@@ -1,0 +1,15 @@
+{
+    "bridge_tokens_max": 50,
+    "lacs_tokens_max": 50,
+    "triforce_goal_per_world_max": 50,
+    "mq_dungeons": {
+        "0": 100
+    },
+    "damage_multiplier": {
+        "normal": 40
+    },
+    "mq_dungeons_random": {
+        "True": 0.0,
+        "False": 100
+    }
+}
