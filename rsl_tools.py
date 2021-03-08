@@ -88,6 +88,7 @@ def generate_patch_file(max_retries=3):
     return completed_process
 
 
+# This function will probably need some more meat to it. If the user is patching the z64 file in the same directory it will find that
 def find_rom_file():
     rom_filename = glob.glob(os.path.join(os.getcwd(), "**", "*.z64"), recursive=True) + glob.glob(os.path.join(os.getcwd(), "**", "*.Z64"), recursive=True)
     if len(rom_filename) == 0:
