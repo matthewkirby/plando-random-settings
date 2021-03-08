@@ -243,7 +243,7 @@ def get_command_line_args():
 def main():
     no_seed, worldcount = get_command_line_args()
 
-    max_retries = 10
+    max_retries = 3
     for i in range(max_retries):
         generate_plando()
         tools.init_randomizer_settings(worldcount=worldcount)

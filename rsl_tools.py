@@ -4,6 +4,7 @@ import zipfile
 import shutil
 import os
 import json
+import glob
 from version import randomizer_commit, randomizer_version
 try: 
     import requests
@@ -55,11 +56,8 @@ def check_version():
 def init_randomizer_settings(worldcount=1):
     rootdir = os.getcwd()
 
-    with open('path_to_rom.txt', 'r') as fp:
-        path_to_rom = fp.readline()
-
     randomizer_settings = {
-        "rom": os.path.join(rootdir, path_to_rom),
+        "rom": find_rom_file(),
         "output_dir": os.path.join(rootdir, 'patches'),
         "compress_rom": "Patch", 
         "enable_distribution_file": "True",
@@ -88,3 +86,10 @@ def generate_patch_file(max_retries=3):
             break
         break
     return completed_process
+
+
+def find_rom_file():
+    rom_filename = glob.glob(os.path.join(os.getcwd(), "**", "*.z64"), recursive=True) + glob.glob(os.path.join(os.getcwd(), "**", "*.Z64"), recursive=True)
+    if len(rom_filename) == 0:
+        raise FileNotFoundError("RSL GENERATOR ERROR: NO .z64 ROM FILE FOUND.")
+    return rom_filename[0]
