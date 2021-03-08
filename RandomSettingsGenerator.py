@@ -116,10 +116,8 @@ def generate_plando():
     # Delete residual files from previous runs
     remove_me = [os.path.join("data", "random_settings.json"), "ERRORLOG.TXT"]
     for file_to_delete in remove_me:
-        try:
+        if os.path.isfile(file_to_delete):
             os.remove(file_to_delete)
-        except FileNotFoundError:
-            pass
 
 
     # Load the weight dictionary
@@ -222,6 +220,7 @@ def get_command_line_args():
     parser.add_argument("--no_seed", help="Suppresses the generation of a patch file.", action="store_true")
     parser.add_argument("--override", help="Use the specified weights file over the default RSL weights.")
     parser.add_argument("--worldcount", help="Generate a seed with more than 1 world.")
+    parser.add_argument("--check_new_settings", help="When the version updates, run with this flag to find changes to settings names or new settings.", action="store_true")
     
     args = parser.parse_args()
 
@@ -237,11 +236,15 @@ def get_command_line_args():
     if args.worldcount is not None:
         worldcount = int(args.worldcount)
 
-    return args.no_seed, worldcount
+    return args.no_seed, worldcount, args.check_new_settings
 
 
 def main():
-    no_seed, worldcount = get_command_line_args()
+    no_seed, worldcount, check_new_settings = get_command_line_args()
+
+    if check_new_settings:
+        tools.check_for_setting_changes(load_weights_file("random_settings_league_s2.json"), generate_balanced_weights(None))
+        return
 
     max_retries = 10
     for i in range(max_retries):
