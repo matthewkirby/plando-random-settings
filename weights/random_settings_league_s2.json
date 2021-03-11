@@ -1,8 +1,7 @@
 {
-    "hash": {
-        "obj1": "Longshot",
-        "obj2": "Longshot"
-    },
+    "bridge_tokens_max": 100,
+    "lacs_tokens_max": 100,
+    "triforce_goal_per_world_max": 100,
     "logic_rules": {
         "glitchless": 100,
         "glitched": 0,
