@@ -232,7 +232,7 @@ def get_command_line_args():
 
 
 def main():
-    no_seed, worldcount, check_new_settings = get_command_line_args()
+    no_seed, worldcount, override_weights_fname, check_new_settings = get_command_line_args()
 
     if check_new_settings:
         tools.check_for_setting_changes(load_weights_file("random_settings_league_s2.json"), generate_balanced_weights(None))
