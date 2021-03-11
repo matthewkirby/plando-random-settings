@@ -246,11 +246,11 @@
         "on_lacs": 33.33
     },
     "lacs_condition": {
-        "lacs_vanilla": 12.5,
-        "lacs_medallions": 12.5,
-        "lacs_stones": 12.5,
-        "lacs_dungeons": 12.5,
-        "lacs_tokens": 50
+        "vanilla": 12.5,
+        "medallions": 12.5,
+        "stones": 12.5,
+        "dungeons": 12.5,
+        "tokens": 50
     },
     "lacs_medallions": {
         "1": 10,
