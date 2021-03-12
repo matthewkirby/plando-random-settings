@@ -52,7 +52,6 @@ def restrict_one_entrance_randomizer(_, random_settings):
         setting, off_option = item.split(":")
         if random_settings[setting] != off_option:
             enabled_er.append(setting)
-    print(enabled_er)
 
     # If too many are enabled, chose one to keep on
     if len(enabled_er) < 2:
@@ -63,5 +62,4 @@ def restrict_one_entrance_randomizer(_, random_settings):
     for item in erlist:
         setting, off_option = item.split(":")
         if setting != keepon:
-            print("Turning off", setting)
             random_settings[setting] = off_option
