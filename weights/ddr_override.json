@@ -1,5 +1,7 @@
 {
-    "useful_cutscenes": {
-        "true": 1
+    "weights": {
+        "useful_cutscenes": {
+            "true": 1
+        }
     }
 }
