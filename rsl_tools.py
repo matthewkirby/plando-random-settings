@@ -98,10 +98,6 @@ def find_rom_file():
 
 # Compare weights file to settings list to check for changes to the randomizer settings table
 def check_for_setting_changes(weights, randomizer_settings):
-    for ele in ["bridge_tokens_max", "lacs_tokens_max", "triforce_goal_per_world_max"]:
-        if ele in weights:
-            weights.pop(ele)
-
     # Find new or changed settings by name
     old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))
     new_settings = list(set(randomizer_settings.keys()) - set(weights.keys()))
