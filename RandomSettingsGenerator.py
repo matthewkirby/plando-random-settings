@@ -1,8 +1,7 @@
 import json, random, sys, os, traceback, argparse
 import rsl_tools as tools
-import roll_settings as rs
 tools.check_version()
-
+import roll_settings as rs
 
 # Please set the weights file you with to load
 weights = "RSL" # The default Random Settings League Season 2 weights
