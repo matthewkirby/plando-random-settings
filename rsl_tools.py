@@ -90,9 +90,15 @@ def generate_patch_file(max_retries=3):
 
 # This function will probably need some more meat to it. If the user is patching the z64 file in the same directory it will find that
 def find_rom_file():
-    rom_filename = glob.glob(os.path.join(os.getcwd(), "**", "*.z64"), recursive=True) + glob.glob(os.path.join(os.getcwd(), "**", "*.Z64"), recursive=True)
+    rom_extensions = ["*.n64", "*.N64", "*.z64", "*.Z64"]
+    for ext in rom_extensions:
+        rom_filename = glob.glob(os.path.join(os.getcwd(), "**", ext), recursive=True)
+        if len(rom_filename) > 0:
+            break
+    
+    # No rom file found
     if len(rom_filename) == 0:
-        raise FileNotFoundError("RSL GENERATOR ERROR: NO .z64 ROM FILE FOUND.")
+        raise FileNotFoundError("RSL GENERATOR ERROR: NO .n64 or .z64 ROM FILE FOUND.")
     return rom_filename[0]
 
 
