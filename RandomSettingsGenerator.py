@@ -64,7 +64,7 @@ def main():
 
     # If we only want to check for new/changed settings
     if check_new_settings:
-        _, rslweights = rs.load_weights_file("random_settings_league_s2.json")
+        _, rslweights = rs.load_weights_file("rsl_season3.json")
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
