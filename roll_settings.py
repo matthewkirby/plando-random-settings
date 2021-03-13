@@ -115,7 +115,6 @@ def generate_plando(weights, override_weights_fname):
 
                 # Handling removes
                 if key.startswith("remove_"):
-                    print("removing", key)
                     option = key.split("remove_")[1]
                     if option in weight_options:
                         for item in value:
