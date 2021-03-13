@@ -148,9 +148,9 @@
             "false": 3
         },
         "mix_entrance_pools": {
-            "all": 0,
-            "indoor": 1,
-            "off": 1
+            "all": 1,
+            "indoor": 5,
+            "off": 5
         },
         "decouple_entrances": {
             "true": 0,
@@ -169,8 +169,8 @@
             "false": 1
         },
         "mq_dungeons_random": {
-            "true": 0,
-            "false": 1
+            "true": 1,
+            "false": 9
         },
         "mq_dungeons": {
             "0": 33,
@@ -414,15 +414,15 @@
             "always": 8
         },
         "hint_dist": {
-            "balanced": 4,
+            "balanced": 1,
             "bingo": 0,
             "ddr": 0,
             "scrubs": 1,
-            "strong": 4,
-            "tournament": 1,
-            "tournament_s3": 1,
-            "useless": 4,
-            "very_strong": 4
+            "strong": 1,
+            "tournament": 0,
+            "tournament_s3": 0,
+            "useless": 1,
+            "very_strong": 1
         },
         "misc_hints": {
             "true": 1,
