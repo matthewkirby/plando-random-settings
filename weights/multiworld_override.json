@@ -1,0 +1,54 @@
+{
+    "weights": {
+        "open_door_of_time": {
+            "true": 100,
+            "false": 0
+        },
+        "zora_fountain": {
+            "closed": 0,
+            "adult": 0,
+            "open": 100
+        },
+        "shuffle_overworld_entrances": {
+            "true": 0,
+            "false": 100
+        },
+        "free_scarecrow": {
+            "true": 100,
+            "false": 0
+        },
+        "hints": {
+            "none": 0,
+            "mask": 0,
+            "agony": 25,
+            "always": 75
+        },
+        "hint_dist": {
+            "balanced": 20,
+            "bingo": 0,
+            "strong": 20,
+            "tournament": 20,
+            "tournament_s3": 20,
+            "useless": 0,
+            "very_strong": 20
+        },
+        "damage_multiplier": {
+            "half": 25,
+            "normal": 50,
+            "double": 25,
+            "quadruple": 0,
+            "ohko": 0
+        },
+        "no_collectible_hearts": {
+            "true": 0,
+            "false": 100
+        },
+        "starting_songs": [
+            "suns_song"
+        ],
+        "skip_child_zelda": {
+            "true": 0,
+            "false": 100
+        }
+    }
+}
