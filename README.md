@@ -9,8 +9,18 @@ This script allows its user to randomize every setting in the Randomizer, not ju
 4. Run the code by double clicking `RandomSettingsGenerator.py` or running `python3 RandomSettingsGenerator.py` (or however you run python files on your system) via the command line.
 5. Your patch file will be saved in the `patches` directory.
 
-## Multiworld/Dungeon Door Requirement (DDR)
-- If you are playing a format besides an official Random Setting League race, you may wish to edit the weights. We also provide presets for multiworld and the DDR ruleset at the moment. To use these presets, open `RandomSettingsGenerator.py` in a text editor and remove the `# ` (including the space after the `#`) from line 16 for multiworld or from line 17 for DDR.
+## Rolling seeds with Weight Overrides
+If you are playing a format besides an official Random Setting League race, you may wish to edit the weights. 
+
+1. Put the weights you wish to change into a JSON file in the weights folder
+2. Open `RandomSettingsGenerator.py` in a text editor and add the line `global_override_fname = "<override file name>.json"` where you replace `<overworld file name>` with the name of your weights file.
+
+We simplify this process by providing some presets. To use these presets, open `RandomSettingsGenerator.py` in a text editor and remove the `# ` (including the space after the `#`) from...
+
+- Line 10 for multiworld
+- Line 11 for DDR
+- Line 12 for Beginner
+- Line 13 for Co-Op
 
 ## Command Line Interface Options
 If you opt to run the script via the command line, you have several options available to you

@@ -4,7 +4,7 @@ tools.check_version()
 import roll_settings as rs
 
 # Please set the weights file you with to load
-weights = "RSL" # The default Random Settings League Season 2 weights
+weights = "RSL" # The default Random Settings League Season 3 weights
 # weights = "full-random" # Every setting with even weights
 # weights = "my_weights.json" # Provide your own weights file. If the specified file does not exist, this will create one with equal weights
 # global_override_fname = "multiworld_override.json"
