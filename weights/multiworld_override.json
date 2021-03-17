@@ -45,10 +45,6 @@
         },
         "starting_songs": [
             "suns_song"
-        ],
-        "skip_child_zelda": {
-            "true": 0,
-            "false": 100
-        }
+        ]
     }
 }
