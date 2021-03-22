@@ -18,6 +18,9 @@ def error_handler(type, value, tb):
     with open("ERRORLOG.TXT", 'w') as errout:
         traceback.print_exception(type, value, tb, file=errout)
         traceback.print_exception(type, value, tb, file=sys.stdout)
+
+    if type == tools.RandomizerError:
+        sys.exit(3)
 sys.excepthook = error_handler
 
 
@@ -70,7 +73,7 @@ def main():
     # Clean up residual files from previous run
     cleanup_previous_run()
 
-    max_retries = 3
+    max_retries = 5
     for i in range(max_retries):
         rs.generate_plando(weights, override_weights_fname)
         tools.init_randomizer_settings(worldcount=worldcount)
@@ -78,7 +81,7 @@ def main():
         if completed_process is None or completed_process.returncode == 0:
             break
         if i == max_retries-1 and completed_process.returncode != 0:
-            raise RuntimeError(completed_process.stderr.decode("utf-8"))
+            raise tools.RandomizerError(completed_process.stderr.decode("utf-8"))
 
     if not no_seed:
         print(completed_process.stderr.decode("utf-8").split("Patching ROM.")[-1])
