@@ -8,7 +8,7 @@ import glob
 from version import randomizer_commit, randomizer_version
 try: 
     import requests
-except:
+except ModuleNotFoundError:
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
     import requests
 
@@ -129,3 +129,7 @@ def check_for_setting_changes(weights, randomizer_settings):
         if len(new_options) > 0:
             for name in new_options:
                 print(f"{setting} option {name} is new!")
+
+
+class RandomizerError(Exception):
+    pass
