@@ -282,11 +282,11 @@
             "on_lacs": 8
         },
         "lacs_condition": {
-            "lacs_vanilla": 3,
-            "lacs_medallions": 3,
-            "lacs_stones": 3,
-            "lacs_dungeons": 3,
-            "lacs_tokens": 8
+            "vanilla": 3,
+            "medallions": 3,
+            "stones": 3,
+            "dungeons": 3,
+            "tokens": 8
         },
         "lacs_medallions": {
             "1": 1,
@@ -422,7 +422,8 @@
             "tournament": 0,
             "tournament_s3": 0,
             "useless": 1,
-            "very_strong": 1
+            "very_strong": 1,
+            "mw2": 0
         },
         "misc_hints": {
             "true": 1,

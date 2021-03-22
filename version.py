@@ -1,6 +1,6 @@
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 version_hash_1 = "Map"
 version_hash_2 = "Map"
 
-randomizer_version = '6.0.36 R-1'
-randomizer_commit = '26c70bd172aaebe9c90820d60c950071b5691f3e'
+randomizer_version = '6.0.41 R-1'
+randomizer_commit = 'd6755f8e4b1c6b5d5612e583f8f91fa303f1669b'
