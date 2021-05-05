@@ -39,7 +39,7 @@ def disable_lacs_condition_ifnot_ganonbosskey(_, random_settings):
     avoid requiring constant trips every couple skulltula tokens, we are disabling this
     setting if the ganon boss key is not there (if its there the condition is listed on the
     Temple of Time pedestal """
-    if random_settings['shuffle_ganon_bosskey'] != 'on_lacs':
+    if random_settings['shuffle_ganon_bosskey'] != 'on_lacs' or random_settings['triforce_hunt'] == 'true':
         random_settings['lacs_condition'] = 'lacs_vanilla'
 
 
