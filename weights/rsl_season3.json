@@ -423,7 +423,8 @@
             "tournament_s3": 0,
             "useless": 1,
             "very_strong": 1,
-            "mw2": 0
+            "mw2": 0,
+            "league": 0
         },
         "misc_hints": {
             "true": 1,
