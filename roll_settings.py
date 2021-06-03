@@ -176,7 +176,7 @@ def generate_plando(weights, override_weights_fname):
         "file_hash": [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
     }
 
-    plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S}.json'
+    plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
 
     if not os.path.isdir("data"):
         os.mkdir("data")
