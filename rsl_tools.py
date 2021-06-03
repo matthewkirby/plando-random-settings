@@ -51,32 +51,36 @@ def check_version():
         download_randomizer()
     return
 
-
 # This function will take things from the GUI eventually.
-def init_randomizer_settings(worldcount=1):
-    rootdir = os.getcwd()
-
-    randomizer_settings = {
+def randomizer_settings(rootdir=os.getcwd(), plando_filename='random_settings.json', worldcount=1):
+    return {
         "rom": find_rom_file(),
         "output_dir": os.path.join(rootdir, 'patches'),
-        "compress_rom": "Patch", 
+        "compress_rom": "Patch",
         "enable_distribution_file": "True",
-        "distribution_file": os.path.join(rootdir, "data", "random_settings.json"),
+        "distribution_file": os.path.join(rootdir, "data", plando_filename),
         "create_spoiler": "True",
         "world_count": worldcount
     }
 
+def init_randomizer_settings(plando_filename='random_settings.json', worldcount=1):
+    settings = randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+
     with open(os.path.join('data', 'randomizer_settings.json'), 'w') as fp:
-        json.dump(randomizer_settings, fp, indent=4)
+        json.dump(settings, fp, indent=4)
 
 
-def generate_patch_file(max_retries=3):
+def generate_patch_file(plando_filename='random_settings.json', worldcount=1, max_retries=3):
+    settings = json.dumps(randomizer_settings(plando_filename=plando_filename, worldcount=worldcount))
+
     retries = 0
     while(True):
         print(f"RSL GENERATOR: RUNNING THE RANDOMIZER - ATTEMPT {retries+1} OF {max_retries}")
         completed_process = subprocess.run(
-            [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings", os.path.join("..", "data", "randomizer_settings.json")],
-            capture_output=True)
+            [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings=-"],
+            capture_output=True,
+            input=settings,
+        )
 
         if completed_process.returncode != 0:
             retries += 1

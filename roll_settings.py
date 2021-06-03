@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 import json
 import random
 import conditionals as conds
@@ -175,7 +176,11 @@ def generate_plando(weights, override_weights_fname):
         "file_hash": [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
     }
 
+    plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S}.json'
+
     if not os.path.isdir("data"):
         os.mkdir("data")
-    with open(os.path.join("data", "random_settings.json"), 'w') as fp:
+    with open(os.path.join("data", plando_filename), 'w') as fp:
         json.dump(output, fp, indent=4)
+
+    return plando_filename

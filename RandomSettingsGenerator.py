@@ -3,6 +3,8 @@ import rsl_tools as tools
 tools.check_version()
 import roll_settings as rs
 
+LOG_ERRORS = True
+
 # Please set the weights file you with to load
 weights = "RSL" # The default Random Settings League Season 3 weights
 # weights = "full-random" # Every setting with even weights
@@ -15,30 +17,32 @@ weights = "RSL" # The default Random Settings League Season 3 weights
 
 # Handle all uncaught exceptions with logging
 def error_handler(type, value, tb):
-    with open("ERRORLOG.TXT", 'w') as errout:
-        traceback.print_exception(type, value, tb, file=errout)
-        traceback.print_exception(type, value, tb, file=sys.stdout)
+    if LOG_ERRORS:
+        with open("ERRORLOG.TXT", 'w') as errout:
+            traceback.print_exception(type, value, tb, file=errout)
+    traceback.print_exception(type, value, tb, file=sys.stdout)
 
     if type == tools.RandomizerError:
         sys.exit(3)
 sys.excepthook = error_handler
 
 
-def cleanup_previous_run():
-    # Delete residual files from previous runs
-    remove_me = [os.path.join("data", "random_settings.json"), "ERRORLOG.TXT"]
-    for file_to_delete in remove_me:
-        if os.path.isfile(file_to_delete):
-            os.remove(file_to_delete)
+def cleanup(file_to_delete):
+    # Delete residual files that are no longer needed
+    if os.path.isfile(file_to_delete):
+        os.remove(file_to_delete)
 
 
 def get_command_line_args():
+    global LOG_ERRORS
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--no_seed", help="Suppresses the generation of a patch file.", action="store_true")
     parser.add_argument("--override", help="Use the specified weights file over the default RSL weights.")
     parser.add_argument("--worldcount", help="Generate a seed with more than 1 world.")
     parser.add_argument("--check_new_settings", help="When the version updates, run with this flag to find changes to settings names or new settings.", action="store_true")
-    
+    parser.add_argument("--no_log_errors", help="Only show errors in the console, don't log them to a file.", action="store_true")
+
     args = parser.parse_args()
 
     # Parse weights override file
@@ -58,6 +62,9 @@ def get_command_line_args():
     if args.worldcount is not None:
         worldcount = int(args.worldcount)
 
+    if args.no_log_errors:
+        LOG_ERRORS = False
+
     return args.no_seed, worldcount, override, args.check_new_settings
 
 
@@ -70,21 +77,29 @@ def main():
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
-    # Clean up residual files from previous run
-    cleanup_previous_run()
+    if LOG_ERRORS:
+        # Clean up error log from previous run, if any
+        cleanup('ERRORLOG.TXT')
 
+    plandos_to_cleanup = []
     max_retries = 5
     for i in range(max_retries):
-        rs.generate_plando(weights, override_weights_fname)
-        tools.init_randomizer_settings(worldcount=worldcount)
-        completed_process = tools.generate_patch_file() if not no_seed else None
-        if completed_process is None or completed_process.returncode == 0:
-            break
-        if i == max_retries-1 and completed_process.returncode != 0:
-            raise tools.RandomizerError(completed_process.stderr.decode("utf-8"))
+        plando_filename = rs.generate_plando(weights, override_weights_fname)
+        if no_seed:
+            tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+        else:
+            plandos_to_cleanup.append(plando_filename)
+            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)
+            if completed_process.returncode == 0:
+                break
+            if i == max_retries-1 and completed_process.returncode != 0:
+                raise tools.RandomizerError(completed_process.stderr.decode("utf-8"))
 
     if not no_seed:
         print(completed_process.stderr.decode("utf-8").split("Patching ROM.")[-1])
+
+    for plando_filename in plandos_to_cleanup:
+        cleanup(os.path.join('data', plando_filename))
 
 
 if __name__ == "__main__":
