@@ -80,6 +80,7 @@ def generate_patch_file(plando_filename='random_settings.json', worldcount=1, ma
             [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings=-"],
             capture_output=True,
             input=settings,
+            encoding='utf-8',
         )
 
         if completed_process.returncode != 0:
