@@ -93,10 +93,10 @@ def main():
             if completed_process.returncode == 0:
                 break
             if i == max_retries-1 and completed_process.returncode != 0:
-                raise tools.RandomizerError(completed_process.stderr.decode("utf-8"))
+                raise tools.RandomizerError(completed_process.stderr)
 
     if not no_seed:
-        print(completed_process.stderr.decode("utf-8").split("Patching ROM.")[-1])
+        print(completed_process.stderr.split("Patching ROM.")[-1])
 
     for plando_filename in plandos_to_cleanup:
         cleanup(os.path.join('data', plando_filename))
