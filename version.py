@@ -1,4 +1,4 @@
-__version__ = "2.0.4"
+__version__ = "2.0.5"
 version_hash_1 = "Cucco"
 version_hash_2 = "Cucco"
 
