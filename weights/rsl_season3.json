@@ -2,6 +2,7 @@
     "options": {
         "bridge_tokens_max": 100,
         "lacs_tokens_max": 100,
+        "triforce_goal_per_world_min": 2,
         "triforce_goal_per_world_max": 100,
         "starting_items": true,
         "conditionals": {

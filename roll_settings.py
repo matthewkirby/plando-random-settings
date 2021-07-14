@@ -132,11 +132,9 @@ def generate_plando(weights, override_weights_fname):
     ####################################################################################
     # Generate even weights for tokens and triforce pieces given the max value (Maybe put this into the step that loads the weights)
     for nset in ["bridge_tokens", "lacs_tokens", "triforce_goal_per_world"]:
-        kw = nset + "_max"
-        nmax = weight_options[kw] if kw in weight_options else 100
-        weight_dict[nset] = {i+1: 100./nmax for i in range(nmax)}
-        if kw in weight_dict:
-            weight_dict.pop(kw)
+        nmin = weight_options.get(nset + "_min", 1)
+        nmax = weight_options.get(nset + "_max", 100)
+        weight_dict[nset] = {i: 1 for i in range(nmin, nmax + 1)}
     ####################################################################################
 
     # Draw the random settings
