@@ -9,7 +9,8 @@
             "exclude_ice_trap_misery": true,
             "disable_fortresskeys_independence": true,
             "disable_lacs_condition_ifnot_ganonbosskey": true,
-            "restrict_one_entrance_randomizer": false
+            "restrict_one_entrance_randomizer": false,
+            "workaround_th_scz_bug": true
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
