@@ -31,7 +31,7 @@ def generate_balanced_weights(fname="default_weights.json"):
                 list(get_settings_from_tab("other_tab")) + \
                 list(get_settings_from_tab("starting_tab"))
 
-    exclude_from_weights = ["bridge_tokens", "lacs_tokens", "triforce_goal_per_world", "disabled_locations",
+    exclude_from_weights = ["bridge_tokens", "ganon_bosskey_tokens", "triforce_goal_per_world", "disabled_locations",
                             "allowed_tricks", "starting_equipment", "starting_items", "starting_songs"]
     weight_dict = {}
     for name in settings_to_randomize:
@@ -131,7 +131,7 @@ def generate_plando(weights, override_weights_fname):
     # Make a new function that parses the weights file that does this stuff
     ####################################################################################
     # Generate even weights for tokens and triforce pieces given the max value (Maybe put this into the step that loads the weights)
-    for nset in ["bridge_tokens", "lacs_tokens", "triforce_goal_per_world"]:
+    for nset in ["bridge_tokens", "ganon_bosskey_tokens", "triforce_goal_per_world"]:
         kw = nset + "_max"
         nmax = weight_options[kw] if kw in weight_options else 100
         weight_dict[nset] = {i+1: 100./nmax for i in range(nmax)}

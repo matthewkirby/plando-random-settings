@@ -114,6 +114,8 @@ def find_rom_file():
 
 # Compare weights file to settings list to check for changes to the randomizer settings table
 def check_for_setting_changes(weights, randomizer_settings):
+    ignore_list = ["tricks_list_msg", "bingosync_url"]
+
     # Find new or changed settings by name
     old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))
     new_settings = list(set(randomizer_settings.keys()) - set(weights.keys()))
@@ -124,7 +126,8 @@ def check_for_setting_changes(weights, randomizer_settings):
         print("-------------------------------------")
     if len(new_settings) > 0:
         for setting in new_settings:
-            print(f"{setting} with options {list(randomizer_settings[setting].keys())} is a new setting!")
+            if setting not in ignore_list:
+                print(f"{setting} with options {list(randomizer_settings[setting].keys())} is a new setting!")
         print("-------------------------------------")
 
     # Find new or changed options
