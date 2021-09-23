@@ -31,7 +31,7 @@ def download_randomizer():
     # Extract the zip file and add __init__.py
     with zipfile.ZipFile(zippath, 'r') as zf:
         zf.extractall('.')
-    os.rename(f'OoT-Randomizer-{randomizer_commit}', 'randomizer')
+    shutil.move(f'OoT-Randomizer-{randomizer_commit}', 'randomizer')
     with open(os.path.join('randomizer', '__init__.py'), 'w') as fp:
         pass
 
