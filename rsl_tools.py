@@ -5,6 +5,7 @@ import shutil
 import os
 import json
 import glob
+import stat
 from version import randomizer_commit, randomizer_version
 try: 
     import requests
@@ -33,6 +34,10 @@ def download_randomizer():
     os.rename(f'OoT-Randomizer-{randomizer_commit}', 'randomizer')
     with open(os.path.join('randomizer', '__init__.py'), 'w') as fp:
         pass
+
+    # Restore permissions in the unzipped randomizer
+    for executable in [os.path.join('randomizer', 'OoTRandomizer.py'), os.path.join('randomizer', 'Decompress', 'Decompress')]:
+        os.chmod(executable, os.stat(executable).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     # Delete the zip file
     os.remove(zippath)
