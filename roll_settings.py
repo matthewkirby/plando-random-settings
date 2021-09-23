@@ -159,15 +159,19 @@ def generate_plando(weights, override_weights_fname):
 
     # Format numbers and bools to not be strings
     for setting, value in random_settings.items():
-        if value == "false":
-            random_settings[setting] = False
-        elif value == "true":
-            random_settings[setting] = True
-        else:
-            try:
-                random_settings[setting] = int(value)
-            except:
-                random_settings[setting] = value
+        setting_type = get_setting_info(setting).type
+        if setting_type is bool:
+            if value == "true":
+                value = True
+            elif value == "false":
+                value = False
+            else:
+                raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
+        elif setting_type is int:
+            value = int(value)
+        elif setting_type is not str:
+            raise NotImplementedError(f'Unsupported setting type: {setting_type!r}')
+        random_settings[setting] = value
 
 
     # Save the output plando
