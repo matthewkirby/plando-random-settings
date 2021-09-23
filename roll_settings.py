@@ -169,8 +169,8 @@ def generate_plando(weights, override_weights_fname):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str:
-            raise NotImplementedError(f'Unsupported setting type: {setting_type!r}')
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment"]:
+            raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 
 
