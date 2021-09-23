@@ -1,7 +1,7 @@
 {
     "options": {
         "bridge_tokens_max": 75,
-        "lacs_tokens_max": 75,
+        "ganon_bosskey_tokens_max": 75,
         "remove_tricks": [
             "logic_lens_gtg_mq",
             "logic_lens_jabu_mq",
