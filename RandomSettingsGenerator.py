@@ -73,7 +73,7 @@ def main():
 
     # If we only want to check for new/changed settings
     if check_new_settings:
-        _, rslweights = rs.load_weights_file("rsl_season3.json")
+        _, rslweights = rs.load_weights_file("rsl_season4.json")
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
@@ -87,6 +87,7 @@ def main():
         plando_filename = rs.generate_plando(weights, override_weights_fname)
         if no_seed:
             tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+            break
         else:
             plandos_to_cleanup.append(plando_filename)
             completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)

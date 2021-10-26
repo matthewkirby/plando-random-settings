@@ -75,7 +75,7 @@ def draw_choices_from_pool(itempool):
 def generate_plando(weights, override_weights_fname):
     # Load the weight dictionary
     if weights == "RSL":
-        weight_options, weight_dict = load_weights_file("rsl_season3.json")
+        weight_options, weight_dict = load_weights_file("rsl_season4.json")
     elif weights == "full-random":
         weight_options = None
         weight_dict = generate_balanced_weights(None)
@@ -148,7 +148,7 @@ def generate_plando(weights, override_weights_fname):
     # Add starting items, conditionals, tricks and excluded locations
     if weight_options is not None:
         if "conditionals" in weight_options:
-            conds.parse_conditionals(weight_options["conditionals"], weight_dict, random_settings)
+            conds.parse_conditionals(weight_options["conditionals"], weight_dict, random_settings, start_with)
         if "tricks" in weight_options:
             random_settings["allowed_tricks"] = weight_options["tricks"]
         if "disabled_locations" in weight_options:
