@@ -11,7 +11,8 @@
             "restrict_one_entrance_randomizer": [false],
             "workaround_th_scz_bug": [true],
             "random_scrubs_start_wallet": [true],
-            "dynamic_skulltula_wincon": [true, 15, "40/40/20"]
+            "dynamic_skulltula_wincon": [true, 15, "40/40/20"],
+            "shuffle_goal_hints": [true, 50]
         },
         "tricks": [
             "logic_fewer_tunic_requirements",

@@ -1,4 +1,6 @@
 import random
+import json
+import os
 
 
 def parse_conditionals(conditional_list, weight_dict, random_settings, extra_starting_items):
@@ -72,7 +74,7 @@ def random_scrubs_start_wallet(random_settings, weight_dict, extra_starting_item
 
 def dynamic_skulltula_wincon(random_settings, **kwargs):
     """ Rolls skull win condition seperately. Takes extra inputs [weight of skull win con, "bridge%/gbk%/both"] """
-    chance_of_skull_wincon = 100 #int(kwargs['cparams'][0])
+    chance_of_skull_wincon = int(kwargs['cparams'][0])
     weights = [int(x) for x in kwargs['cparams'][1].split('/')]
 
     # Roll for a skull win condition
@@ -86,3 +88,24 @@ def dynamic_skulltula_wincon(random_settings, **kwargs):
         random_settings['bridge'] = 'tokens'
     if whichtype in ['gbk', 'both']:
         random_settings['shuffle_ganon_bosskey'] = 'tokens'
+
+
+def shuffle_goal_hints(random_settings, **kwargs):
+    """ Swaps Way of the Hero hints with Goal hints. Takes an extra input [how often to swap] """
+    chance_of_goals = int(kwargs['cparams'][0])
+    current_distro = random_settings['hint_dist']
+
+    # Roll to swap goal hints
+    goals = random.choices([True, False], weights=[chance_of_goals, 100-chance_of_goals])[0]
+    if not goals or current_distro == 'useless':
+        return
+
+    # Load the distro
+    with open(os.path.join('randomizer', 'data', 'Hints', current_distro+'.json')) as fin:
+        distroin = json.load(fin)
+
+    # Perform the swap
+    woth = {**distroin['distribution']['woth']}
+    distroin['distribution']['woth'] = distroin['distribution']['goal']
+    distroin['distribution']['goal'] = woth
+    random_settings['hint_dist_user'] = distroin

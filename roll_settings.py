@@ -169,7 +169,7 @@ def generate_plando(weights, override_weights_fname):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment"]:
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user"]:
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 
@@ -181,6 +181,7 @@ def generate_plando(weights, override_weights_fname):
     }
 
     plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
+    # plando_filename = f'random_settings.json'
 
     if not os.path.isdir("data"):
         os.mkdir("data")
