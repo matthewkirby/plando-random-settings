@@ -54,10 +54,3 @@ def restrict_one_entrance_randomizer(_, random_settings):
         setting, off_option = item.split(":")
         if setting != keepon:
             random_settings[setting] = off_option
-
-def workaround_th_scz_bug(weight_dict, random_settings):
-    """ Makes sure https://github.com/TestRunnerSRL/OoT-Randomizer/issues/1331 won't happen. """
-    weights = weight_dict['triforce_goal_per_world']
-    if random_settings['triforce_hunt'] and random_settings['triforce_goal_per_world'] == 1 and random_settings['shuffle_song_items'] == 'any' and random_settings['skip_child_zelda']:
-        weights.pop(1)
-        random_settings['triforce_goal_per_world'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]

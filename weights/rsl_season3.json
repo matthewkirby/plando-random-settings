@@ -8,8 +8,7 @@
             "exclude_minimal_triforce_hunt": true,
             "exclude_ice_trap_misery": true,
             "disable_hideoutkeys_independence": true,
-            "restrict_one_entrance_randomizer": false,
-            "workaround_th_scz_bug": true
+            "restrict_one_entrance_randomizer": false
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
