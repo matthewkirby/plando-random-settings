@@ -58,14 +58,6 @@ def restrict_one_entrance_randomizer(random_settings, **kwargs):
             random_settings[setting] = off_option
 
 
-def workaround_th_scz_bug(random_settings, weight_dict, **kwargs):
-    """ Makes sure https://github.com/TestRunnerSRL/OoT-Randomizer/issues/1331 won't happen. """
-    weights = weight_dict['triforce_goal_per_world']
-    if random_settings['triforce_hunt'] and random_settings['triforce_goal_per_world'] == 1 and random_settings['shuffle_song_items'] == 'any' and random_settings['skip_child_zelda']:
-        weights.pop(1)
-        random_settings['triforce_goal_per_world'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]
-
-
 def random_scrubs_start_wallet(random_settings, weight_dict, extra_starting_items, **kwargs):
     """ If random scrubs is enabled, add a wallet to the extra starting items """
     if random_settings['shuffle_scrubs'] == 'random':
