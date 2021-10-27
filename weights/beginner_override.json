@@ -3,7 +3,7 @@
         "bridge_tokens_max": 50,
         "ganon_bosskey_tokens_max": 50,
         "extra_conditionals": {
-            "restrict_one_entrance_randomizer": true
+            "restrict_one_entrance_randomizer": [true]
         }
     },
     "weights": {
