@@ -43,7 +43,7 @@
             "7": 1
         },
         "hints": {
-            "always": 7,
+            "always": 19,
             "agony": 1
         },
         "text_shuffle": {
@@ -54,9 +54,6 @@
             "normal": 11,
             "double": 4,
             "quadruple": 2
-        },
-        "no_collectible_hearts": {
-            "false": 1
         },
         "logic_earliest_adult_trade": {
             "cojiro": 1
