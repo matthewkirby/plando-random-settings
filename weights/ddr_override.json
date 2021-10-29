@@ -2,6 +2,9 @@
     "weights": {
         "useful_cutscenes": {
             "true": 1
+        },
+        "damage_multiplier": {
+            "normal": 1
         }
     }
 }
