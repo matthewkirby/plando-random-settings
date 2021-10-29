@@ -24,20 +24,17 @@
             "0": 1
         },
         "shuffle_song_items": {
-            "song": 5,
-            "any": 3
+            "song": 6,
+            "any": 4
         },
         "shuffle_scrubs": {
-            "off": 8,
+            "off": 10,
             "low": 5
         },
         "no_escape_sequence": {
             "true": 1
         },
         "no_epona_race": {
-            "true": 1
-        },
-        "skip_some_minigame_phases": {
             "true": 1
         },
         "big_poe_count_random": {
@@ -53,12 +50,10 @@
             "always": 1
         },
         "hint_dist": {
-            "balanced": 4,
+            "balanced": 1,
             "scrubs": 1,
-            "strong": 4,
-            "tournament": 1,
-            "tournament_s3": 1,
-            "very_strong": 4
+            "strong": 1,
+            "very_strong": 1
         },
         "text_shuffle": {
             "none": 1
@@ -68,16 +63,13 @@
             "normal": 13,
             "double": 4
         },
-        "no_collectible_hearts": {
-            "false": 1
-        },
         "item_pool_value": {
             "plentiful": 3,
-            "balanced": 11,
+            "balanced": 12,
             "scarce": 5
         },
         "junk_ice_traps": {
-            "off": 6,
+            "off": 12,
             "normal": 6,
             "on": 3
         },
