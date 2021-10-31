@@ -101,3 +101,9 @@ def shuffle_goal_hints(random_settings, **kwargs):
     distroin['distribution']['woth'] = distroin['distribution']['goal']
     distroin['distribution']['goal'] = woth
     random_settings['hint_dist_user'] = distroin
+
+def disable_randomized_setting_override(random_settings, **kwargs):
+    """ Removes mq_dungeons if mq_dungeons_random is on, since mq_dungeons_random would otherwise be ignored. Same with other “_random” settings """
+    for setting_name in list(random_settings): # copy the list of setting names to avoid modifying the dict during iteration
+        if random_settings.get(f'{setting_name}_random'):
+            del random_settings[setting_name]
