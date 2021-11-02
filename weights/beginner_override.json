@@ -4,11 +4,12 @@
         "ganon_bosskey_tokens_max": 50,
         "extra_conditionals": {
             "restrict_one_entrance_randomizer": [true]
-        }
+        },
+        "allow_random_and_plando": true
     },
     "weights": {
         "trials_random": {
-            "false": 1
+            "true": 1
         },
         "trials": {
             "0": 1,
