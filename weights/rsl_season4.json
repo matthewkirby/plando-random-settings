@@ -4,6 +4,7 @@
         "ganon_bosskey_tokens_max": 100,
         "triforce_goal_per_world_max": 100,
         "starting_items": true,
+        "allow_random_and_plando": false,
         "conditionals": {
             "exclude_minimal_triforce_hunt": [true],
             "exclude_ice_trap_misery": [true],

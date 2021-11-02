@@ -72,6 +72,14 @@ def draw_choices_from_pool(itempool):
     return random.sample(list(itempool.keys()), N)
 
 
+def remove_plando_if_random(random_settings):
+    """ For settings that have a _random option, remove the specific plando if _random is true """
+    settings_to_check = ["trials", "mq_dungeons", "chicken_count", "big_poe_count"]
+    for setting in settings_to_check:
+        if random_settings[setting+'_random'] == "true":
+            random_settings.pop(setting)
+
+
 def generate_plando(weights, override_weights_fname):
     # Load the weight dictionary
     if weights == "RSL":
@@ -156,6 +164,11 @@ def generate_plando(weights, override_weights_fname):
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
 
+    # Remove plando if a _random setting is true
+    if not (weight_options is not None and
+      "allow_random_and_plando" in weight_options and
+      weight_options["allow_random_and_plando"]):
+        remove_plando_if_random(random_settings)
 
     # Format numbers and bools to not be strings
     for setting, value in random_settings.items():
