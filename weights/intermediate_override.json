@@ -8,11 +8,12 @@
             "logic_lens_shadow_mq",
             "logic_lens_shadow_mq_back",
             "logic_lens_spirit_mq"
-        ]
+        ],
+        "allow_random_and_plando": true
     },
     "weights": {
         "trials_random": {
-            "false": 1
+            "true": 1
         },
         "trials": {
             "0": 1,
