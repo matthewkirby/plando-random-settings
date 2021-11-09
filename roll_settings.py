@@ -43,7 +43,7 @@ def generate_balanced_weights(fname="default_weights.json"):
     if fname is not None:
         with open(fname, 'w') as fp:
             json.dump(weight_dict, fp, indent=4)
-    
+
     return weight_dict
 
 
@@ -60,7 +60,7 @@ def draw_starting_item_pool(random_settings, start_with):
     random_settings["starting_items"] = draw_choices_from_pool(inventory)
     random_settings["starting_songs"] = draw_choices_from_pool(songs)
     random_settings["starting_equipment"] = draw_choices_from_pool(equipment)
-    
+
     for key, val in start_with.items():
         for thing in val:
             if thing not in random_settings[key]:
@@ -117,7 +117,7 @@ def generate_plando(weights, override_weights_fname):
                         weight_options[option] = value
                     else: # Both existing options and extra options
                         if isinstance(weight_options[option], dict):
-                            weight_options[option].update(value) 
+                            weight_options[option].update(value)
                         else:
                             weight_options[option] += value
                             weight_options[option] = list(set(weight_options[option]))
@@ -166,8 +166,8 @@ def generate_plando(weights, override_weights_fname):
 
     # Remove plando if a _random setting is true
     if not (weight_options is not None and
-      "allow_random_and_plando" in weight_options and
-      weight_options["allow_random_and_plando"]):
+            "allow_random_and_plando" in weight_options and
+            weight_options["allow_random_and_plando"]):
         remove_plando_if_random(random_settings)
 
     # Format numbers and bools to not be strings
