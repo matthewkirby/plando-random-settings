@@ -4,8 +4,8 @@ import os
 import traceback
 import argparse
 import rsl_tools as tools
-import roll_settings as rs
 tools.check_version()
+import roll_settings as rs
 
 LOG_ERRORS = True
 
