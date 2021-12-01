@@ -1,6 +1,6 @@
-__version__ = "2.2.4"
-version_hash_1 = "Frog"
-version_hash_2 = "Frog"
+__version__ = "2.2.5"
+version_hash_1 = "Map"
+version_hash_2 = "Map"
 
-randomizer_version = '6.0.127 R-1'
-randomizer_commit = '81e3d4a3a5110e94b073567525a167c3a56c96f7'
+randomizer_version = '6.2.1 R-1'
+randomizer_commit = '2377f1bb45a08341253d06808585195505886964'
