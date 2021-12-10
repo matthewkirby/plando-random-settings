@@ -94,7 +94,7 @@ def main():
     plandos_to_cleanup = []
     max_retries = 5
     for i in range(max_retries):
-        plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname)
+        plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
         if no_seed:
             tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
             break

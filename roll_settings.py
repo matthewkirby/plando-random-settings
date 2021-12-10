@@ -80,7 +80,7 @@ def remove_plando_if_random(random_settings):
             random_settings.pop(setting)
 
 
-def generate_plando(weights, override_weights_fname):
+def generate_plando(weights, override_weights_fname, no_seed):
     # Load the weight dictionary
     if weights == "RSL":
         weight_options, weight_dict = load_weights_file("rsl_season4.json")
@@ -200,5 +200,7 @@ def generate_plando(weights, override_weights_fname):
         os.mkdir("data")
     with open(os.path.join("data", plando_filename), 'w') as fp:
         json.dump(output, fp, indent=4)
+    if no_seed:
+        print(f"Plando File: {plando_filename}")
 
     return plando_filename
