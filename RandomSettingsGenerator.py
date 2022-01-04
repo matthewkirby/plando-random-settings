@@ -96,7 +96,7 @@ def main():
     for i in range(max_retries):
         plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
         if no_seed:
-            tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+            # tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
             break
         plandos_to_cleanup.append(plando_filename)
         completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)
