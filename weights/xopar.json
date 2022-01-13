@@ -1,0 +1,40 @@
+{
+    "weights": {
+        "triforce_hunt": {
+            "true": 1,
+            "false": 19
+        },
+        "shuffle_overworld_entrances": {
+            "false": 1
+        },
+        "mq_dungeons_random": {
+            "true": 1,
+            "false": 1
+        },
+        "useful_cutscenes": {
+            "true": 1
+        },
+        "free_scarecrow": {
+            "true": 1,
+            "false": 0
+        },
+        "hints": {
+            "none": 0,
+            "mask": 0,
+            "agony": 0,
+            "always": 1
+        },
+        "text_shuffle": {
+            "none": 1,
+            "except_hints": 0,
+            "complete": 0
+        },
+        "damage_multiplier": {
+            "half": 0,
+            "normal": 1,
+            "double": 0,
+            "quadruple": 1,
+            "ohko": 1
+        }
+    }
+}

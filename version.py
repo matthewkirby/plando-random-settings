@@ -1,4 +1,4 @@
-__version__ = "2.2.6"
+__version__ = "2.2.7"
 version_hash_1 = "Map"
 version_hash_2 = "Map"
 
