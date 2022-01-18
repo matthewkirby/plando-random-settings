@@ -5,6 +5,7 @@
         "triforce_goal_per_world_max": 100,
         "starting_items": true,
         "allow_random_and_plando": false,
+        "geometric_dungeon_shortcuts": true,
         "conditionals": {
             "exclude_minimal_triforce_hunt": [true],
             "exclude_ice_trap_misery": [true],
@@ -29,15 +30,18 @@
             "logic_lens_castle",
             "logic_lens_gtg",
             "logic_lens_shadow",
-            "logic_lens_shadow_back",
             "logic_lens_spirit",
             "logic_visible_collisions", 
             "logic_deku_b1_webs_with_bow",
             "logic_lens_gtg_mq",
             "logic_lens_jabu_mq",
             "logic_lens_shadow_mq",
-            "logic_lens_shadow_mq_back",
-            "logic_lens_spirit_mq"
+            "logic_lens_spirit_mq",
+            "logic_lens_shadow_mq",
+            "logic_lens_shadow_mq_platform",
+            "logic_lens_shadow",
+            "logic_lens_shadow_platform",
+            "logic_lens_shadow_mq_dead_hand"
         ],
         "disabled_locations": []
     },
@@ -396,9 +400,18 @@
             "true": 0,
             "false": 1
         },
-        "correct_chest_sizes": {
-            "true": 1,
-            "false": 1
+        "correct_chest_appearances": {
+            "off": 4,
+            "textures": 3,
+            "sizes": 3
+        },
+        "shopsanity_prices": {
+            "random": 1,
+            "random_starting": 1,
+            "random_adult": 1,
+            "random_giant": 1,
+            "random_tycoon": 1,
+            "affordable": 1
         },
         "fast_bunny_hood": {
             "true": 1,

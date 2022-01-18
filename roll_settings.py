@@ -80,6 +80,13 @@ def remove_plando_if_random(random_settings):
             random_settings.pop(setting)
 
 
+def draw_dungeon_shortcuts(random_settings):
+    """ Decide how many dungeon shortcuts to enable and randomly select them """
+    N = random.choices(range(8), weights=geometric_weights(8))[0]
+    dungeon_shortcuts_opts = ['deku_tree', 'dodongos_cavern', 'jabu_jabus_belly', 'forest_temple', 'fire_temple', 'shadow_temple', 'spirit_temple']
+    random_settings["dungeon_shortcuts"] = random.sample(dungeon_shortcuts_opts, N)
+
+
 def generate_plando(weights, override_weights_fname, no_seed):
     # Load the weight dictionary
     if weights == "RSL":
@@ -163,6 +170,8 @@ def generate_plando(weights, override_weights_fname, no_seed):
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
+        if "geometric_dungeon_shortcuts" in weight_options and weight_options["geometric_dungeon_shortcuts"] == True:
+            draw_dungeon_shortcuts(random_settings)
 
     # Remove plando if a _random setting is true
     if not (weight_options is not None and
@@ -182,7 +191,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user"]:
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"]:
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 
