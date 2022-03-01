@@ -4,11 +4,9 @@ import datetime
 import json
 import random
 import conditionals as conds
-from version import version_hash_1, version_hash_2
 sys.path.append("randomizer")
 from randomizer.SettingsList import get_settings_from_tab, get_setting_info
 from randomizer.StartingItems import inventory, songs, equipment
-from randomizer.Spoiler import HASH_ICONS
 
 
 def load_weights_file(weights_fname):
@@ -224,10 +222,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
 
 
     # Save the output plando
-    output = {
-        "settings": random_settings,
-        "file_hash": [version_hash_1, version_hash_2, *random.choices(HASH_ICONS, k=3)]
-    }
+    output = {"settings": random_settings}
 
     plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
     # plando_filename = f'random_settings.json'
