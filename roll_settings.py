@@ -19,9 +19,10 @@ def load_weights_file(weights_fname):
             datain = json.load(fin)
 
     weight_options = datain["options"] if "options" in datain else None
+    weight_multiselect = datain["multiselect"] if "multiselect" in datain else None
     weight_dict = datain["weights"]
 
-    return weight_options, weight_dict
+    return weight_options, weight_multiselect, weight_dict
 
 
 def generate_balanced_weights(fname="default_weights.json"):
@@ -80,6 +81,28 @@ def remove_plando_if_random(random_settings):
             random_settings.pop(setting)
 
 
+def resolve_multiselect_weights(setting, options):
+    """ Given a multiselect weights block, resolve into the plando options. 
+    A multiselect block should contain the following elements in addition to individual weights
+
+    global_enable_percentage [0,100] - the chance at rolling any on in the first place
+    geometric [true/false] - If true, ignore individual weights and chose a random number
+    to enable according to the geometric distribution
+    """
+    if random.random()*100 > options["global_enable_percentage"]:
+        return []
+    
+    if "geometric" in options.keys() and options["geometric"]:
+        nopts = len(get_setting_info(setting).choices)
+        N = random.choices(range(nopts+1), weights=geometric_weights(nopts+1))[0]
+        return random.sample(list(get_setting_info(setting).choices.keys()), N)
+
+    # Randomly draw which multiselects should be enabled
+    if not "opt_percentage" in options.keys():
+        return []
+    return [msopt for msopt, perc in options["opt_percentage"].items() if random.random()*100 < perc]
+
+
 def draw_dungeon_shortcuts(random_settings):
     """ Decide how many dungeon shortcuts to enable and randomly select them """
     N = random.choices(range(8), weights=geometric_weights(8))[0]
@@ -90,19 +113,19 @@ def draw_dungeon_shortcuts(random_settings):
 def generate_plando(weights, override_weights_fname, no_seed):
     # Load the weight dictionary
     if weights == "RSL":
-        weight_options, weight_dict = load_weights_file("rsl_season4.json")
+        weight_options, weight_multiselect, weight_dict = load_weights_file("rsl_season4.json")
     elif weights == "full-random":
         weight_options = None
         weight_dict = generate_balanced_weights(None)
     else:
-        weight_options, weight_dict = load_weights_file(weights)
+        weight_options, weight_multiselect, weight_dict = load_weights_file(weights)
 
 
     # If an override_weights file name is provided, load it
     start_with = {"starting_items":[], "starting_songs":[], "starting_equipment":[]}
     if override_weights_fname is not None:
         print(f"RSL GENERATOR: LOADING OVERRIDE WEIGHTS from {override_weights_fname}")
-        override_options, override_weights = load_weights_file(override_weights_fname)
+        override_options, override_multiselect, override_weights = load_weights_file(override_weights_fname)
         # Check for starting items, songs and equipment
         for key in start_with.keys():
             if key in override_weights.keys():
@@ -141,6 +164,11 @@ def generate_plando(weights, override_weights_fname, no_seed):
         for key, value in override_weights.items():
             weight_dict[key] = value
 
+        # Replace the multiselects
+        if override_multiselect is not None:
+            for key, value in override_multiselect.items():
+                weight_multiselect[key] = value
+
 
     ####################################################################################
     # Make a new function that parses the weights file that does this stuff
@@ -159,6 +187,10 @@ def generate_plando(weights, override_weights_fname, no_seed):
     for setting, options in weight_dict.items():
         random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
 
+    # Draw the multiselects
+    if weight_multiselect is not None:
+        for setting, options in weight_multiselect.items():
+            random_settings[setting] = resolve_multiselect_weights(setting, options)
 
     # Add starting items, conditionals, tricks and excluded locations
     if weight_options is not None:
@@ -170,9 +202,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
-        if "geometric_dungeon_shortcuts" in weight_options and weight_options["geometric_dungeon_shortcuts"] == True:
-            draw_dungeon_shortcuts(random_settings)
-
+        
     # Remove plando if a _random setting is true
     if not (weight_options is not None and
             "allow_random_and_plando" in weight_options and
@@ -191,7 +221,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"]:
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 

@@ -5,7 +5,6 @@
         "triforce_goal_per_world_max": 100,
         "starting_items": true,
         "allow_random_and_plando": false,
-        "geometric_dungeon_shortcuts": true,
         "conditionals": {
             "exclude_minimal_triforce_hunt": [true],
             "exclude_ice_trap_misery": [true],
@@ -44,6 +43,27 @@
             "logic_lens_shadow_mq_dead_hand"
         ],
         "disabled_locations": []
+    },
+    "multiselect": {
+        "key_rings": {
+            "global_enable_percentage": 0,
+            "geometric": false,
+            "opt_percentage": {
+                "Thieves Hideout": 50,
+                "Forest Temple": 50,
+                "Fire Temple": 50,
+                "Water Temple": 50,
+                "Shadow Temple": 50,
+                "Spirit Temple": 50,
+                "Bottom of the Well": 50,
+                "Gerudo Training Ground": 50,
+                "Ganons Castle": 50
+            }
+        },
+        "dungeon_shortcuts": {
+            "global_enable_percentage": 100,
+            "geometric": true
+        }
     },
     "weights": {
         "logic_rules": {
@@ -368,6 +388,10 @@
         },
         "complete_mask_quest": {
             "true": 1,
+            "false": 1
+        },
+        "plant_beans": {
+            "true": 0,
             "false": 1
         },
         "chicken_count": {
