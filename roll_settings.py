@@ -203,11 +203,8 @@ def generate_plando(weights, override_weights_fname, no_seed):
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
         
-    # Remove plando if a _random setting is true
-    if not (weight_options is not None and
-            "allow_random_and_plando" in weight_options and
-            weight_options["allow_random_and_plando"]):
-        remove_plando_if_random(random_settings)
+    # Remove plando setting if a _random setting is true
+    remove_plando_if_random(random_settings)
 
     # Format numbers and bools to not be strings
     for setting, value in random_settings.items():
