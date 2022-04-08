@@ -1,0 +1,192 @@
+{
+    "options": {
+        "bridge_tokens_max": 75,
+        "ganon_bosskey_tokens_max": 75,
+        "remove_tricks": [
+            "logic_goron_city_pot_with_strength",
+            "logic_lens_gtg_mq",
+            "logic_lens_jabu_mq",
+            "logic_lens_shadow_mq",
+            "logic_lens_shadow_mq_back",
+            "logic_lens_spirit_mq"
+        ],
+        "allow_random_and_plando": true
+    },
+    "weights": {
+        "trials_random": {
+            "true": 1
+        },
+        "starting_items": [
+          "ocarina"
+        ],
+        "trials": {
+            "0": 1,
+            "1": 1,
+            "2": 1,
+            "3": 1
+        },
+        "zora_fountain": {
+            "closed": 1,
+            "adult": 1,
+            "open": 0
+        },
+        "bridge": {
+            "open": 3,
+            "vanilla": 1,
+            "stones": 3,
+            "medallions": 3,
+            "dungeons": 0,
+            "tokens": 0,
+            "random": 0
+        },
+        "bridge_medallions": {
+            "1": 5,
+            "2": 3,
+            "3": 2,
+            "4": 1,
+            "5": 1,
+            "6": 1
+        },
+        "bridge_stones": {
+            "1": 2,
+            "2": 2,
+            "3": 1
+        },
+        "bridge_rewards": {
+            "1": 0,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 8
+        },
+        "shuffle_overworld_entrances": {
+            "false": 1
+        },
+        "mix_entrance_pools": {
+            "all": 0,
+            "indoor": 3,
+            "off": 17
+        },
+        "shuffle_scrubs": {
+            "off": 2,
+            "low": 2,
+            "regular": 1,
+            "random": 0
+        },
+        "shuffle_song_items": {
+            "song": 3,
+            "dungeon": 0,
+            "any": 1
+        },
+        "shuffle_beans": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_mapcompass": {
+            "remove": 0,
+            "startwith": 0,
+            "vanilla": 1,
+            "dungeon": 1,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 1
+        },
+        "shuffle_smallkeys": {
+            "remove": 0,
+            "vanilla": 2,
+            "dungeon": 2,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 2
+        },
+        "shuffle_bosskeys": {
+            "remove": 0,
+            "vanilla": 2,
+            "dungeon": 2,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 2
+        },
+        "shuffle_ganon_bosskey": {
+            "remove": 0,
+            "vanilla": 3,
+            "dungeon": 3,
+            "overworld": 0,
+            "any_dungeon": 0,
+            "keysanity": 1,
+            "on_lacs": 0,
+            "medallions": 0,
+            "stones": 0,
+            "dungeons": 3,
+            "tokens": 0
+        },
+        "ganon_bosskey_rewards": {
+            "1": 0,
+            "2": 1,
+            "3": 2,
+            "4": 3,
+            "5": 3,
+            "6": 2,
+            "7": 1,
+            "8": 0,
+            "9": 0
+        },
+        "mq_dungeons_random": {
+            "false": 1
+        },
+        "mq_dungeons": {
+            "0": 1,
+            "1": 1
+        },
+        "big_poe_count_random": {
+            "false": 1
+        },
+        "reachable_locations": {
+            "all": 1,
+            "goals": 0,
+            "beatable": 0
+        },
+        "item_pool_value": {
+            "plentiful": 1,
+            "balanced": 3,
+            "scarce": 0,
+            "minimal": 0
+        },
+        "junk_ice_traps": {
+            "off": 0,
+            "normal": 6,
+            "on": 3,
+            "mayhem": 1,
+            "onslaught": 0
+        },
+        "big_poe_count": {
+            "1": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1
+        },
+        "hints": {
+            "always": 19,
+            "agony": 1
+        },
+        "text_shuffle": {
+            "none": 1
+        },
+        "damage_multiplier": {
+            "half": 3,
+            "normal": 11,
+            "double": 4,
+            "quadruple": 2
+        },
+        "logic_earliest_adult_trade": {
+            "cojiro": 1
+        }
+    }
+}

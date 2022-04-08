@@ -1,0 +1,69 @@
+{
+    "weights": {
+        "zora_fountain": {
+            "closed": 1,
+            "adult": 1,
+            "open": 0
+        },
+        "shuffle_beans": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_mapcompass": {
+            "remove": 0,
+            "startwith": 0,
+            "vanilla": 1,
+            "dungeon": 1,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 1
+        },
+        "shuffle_smallkeys": {
+            "remove": 0,
+            "vanilla": 2,
+            "dungeon": 2,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 2
+        },
+        "shuffle_bosskeys": {
+            "remove": 0,
+            "vanilla": 2,
+            "dungeon": 2,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 2
+        },
+        "shuffle_ganon_bosskey": {
+            "remove": 0,
+            "vanilla": 3,
+            "dungeon": 3,
+            "overworld": 1,
+            "any_dungeon": 1,
+            "keysanity": 1,
+            "on_lacs": 2,
+            "medallions": 1,
+            "stones": 1,
+            "dungeons": 1,
+            "tokens": 0
+        },
+        "reachable_locations": {
+            "all": 1,
+            "goals": 0,
+            "beatable": 0
+        },
+        "item_pool_value": {
+            "plentiful": 3,
+            "balanced": 9,
+            "scarce": 0,
+            "minimal": 0
+        },
+        "junk_ice_traps": {
+            "off": 0,
+            "normal": 6,
+            "on": 3,
+            "mayhem": 2,
+            "onslaught": 1
+        }
+    }
+}
