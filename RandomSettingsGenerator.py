@@ -51,6 +51,8 @@ def get_command_line_args():
     parser.add_argument("--worldcount", help="Generate a seed with more than 1 world.")
     parser.add_argument("--check_new_settings", help="When the version updates, run with this flag to find changes to settings names or new settings.", action="store_true")
     parser.add_argument("--no_log_errors", help="Only show errors in the console, don't log them to a file.", action="store_true")
+    parser.add_argument("--stress_test", help="Generate the specified number of seeds.")
+    parser.add_argument("--benchmark", help="Compare the specified weights file to spoiler log empirical data.", action="store_true")
 
     args = parser.parse_args()
 
@@ -74,12 +76,16 @@ def get_command_line_args():
     if args.no_log_errors:
         LOG_ERRORS = False
 
-    return args.no_seed, worldcount, override, args.check_new_settings
+    seed_count = 1
+    if args.stress_test is not None:
+        seed_count = int(args.stress_test)
+
+    return args.no_seed, worldcount, override, args.check_new_settings, seed_count, args.benchmark
 
 
 def main():
     """ Roll a random settings seed """
-    no_seed, worldcount, override_weights_fname, check_new_settings = get_command_line_args()
+    no_seed, worldcount, override_weights_fname, check_new_settings, seed_count, benchmark = get_command_line_args()
 
     # If we only want to check for new/changed settings
     if check_new_settings:
@@ -87,29 +93,42 @@ def main():
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
-    if LOG_ERRORS:
-        # Clean up error log from previous run, if any
-        cleanup('ERRORLOG.TXT')
+    # If we only want to benchmark weights
+    if benchmark:
+        weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, override_weights_fname)
+        tools.benchmark_weights(weight_options, weight_dict, weight_multiselect)
+        return
 
-    plandos_to_cleanup = []
-    max_retries = 5
-    for i in range(max_retries):
-        plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
-        if no_seed:
-            # tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
-            break
-        plandos_to_cleanup.append(plando_filename)
-        completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)
-        if completed_process.returncode == 0:
-            break
-        if i == max_retries-1 and completed_process.returncode != 0:
-            raise tools.RandomizerError(completed_process.stderr)
+    for i in range(seed_count):
+        if seed_count > 1:
+            print("Rolling test seed", i + 1, "...")
 
-    if not no_seed:
-        print(completed_process.stderr.split("Patching ROM.")[-1])
+        if LOG_ERRORS:
+            # Clean up error log from previous run, if any
+            cleanup('ERRORLOG.TXT')
 
-    for plando_filename in plandos_to_cleanup:
-        cleanup(os.path.join('data', plando_filename))
+        plandos_to_cleanup = []
+        max_retries = 5
+        for i in range(max_retries):
+            plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
+            if no_seed:
+                # tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+                break
+            plandos_to_cleanup.append(plando_filename)
+            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)
+            if completed_process.returncode == 0:
+                break
+            plandos_to_cleanup.remove(plando_filename)
+            if os.path.isfile(os.path.join('data', plando_filename)):
+                os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
+            if i == max_retries-1 and completed_process.returncode != 0:
+                raise tools.RandomizerError(completed_process.stderr)
+
+        if not no_seed:
+            print(completed_process.stderr.split("Patching ROM.")[-1])
+
+        for plando_filename in plandos_to_cleanup:
+            cleanup(os.path.join('data', plando_filename))
 
 
 if __name__ == "__main__":

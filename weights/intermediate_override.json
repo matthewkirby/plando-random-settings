@@ -23,10 +23,10 @@
         "shuffle_overworld_entrances": {
             "false": 1
         },
-        "mq_dungeons_random": {
-            "false": 1
+        "mq_dungeons_mode": {
+            "count": 1
         },
-        "mq_dungeons": {
+        "mq_dungeons_count": {
             "0": 1,
             "1": 1
         },

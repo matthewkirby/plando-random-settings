@@ -45,7 +45,8 @@
             "medallions": 1,
             "stones": 1,
             "dungeons": 1,
-            "tokens": 0
+            "tokens": 0,
+            "hearts": 0
         },
         "reachable_locations": {
             "all": 1,
