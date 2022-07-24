@@ -12,6 +12,18 @@
         ],
         "allow_random_and_plando": true
     },
+    "multiselect": {
+        "mix_entrance_pools": {
+            "global_enable_percentage": 15,
+            "geometric": false,
+            "opt_percentage": {
+                "Interior": 100,
+                "GrottoGrave": 100,
+                "Dungeon": 100,
+                "Overworld": 0
+            }
+        }
+    },
     "weights": {
         "trials_random": {
             "true": 1
@@ -37,6 +49,7 @@
             "medallions": 3,
             "dungeons": 0,
             "tokens": 0,
+            "hearts": 0,
             "random": 0
         },
         "bridge_medallions": {
@@ -65,11 +78,6 @@
         },
         "shuffle_overworld_entrances": {
             "false": 1
-        },
-        "mix_entrance_pools": {
-            "all": 0,
-            "indoor": 3,
-            "off": 17
         },
         "shuffle_scrubs": {
             "off": 2,
@@ -122,7 +130,8 @@
             "medallions": 0,
             "stones": 0,
             "dungeons": 3,
-            "tokens": 0
+            "tokens": 0,
+            "hearts": 0
         },
         "ganon_bosskey_rewards": {
             "1": 0,
@@ -135,10 +144,10 @@
             "8": 0,
             "9": 0
         },
-        "mq_dungeons_random": {
-            "false": 1
+        "mq_dungeons_mode": {
+            "count": 1
         },
-        "mq_dungeons": {
+        "mq_dungeons_count": {
             "0": 1,
             "1": 1
         },

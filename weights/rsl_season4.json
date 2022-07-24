@@ -2,15 +2,22 @@
     "options": {
         "bridge_tokens_max": 100,
         "ganon_bosskey_tokens_max": 100,
+        "bridge_hearts_min": 4,
+        "ganon_bosskey_hearts_min": 4,
+        "bridge_hearts_max": 20,
+        "ganon_bosskey_hearts_max": 20,
         "triforce_goal_per_world_max": 100,
         "starting_items": true,
         "conditionals": {
-            "exclude_minimal_triforce_hunt": [true],
+            "exclude_minimal_triforce_hunt": [false],
+            "constant_triforce_hunt_extras": [true],
             "exclude_ice_trap_misery": [true],
             "disable_hideoutkeys_independence": [true],
+            "disable_pot_chest_texture_independence": [false],
             "restrict_one_entrance_randomizer": [false],
             "random_scrubs_start_wallet": [true],
             "dynamic_skulltula_wincon": [true, 15, "40/40/20"],
+            "dynamic_heart_wincon": [false, 15, "40/40/20"],
             "shuffle_goal_hints": [true, 50]
         },
         "tricks": [
@@ -29,7 +36,7 @@
             "logic_lens_gtg",
             "logic_lens_shadow",
             "logic_lens_spirit",
-            "logic_visible_collisions", 
+            "logic_visible_collisions",
             "logic_deku_b1_webs_with_bow",
             "logic_lens_gtg_mq",
             "logic_lens_jabu_mq",
@@ -62,6 +69,26 @@
         "dungeon_shortcuts": {
             "global_enable_percentage": 100,
             "geometric": true
+        },
+        "mix_entrance_pools": {
+            "global_enable_percentage": 50,
+            "geometric": false,
+            "opt_percentage": {
+                "Interior": 100,
+                "GrottoGrave": 100,
+                "Dungeon": 100,
+                "Overworld": 20
+            }
+        },
+        "misc_hints": {
+            "global_enable_percentage": 100,
+            "geometric": false,
+            "opt_percentage": {
+                "altar": 100,
+                "ganondorf": 100,
+                "warp_songs": 100,
+                "dampe_diary": 0
+            }
         }
     },
     "weights": {
@@ -101,6 +128,7 @@
             "medallions": 1,
             "dungeons": 1,
             "tokens": 0,
+            "hearts": 0,
             "random": 0
         },
         "bridge_medallions": {
@@ -167,17 +195,18 @@
             "false": 1
         },
         "shuffle_dungeon_entrances": {
-            "true": 1,
-            "false": 1
+            "off": 1,
+            "simple": 1,
+            "all": 0
+        },
+        "shuffle_bosses": {
+            "off": 1,
+            "limited": 0,
+            "full": 0
         },
         "shuffle_overworld_entrances": {
             "true": 2,
             "false": 3
-        },
-        "mix_entrance_pools": {
-            "all": 2,
-            "indoor": 3,
-            "off": 5
         },
         "decouple_entrances": {
             "true": 0,
@@ -195,11 +224,20 @@
             "true": 1,
             "false": 1
         },
-        "mq_dungeons_random": {
-            "true": 1,
-            "false": 4
+        "dungeon_shortcuts_choice": {
+            "off": 0,
+            "choice": 1,
+            "all": 0,
+            "random": 0
         },
-        "mq_dungeons": {
+        "mq_dungeons_mode": {
+            "random": 1,
+            "count": 4,
+            "vanilla": 0,
+            "mq": 0,
+            "specific": 0
+        },
+        "mq_dungeons_count": {
             "0": 4096,
             "1": 2048,
             "2": 1024,
@@ -268,6 +306,10 @@
             "true": 2,
             "false": 3
         },
+        "shuffle_frog_song_rupees": {
+            "true": 0,
+            "false": 1
+        },
         "shuffle_mapcompass": {
             "remove": 1,
             "startwith": 1,
@@ -310,7 +352,8 @@
             "medallions": 1,
             "stones": 1,
             "dungeons": 1,
-            "tokens": 0
+            "tokens": 0,
+            "hearts": 0
         },
         "ganon_bosskey_medallions": {
             "1": 1,
@@ -420,13 +463,20 @@
             "10": 1
         },
         "ocarina_songs": {
-            "true": 0,
-            "false": 1
+            "off": 1,
+            "frog": 0,
+            "warp": 0,
+            "all": 0
         },
         "correct_chest_appearances": {
             "off": 4,
             "textures": 3,
-            "sizes": 3
+            "both": 3,
+            "classic": 0
+        },
+        "invisible_chests": {
+            "true": 0,
+            "false": 1
         },
         "shopsanity_prices": {
             "random": 1,
@@ -439,6 +489,39 @@
         "fast_bunny_hood": {
             "true": 1,
             "false": 0
+        },
+        "blue_fire_arrows": {
+            "true": 0,
+            "false": 1
+        },
+        "easier_fire_arrow_entry": {
+            "true": 0,
+            "false": 1
+        },
+        "fae_torch_count": {
+            "1": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "15": 1,
+            "16": 1,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 1,
+            "21": 1,
+            "22": 1,
+            "23": 1
         },
         "clearer_hints": {
             "true": 1,
@@ -462,11 +545,10 @@
             "very_strong": 2,
             "mw2": 0,
             "league": 0,
-            "coop2": 0
-        },
-        "misc_hints": {
-            "true": 1,
-            "false": 0
+            "coop2": 0,
+            "chaos": 0,
+            "very_strong_magic": 0,
+            "weekly": 0
         },
         "text_shuffle": {
             "none": 19,
@@ -479,6 +561,14 @@
             "double": 4,
             "quadruple": 2,
             "ohko": 1
+        },
+        "deadly_bonks": {
+            "none": 1,
+            "half": 0,
+            "normal": 0,
+            "double": 0,
+            "quadruple": 0,
+            "ohko": 0
         },
         "no_collectible_hearts": {
             "true": 0,
@@ -500,7 +590,8 @@
             "plentiful": 3,
             "balanced": 9,
             "scarce": 5,
-            "minimal": 3
+            "minimal": 3,
+            "ludicrous": 0
         },
         "junk_ice_traps": {
             "off": 9,

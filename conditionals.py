@@ -1,6 +1,7 @@
 import random
 import json
 import os
+from decimal import Decimal, ROUND_UP
 
 
 def parse_conditionals(conditional_list, weight_dict, random_settings, extra_starting_items):
@@ -8,6 +9,11 @@ def parse_conditionals(conditional_list, weight_dict, random_settings, extra_sta
     for cond, details in conditional_list.items():
         if details[0]:
             eval(cond + "(random_settings, weight_dict=weight_dict, extra_starting_items=extra_starting_items, cparams=details[1:])")
+
+
+def constant_triforce_hunt_extras(random_settings, weight_dict, **kwargs):
+    """ Keep constant 25% extra Triforce Pieces for all item pools. """
+    random_settings['triforce_count_per_world'] = int(Decimal(random_settings['triforce_goal_per_world'] * 1.25).to_integral_value(rounding=ROUND_UP))
 
 
 def exclude_minimal_triforce_hunt(random_settings, weight_dict, **kwargs):
@@ -26,6 +32,14 @@ def exclude_ice_trap_misery(random_settings, weight_dict, **kwargs):
     if 'onslaught' in weights.keys() and random_settings['damage_multiplier'] in ['quadruple', 'ohko']:
         weights.pop('onslaught')
     random_settings['junk_ice_traps'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]
+
+
+def disable_pot_chest_texture_independence(random_settings, **kwargs):
+    """ Set correct_potcrate_appearances to match correct_chest_appearances. """
+    if random_settings['correct_chest_appearances'] in ['textures', 'both', 'classic']:
+        random_settings['correct_potcrate_appearances'] = 'textures'
+    else:
+        random_settings['correct_potcrate_appearances'] = 'off'
 
 
 def disable_hideoutkeys_independence(random_settings, **kwargs):
@@ -80,6 +94,24 @@ def dynamic_skulltula_wincon(random_settings, **kwargs):
         random_settings['bridge'] = 'tokens'
     if whichtype in ['gbk', 'both']:
         random_settings['shuffle_ganon_bosskey'] = 'tokens'
+
+
+def dynamic_heart_wincon(random_settings, **kwargs):
+    """ Rolls skull win condition seperately. Takes extra inputs [weight of skull win con, "bridge%/gbk%/both"] """
+    chance_of_skull_wincon = int(kwargs['cparams'][0])
+    weights = [int(x) for x in kwargs['cparams'][1].split('/')]
+
+    # Roll for a skull win condition
+    skull_wincon = random.choices([True, False], weights=[chance_of_skull_wincon, 100-chance_of_skull_wincon])[0]
+    if not skull_wincon:
+        return
+
+    # Roll for bridge/bosskey/both
+    whichtype = random.choices(['bridge', 'gbk', 'both'], weights=weights)[0]
+    if whichtype in ['bridge', 'both']:
+        random_settings['bridge'] = 'hearts'
+    if whichtype in ['gbk', 'both']:
+        random_settings['shuffle_ganon_bosskey'] = 'hearts'
 
 
 def shuffle_goal_hints(random_settings, **kwargs):

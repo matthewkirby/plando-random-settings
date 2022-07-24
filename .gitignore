@@ -9,10 +9,11 @@ randomizer.zip
 random_settings.json
 patches/
 data/
-
+failed_settings/
 
 
 
 blind_random_settings.json
 my_weights.json
 ERRORLOG.TXT
+weights_report.html

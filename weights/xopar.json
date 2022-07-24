@@ -7,9 +7,9 @@
         "shuffle_overworld_entrances": {
             "false": 1
         },
-        "mq_dungeons_random": {
-            "true": 1,
-            "false": 1
+        "mq_dungeons_mode": {
+            "random": 1,
+            "vanilla": 1
         },
         "useful_cutscenes": {
             "true": 1
