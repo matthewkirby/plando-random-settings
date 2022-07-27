@@ -4,7 +4,7 @@ import datetime
 import json
 import random
 import conditionals as conds
-from version import version_hash_1, version_hash_2
+from version import version_hash_1, version_hash_2, __version__
 sys.path.append("randomizer")
 from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, get_setting_info
 from randomizer.StartingItems import inventory, songs, equipment
@@ -146,7 +146,7 @@ def draw_dungeon_shortcuts(random_settings):
 def generate_weights_override(weights, override_weights_fname):
     # Load the weight dictionary
     if weights == "RSL":
-        weight_options, weight_multiselect, weight_dict = load_weights_file("rsl_season4.json")
+        weight_options, weight_multiselect, weight_dict = load_weights_file("rsl_season5.json")
     elif weights == "full-random":
         weight_options = None
         weight_dict = generate_balanced_weights(None)
@@ -266,6 +266,9 @@ def generate_plando(weights, override_weights_fname, no_seed):
 
     # Remove conflicting "dead" settings since rando won't ignore them anymore
     remove_redundant_settings(random_settings)
+
+    # Add the RSL Script version to the plando
+    random_settings['user_message'] = f'RSL Script v{__version__}'
 
     # Save the output plando
     output = {

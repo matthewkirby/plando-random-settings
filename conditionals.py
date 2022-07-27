@@ -97,13 +97,13 @@ def dynamic_skulltula_wincon(random_settings, **kwargs):
 
 
 def dynamic_heart_wincon(random_settings, **kwargs):
-    """ Rolls skull win condition seperately. Takes extra inputs [weight of skull win con, "bridge%/gbk%/both"] """
-    chance_of_skull_wincon = int(kwargs['cparams'][0])
+    """ Rolls heart win condition seperately. Takes extra inputs [weight of skheartull win con, "bridge%/gbk%/both"] """
+    chance_of_heart_wincon = int(kwargs['cparams'][0])
     weights = [int(x) for x in kwargs['cparams'][1].split('/')]
 
-    # Roll for a skull win condition
-    skull_wincon = random.choices([True, False], weights=[chance_of_skull_wincon, 100-chance_of_skull_wincon])[0]
-    if not skull_wincon:
+    # Roll for a heart win condition
+    heart_wincon = random.choices([True, False], weights=[chance_of_heart_wincon, 100-chance_of_heart_wincon])[0]
+    if not heart_wincon:
         return
 
     # Roll for bridge/bosskey/both
@@ -132,4 +132,15 @@ def shuffle_goal_hints(random_settings, **kwargs):
     woth = {**distroin['distribution']['woth']}
     distroin['distribution']['woth'] = distroin['distribution']['goal']
     distroin['distribution']['goal'] = woth
+    random_settings['hint_dist_user'] = distroin
+
+
+def replace_dampe_diary_hint_with_lightarrow(random_settings, **kwargs):
+    """ Replace the dampe diary hint with a Light Arrow hint """
+    current_distro = random_settings['hint_dist']
+
+    # Load the distro and change the misc hint
+    with open(os.path.join('randomizer', 'data', 'Hints', current_distro+'.json')) as fin:
+        distroin = json.load(fin)
+    distroin['misc_hint_items'] = { 'dampe_diary': "Light Arrows" }
     random_settings['hint_dist_user'] = distroin
