@@ -120,6 +120,8 @@ def main():
                 break
             plandos_to_cleanup.remove(plando_filename)
             if os.path.isfile(os.path.join('data', plando_filename)):
+                if not os.path.isdir('failed_settings'):
+                    os.mkdir('failed_settings')
                 os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
             if i == max_retries-1 and completed_process.returncode != 0:
                 raise tools.RandomizerError(completed_process.stderr)
