@@ -16,8 +16,9 @@
             "disable_pot_chest_texture_independence": [false],
             "restrict_one_entrance_randomizer": [false],
             "random_scrubs_start_wallet": [true],
-            "dynamic_skulltula_wincon": [true, 7.5, "40/40/20"],
-            "dynamic_heart_wincon": [true, 7.5, "40/40/20"],
+            "dynamic_skulltula_wincon": [false, 7.5, "40/40/20"],
+            "dynamic_heart_wincon": [false, 7.5, "40/40/20"],
+            "split_collectible_bridge_conditions": [true, 15, "50/50", "40/40/20"],
             "shuffle_goal_hints": [false, 50],
             "replace_dampe_diary_hint_with_lightarrow": [true]
         },

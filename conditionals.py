@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import sys
 from decimal import Decimal, ROUND_UP
 
 
@@ -8,7 +9,7 @@ def parse_conditionals(conditional_list, weight_dict, random_settings, extra_sta
     """ Parse the conditionals in the weights file to enable/disable them """
     for cond, details in conditional_list.items():
         if details[0]:
-            eval(cond + "(random_settings, weight_dict=weight_dict, extra_starting_items=extra_starting_items, cparams=details[1:])")
+            getattr(sys.modules[__name__], cond)(random_settings, weight_dict=weight_dict, extra_starting_items=extra_starting_items, cparams=details[1:])
 
 
 def constant_triforce_hunt_extras(random_settings, weight_dict, **kwargs):
@@ -144,3 +145,27 @@ def replace_dampe_diary_hint_with_lightarrow(random_settings, **kwargs):
         distroin = json.load(fin)
     distroin['misc_hint_items'] = { 'dampe_diary': "Light Arrows" }
     random_settings['hint_dist_user'] = distroin
+
+
+def split_collectible_bridge_conditions(random_settings, **kwargs):
+    """ Split heart and skulltula token bridge and ganon boss key.
+    kwargs: [how often to have a heart or skull bridge, "heart%/skull%", "bridge%/gbk%/both"]
+    """
+    chance_of_collectible_wincon = int(kwargs['cparams'][0])
+    typeweights = [int(x) for x in kwargs['cparams'][1].split('/')]
+    weights = [int(x) for x in kwargs['cparams'][2].split('/')]
+
+    # Roll for collectible win condition
+    skull_wincon = random.choices([True, False], weights=[chance_of_collectible_wincon, 100-chance_of_collectible_wincon])[0]
+    if not skull_wincon:
+        return
+
+    # Roll for hearts or skulls
+    condition = random.choices(["hearts", "tokens"], weights=typeweights)[0]
+    
+    # Roll for bridge/bosskey/both
+    whichtype = random.choices(['bridge', 'gbk', 'both'], weights=weights)[0]
+    if whichtype in ['bridge', 'both']:
+        random_settings['bridge'] = condition
+    if whichtype in ['gbk', 'both']:
+        random_settings['shuffle_ganon_bosskey'] = condition
