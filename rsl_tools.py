@@ -2,64 +2,13 @@
 to the randomizer. """
 import sys
 import subprocess
-import zipfile
-import shutil
 import os
 import json
 import glob
-import stat
 from version import randomizer_commit, randomizer_version
-try:
-    import requests
-except ModuleNotFoundError:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
-    import requests
 sys.path.append("randomizer")
 from randomizer.SettingsList import get_setting_info
 
-
-
-def download_randomizer():
-    """ Download the randomizer from commit listed in version.py """
-    zippath = 'randomizer.zip'
-
-    # Make sure an old zip isn't sitting around
-    if os.path.isfile(zippath):
-        os.remove(zippath)
-
-    # Download the zipped randomizer
-    req = requests.get(f'https://github.com/Roman971/OoT-Randomizer/archive/{randomizer_commit}.zip', stream=True)
-    with open(zippath, 'wb') as fin:
-        for chunk in req.iter_content():
-            fin.write(chunk)
-
-    # Extract the zip file and add __init__.py
-    with zipfile.ZipFile(zippath, 'r') as zipped:
-        zipped.extractall('.')
-    shutil.move(f'OoT-Randomizer-{randomizer_commit}', 'randomizer')
-    with open(os.path.join('randomizer', '__init__.py'), 'w') as fin:
-        pass
-
-    # Restore permissions in the unzipped randomizer
-    for executable in [os.path.join('randomizer', 'OoTRandomizer.py'), os.path.join('randomizer', 'bin', 'Decompress', 'Decompress')]:
-        os.chmod(executable, os.stat(executable).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
-    # Delete the zip file
-    os.remove(zippath)
-
-def check_version():
-    """ Ensure the downloaded version of the randomizer is the correct, if not update """
-    if os.path.isfile(os.path.join('randomizer', 'version.py')):
-        from randomizer import version as ootrversion
-        if ootrversion.__version__ == randomizer_version:
-            return
-        print("Updating the randomizer...")
-        shutil.rmtree('randomizer')
-        download_randomizer()
-    else:
-        print("Downloading the randomizer...")
-        download_randomizer()
-    return
 
 def randomizer_settings_func(rootdir=os.getcwd(), plando_filename='random_settings.json', worldcount=1):
     """ Set the base randomizer settings. This function is a placeholder for a future GUI """
@@ -72,6 +21,7 @@ def randomizer_settings_func(rootdir=os.getcwd(), plando_filename='random_settin
         "create_spoiler": "True",
         "world_count": worldcount
     }
+
 
 def init_randomizer_settings(plando_filename='random_settings.json', worldcount=1):
     """ Save the randomizer settings to a file. """

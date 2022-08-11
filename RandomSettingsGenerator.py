@@ -3,8 +3,11 @@ import sys
 import os
 import traceback
 import argparse
+
+import update_randomizer as ur
+ur.check_version()
+
 import rsl_tools as tools
-tools.check_version()
 import roll_settings as rs
 
 LOG_ERRORS = True
