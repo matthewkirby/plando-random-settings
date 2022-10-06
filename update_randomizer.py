@@ -4,7 +4,7 @@ import stat
 import zipfile
 import shutil
 import subprocess
-from version import randomizer_commit, randomizer_version
+from rslversion import randomizer_commit, randomizer_version
 try:
     import requests
 except ModuleNotFoundError:

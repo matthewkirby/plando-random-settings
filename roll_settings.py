@@ -4,7 +4,7 @@ import datetime
 import json
 import random
 import conditionals as conds
-from version import __version__
+from rslversion import __version__
 sys.path.append("randomizer")
 from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, get_setting_info
 from randomizer.StartingItems import inventory, songs, equipment

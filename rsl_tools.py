@@ -5,7 +5,6 @@ import subprocess
 import os
 import json
 import glob
-from version import randomizer_commit, randomizer_version
 sys.path.append("randomizer")
 from randomizer.SettingsList import get_setting_info
 
