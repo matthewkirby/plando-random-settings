@@ -48,7 +48,7 @@
             "logic_lens_shadow",
             "logic_lens_shadow_platform",
             "logic_lens_shadow_mq_dead_hand",
-	    "logic_lens_bongo"
+	        "logic_lens_bongo"
         ],
         "disabled_locations": []
     },
@@ -91,6 +91,10 @@
                 "warp_songs": 100,
                 "dampe_diary": 100
             }
+        },
+        "empty_dungeons": {
+            "global_enable_percentage": 0,
+            "geometric": false
         }
     },
     "weights": {
@@ -232,6 +236,17 @@
             "all": 0,
             "random": 0
         },
+        "empty_dungeons_mode": {
+            "none": 1,
+            "specific": 0,
+            "count": 0
+        },
+        "key_rings_choice": {
+            "off": 0,
+            "choice": 1,
+            "all": 0,
+            "random": 0
+        },
         "mq_dungeons_mode": {
             "random": 3,
             "count": 17,
@@ -292,9 +307,10 @@
             "true": 1,
             "false": 1
         },
-        "shuffle_weird_egg": {
-            "true": 1,
-            "false": 1
+        "shuffle_child_trade": {
+            "vanilla": 1,
+            "shuffle": 1,
+            "skip_child_zelda": 2
         },
         "shuffle_gerudo_card": {
             "true": 1,
@@ -319,7 +335,8 @@
             "dungeon": 1,
             "overworld": 1,
             "any_dungeon": 1,
-            "keysanity": 1
+            "keysanity": 1,
+            "regional": 1
         },
         "shuffle_smallkeys": {
             "remove": 2,
@@ -327,13 +344,16 @@
             "dungeon": 2,
             "overworld": 1,
             "any_dungeon": 1,
-            "keysanity": 2
+            "keysanity": 2,
+            "regional": 1
         },
         "shuffle_hideoutkeys": {
             "vanilla": 1,
             "overworld": 0,
             "any_dungeon": 0,
-            "keysanity": 0
+            "keysanity": 0,
+            "regional": 0,
+            "fortress": 0
         },
         "shuffle_bosskeys": {
             "remove": 2,
@@ -341,7 +361,8 @@
             "dungeon": 2,
             "overworld": 1,
             "any_dungeon": 1,
-            "keysanity": 2
+            "keysanity": 2,
+            "regional": 1
         },
         "shuffle_ganon_bosskey": {
             "remove": 3,
@@ -355,7 +376,8 @@
             "stones": 1,
             "dungeons": 1,
             "tokens": 0,
-            "hearts": 0
+            "hearts": 0,
+            "regional": 1
         },
         "ganon_bosskey_medallions": {
             "1": 1,
@@ -392,10 +414,6 @@
         },
         "logic_no_night_tokens_without_suns_song": {
             "true": 0,
-            "false": 1
-        },
-        "skip_child_zelda": {
-            "true": 1,
             "false": 1
         },
         "no_escape_sequence": {
@@ -545,7 +563,9 @@
             "tournament_s3": 0,
             "useless": 0,
             "very_strong": 0,
-            "mw2": 0,
+            "tournament_test_goal": 0,
+            "tournament_test_woth": 0,
+            "mw3": 0,
             "league": 0,
             "coop2": 0,
             "chaos": 1,
@@ -607,29 +627,17 @@
             "junk_only": 1,
             "anything": 1
         },
-        "logic_earliest_adult_trade": {
-            "pocket_egg": 1,
-            "pocket_cucco": 0,
+        "adult_trade_start": {
+            "pocket egg": 1,
+            "pocket cucco": 0,
             "cojiro": 0,
-            "odd_mushroom": 0,
-            "poachers_saw": 0,
-            "broken_sword": 0,
+            "odd mushroom": 0,
+            "poachers saw": 0,
+            "broken sword": 0,
             "prescription": 0,
-            "eyeball_frog": 0,
+            "eyeball frog": 0,
             "eyedrops": 0,
-            "claim_check": 0
-        },
-        "logic_latest_adult_trade": {
-            "pocket_egg": 0,
-            "pocket_cucco": 0,
-            "cojiro": 0,
-            "odd_mushroom": 0,
-            "poachers_saw": 0,
-            "broken_sword": 0,
-            "prescription": 0,
-            "eyeball_frog": 0,
-            "eyedrops": 0,
-            "claim_check": 1
+            "claim check": 0
         },
         "start_with_consumables": {
             "true": 1,
