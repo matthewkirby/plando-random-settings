@@ -20,7 +20,8 @@
             "dynamic_heart_wincon": [false, 7.5, "40/40/20"],
             "split_collectible_bridge_conditions": [true, 15, "50/50", "40/40/20"],
             "shuffle_goal_hints": [false, 50],
-            "replace_dampe_diary_hint_with_lightarrow": [true]
+            "replace_dampe_diary_hint_with_lightarrow": [true],
+            "adjust_chaos_hint_distro": [true]
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
@@ -92,9 +93,21 @@
                 "dampe_diary": 100
             }
         },
-        "empty_dungeons": {
-            "global_enable_percentage": 0,
-            "geometric": false
+        "adult_trade_start": {
+            "global_enable_percentage": 100,
+            "geometric": false,
+            "opt_percentage": {
+                "Pocket Egg": 100,
+                "Pocket Cucco": 100,
+                "Cojiro": 100,
+                "Odd Mushroom": 100,
+                "Poachers Saw": 100,
+                "Broken Sword": 100,
+                "Prescription": 100,
+                "Eyeball Frog": 100,
+                "Eyedrops": 100,
+                "Claim Check": 100
+            }
         }
     },
     "weights": {
@@ -626,18 +639,6 @@
             "major_only": 1,
             "junk_only": 1,
             "anything": 1
-        },
-        "adult_trade_start": {
-            "pocket egg": 1,
-            "pocket cucco": 0,
-            "cojiro": 0,
-            "odd mushroom": 0,
-            "poachers saw": 0,
-            "broken sword": 0,
-            "prescription": 0,
-            "eyeball frog": 0,
-            "eyedrops": 0,
-            "claim check": 0
         },
         "start_with_consumables": {
             "true": 1,

@@ -147,6 +147,7 @@ def replace_dampe_diary_hint_with_lightarrow(random_settings, **kwargs):
     random_settings['hint_dist_user'] = distroin
 
 
+
 def split_collectible_bridge_conditions(random_settings, **kwargs):
     """ Split heart and skulltula token bridge and ganon boss key.
     kwargs: [how often to have a heart or skull bridge, "heart%/skull%", "bridge%/gbk%/both"]
@@ -169,3 +170,26 @@ def split_collectible_bridge_conditions(random_settings, **kwargs):
         random_settings['bridge'] = condition
     if whichtype in ['gbk', 'both']:
         random_settings['shuffle_ganon_bosskey'] = condition
+
+
+
+def adjust_chaos_hint_distro(random_settings, **kwargs):
+    """ Duplicates the always hints in the chaos hint distro"""
+
+    # Load the dist
+    if 'hint_dist_user' in random_settings:
+        distroin = random_settings['hint_dist_user']
+        if not distroin['name'] == "chaos":
+            print("Not using the chaos distribution, passing...")
+            return
+    else:
+        current_distro = random_settings['hint_dist']
+        if not current_distro == "chaos":
+            print("Not using the chaos distribution, passing...")
+            return
+        with open(os.path.join('randomizer', 'data', 'Hints', current_distro+'.json')) as fin:
+            distroin = json.load(fin)
+
+    # Duplicate the always and save
+    distroin['distribution']['always']['copies'] = 2
+    random_settings['hint_dist_user'] = distroin
