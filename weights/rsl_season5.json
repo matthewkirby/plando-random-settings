@@ -21,7 +21,9 @@
             "split_collectible_bridge_conditions": [true, 15, "50/50", "40/40/20"],
             "shuffle_goal_hints": [false, 50],
             "replace_dampe_diary_hint_with_lightarrow": [true],
-            "adjust_chaos_hint_distro": [true]
+            "adjust_chaos_hint_distro": [true],
+            "exclude_mapcompass_info_remove": [true],
+            "ohko_starts_with_nayrus": [true]
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
@@ -372,10 +374,10 @@
             "remove": 2,
             "vanilla": 2,
             "dungeon": 2,
-            "overworld": 1,
-            "any_dungeon": 1,
-            "keysanity": 2,
-            "regional": 1
+            "overworld": 0,
+            "any_dungeon": 0,
+            "keysanity": 4,
+            "regional": 0
         },
         "shuffle_ganon_bosskey": {
             "remove": 3,
@@ -646,6 +648,14 @@
         },
         "start_with_rupees": {
             "true": 1,
+            "false": 1
+        },
+        "fix_broken_drops": {
+            "true": 1,
+            "false": 0
+        },
+        "minor_items_as_major_chest": {
+            "true": 0,
             "false": 1
         },
         "starting_hearts": {

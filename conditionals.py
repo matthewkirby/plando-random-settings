@@ -174,7 +174,8 @@ def split_collectible_bridge_conditions(random_settings, **kwargs):
 
 
 def adjust_chaos_hint_distro(random_settings, **kwargs):
-    """ Duplicates the always hints in the chaos hint distro"""
+    """ Duplicates the always hints in the chaos hint distro and removes
+    the double chance at each sometimes hint """
 
     # Load the dist
     if 'hint_dist_user' in random_settings:
@@ -190,6 +191,23 @@ def adjust_chaos_hint_distro(random_settings, **kwargs):
         with open(os.path.join('randomizer', 'data', 'Hints', current_distro+'.json')) as fin:
             distroin = json.load(fin)
 
-    # Duplicate the always and save
+    # Make changes and save
     distroin['distribution']['always']['copies'] = 2
+    distroin['distribution']['sometimes']['weight'] = 0
     random_settings['hint_dist_user'] = distroin
+
+
+
+def exclude_mapcompass_info_remove(random_settings, weight_dict, **kwargs):
+    """ If Maps and Compai give info, do not allow them to be removed """
+    weights = weight_dict['shuffle_mapcompass']
+    if 'remove' in weights.keys() and random_settings['enhance_map_compass'] == "true":
+        weights.pop('remove')
+    random_settings['shuffle_mapcompass'] = random.choices(list(weights.keys()), weights=list(weights.values()))[0]
+
+
+
+def ohko_starts_with_nayrus(random_settings, weight_dict, extra_starting_items, **kwargs):
+    """ If one hit ko is enabled, add Nayru's Love to the starting items """
+    if random_settings['damage_multiplier'] == 'ohko':
+        extra_starting_items['starting_items'] += ['nayrus_love']
