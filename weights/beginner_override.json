@@ -69,9 +69,6 @@
             "off": 12,
             "normal": 6,
             "on": 3
-        },
-        "logic_earliest_adult_trade": {
-            "poachers_saw": 1
         }
     }
 }
