@@ -117,7 +117,7 @@
             }
         },
         "spawn_positions": {
-            "global_enable_percentage": 100,
+            "global_enable_percentage": 50,
             "geometric": false,
             "opt_percentage": {
                 "child": 100,
