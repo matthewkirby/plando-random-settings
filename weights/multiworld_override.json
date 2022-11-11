@@ -6,14 +6,6 @@
         "free_scarecrow": {
             "true": 1
         },
-        "hints": {
-            "always": 1
-        },
-        "hint_dist": {
-            "balanced": 1,
-            "strong": 1,
-            "very_strong": 1
-        },
         "damage_multiplier": {
             "half": 1,
             "normal": 2,

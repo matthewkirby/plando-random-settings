@@ -92,7 +92,12 @@
                 "altar": 100,
                 "ganondorf": 100,
                 "warp_songs": 100,
-                "dampe_diary": 100
+                "dampe_diary": 100,
+                "10_skulltulas": 0,
+                "20_skulltulas": 0,
+                "30_skulltulas": 0,
+                "40_skulltulas": 0,
+                "50_skulltulas": 0
             }
         },
         "adult_trade_start": {
@@ -109,6 +114,14 @@
                 "Eyeball Frog": 100,
                 "Eyedrops": 100,
                 "Claim Check": 100
+            }
+        },
+        "spawn_positions": {
+            "global_enable_percentage": 100,
+            "geometric": false,
+            "opt_percentage": {
+                "child": 100,
+                "adult": 100
             }
         }
     },
@@ -238,10 +251,6 @@
             "false": 1
         },
         "warp_songs": {
-            "true": 1,
-            "false": 1
-        },
-        "spawn_positions": {
             "true": 1,
             "false": 1
         },
@@ -578,8 +587,6 @@
             "tournament_s3": 0,
             "useless": 0,
             "very_strong": 0,
-            "tournament_test_goal": 0,
-            "tournament_test_woth": 0,
             "mw3": 0,
             "league": 0,
             "coop2": 0,
