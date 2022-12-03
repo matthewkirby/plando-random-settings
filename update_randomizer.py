@@ -49,7 +49,7 @@ def download_randomizer():
         pass
 
     # Restore permissions in the unzipped randomizer
-    for executable in [os.path.join('randomizer', 'OoTRandomizer.py'), os.path.join('randomizer', 'bin', 'Decompress', 'Decompress')]:
+    for executable in [os.path.join('randomizer', 'OoTRandomizer.py'), os.path.join('randomizer', 'bin', 'Decompress', 'Decompress'), os.path.join('randomizer', 'bin', 'Decompress', 'Decompress.out')]:
         os.chmod(executable, os.stat(executable).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     # Delete the zip file
