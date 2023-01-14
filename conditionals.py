@@ -211,3 +211,21 @@ def ohko_starts_with_nayrus(random_settings, weight_dict, extra_starting_items, 
     """ If one hit ko is enabled, add Nayru's Love to the starting items """
     if random_settings['damage_multiplier'] == 'ohko':
         extra_starting_items['starting_items'] += ['nayrus_love']
+
+def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
+    """ When activated will invert the MQ dungeons count
+        kwargs: [chance of having the MQ count reversed]
+    """
+    if random_settings['mq_dungeons_mode'] != 'count':
+        return
+
+    chance_of_inverting_mq_count = int(kwargs['cparams'][0])
+    invert_mq_count = random.choices([True, False], weights=[chance_of_inverting_mq_count, 100-chance_of_inverting_mq_count])[0]
+
+    if not invert_mq_count:
+        return
+    
+    current_mq_dungeons_count = int(random_settings['mq_dungeons_count'])
+    new_mq_dungeons_count = 12 - current_mq_dungeons_count
+    
+    random_settings['mq_dungeons_count'] = str(new_mq_dungeons_count)
