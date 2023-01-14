@@ -228,4 +228,4 @@ def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
     current_mq_dungeons_count = int(random_settings['mq_dungeons_count'])
     new_mq_dungeons_count = 12 - current_mq_dungeons_count
     
-    random_settings['mq_dungeons_count'] = str(new_mq_dungeons_count)
+    random_settings['mq_dungeons_count'] = new_mq_dungeons_count
