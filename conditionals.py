@@ -214,7 +214,7 @@ def ohko_starts_with_nayrus(random_settings, weight_dict, extra_starting_items, 
 
 def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
     """ When activated will invert the MQ dungeons count
-        kwargs: [chance of having the MQ count reversed]
+        kwargs: [chance of having the MQ count inverted]
     """
     if random_settings['mq_dungeons_mode'] != 'count':
         return
