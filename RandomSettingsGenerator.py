@@ -10,7 +10,7 @@ ur.check_version()
 import rsl_tools as tools
 import roll_settings as rs
 
-LOG_ERRORS = True
+global_override_fname = None
 
 # Please set the weights file you with to load
 WEIGHTS = "RSL" # The default Random Settings League Season 5 weights
@@ -38,65 +38,64 @@ def error_handler(errortype, value, trace):
 sys.excepthook = error_handler
 
 
+def range_limited_int_type(arg):
+    """ Type function for argparse - a positive int """
+    try:
+        i = int(arg)
+    except ValueError:    
+        raise argparse.ArgumentTypeError("Must be an integer")
+    if i < 1:
+        raise argparse.ArgumentTypeError("Argument must be > 0")
+    return i
+
+
 def get_command_line_args():
     """ Parse the command line arguements """
     global LOG_ERRORS
+    LOG_ERRORS = True
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--no_seed", help="Suppresses the generation of a patch file.", action="store_true")
+    parser.add_argument("--no_seed", action="store_true",
+                        help="Suppresses the generation of a patch file.")
     parser.add_argument("--override", help="Use the specified weights file over the default RSL weights.")
-    parser.add_argument("--worldcount", help="Generate a seed with more than 1 world.")
-    parser.add_argument("--check_new_settings", help="When the version updates, run with this flag to find changes to settings names or new settings.", action="store_true")
-    parser.add_argument("--no_log_errors", help="Only show errors in the console, don't log them to a file.", action="store_true")
-    parser.add_argument("--stress_test", help="Generate the specified number of seeds.")
-    parser.add_argument("--benchmark", help="Compare the specified weights file to spoiler log empirical data.", action="store_true")
-    parser.add_argument("--max_plando_retries", help="Try at most this many settings plandos. Defaults to 5.")
-    parser.add_argument("--max_rando_retries", help="Try at most this many randomizer runs per settings plando. Defaults to 3.")
-
+    parser.add_argument("--worldcount", type=range_limited_int_type, default=1,
+                        help="Generate a seed with more than 1 world.")
+    parser.add_argument("--check_new_settings", action="store_true",
+                        help="When the version updates, run with this flag to find changes to settings names or new settings.")
+    parser.add_argument("--no_log_errors", action="store_true", default=False,
+                        help="Only show errors in the console, don't log them to a file.")
+    parser.add_argument("--stress_test", type=range_limited_int_type, default=1, dest="seed_count",
+                        help="Generate the specified number of seeds for benchmarking.")
+    parser.add_argument("--benchmark", action="store_true",
+                        help="Compare the specified weights file to spoiler log empirical data.")
+    parser.add_argument("--plando_retries", type=range_limited_int_type, default=5,
+                        help="Retry limit for generating a plando file.")
+    parser.add_argument("--rando_retries", type=range_limited_int_type, default=3,
+                        help="Retry limit for running the randomizer with a given settings plando.")
     args = parser.parse_args()
+
 
     # Parse weights override file
     if args.override is not None:
-        if "global_override_fname" in globals():
-            raise RuntimeError("RSL GENERATOR ERROR: OVERRIDE PROVIDED AS GLOBAL AND VIA COMMAND LINE.")
-        if not os.path.isfile(os.path.join("weights", args.override)):
-            raise FileNotFoundError("RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY: weights")
-        override = args.override
-    elif "global_override_fname" in globals():
-        override = global_override_fname
-    else:
-        override = None
+        if global_override_fname is not None:
+            raise RuntimeError("RSL GENERATOR ERROR: PROVIDING MULTIPLE SETTINGS WEIGHT OVERRIDES IS NOT SUPPORTED.")
+        override_path = os.path.join(os.getcwd(), args.override)
+        if not os.path.isfile(override_path):
+            raise FileNotFoundError(f"RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY:\n{override_path}")
 
     # Parse args
-    worldcount = 1
-    if args.worldcount is not None:
-        worldcount = int(args.worldcount)
-
-    if args.no_log_errors:
-        LOG_ERRORS = False
-
-    seed_count = 1
-    if args.stress_test is not None:
-        seed_count = int(args.stress_test)
-
-    max_plando_retries = 5
-    if args.max_plando_retries is not None:
-        max_plando_retries = int(args.max_plando_retries)
-
-    max_rando_retries = 3
-    if args.max_rando_retries is not None:
-        max_rando_retries = int(args.max_rando_retries)
+    LOG_ERRORS = not args.no_log_errors
 
     # Condense everything into a dict
     return {
         "no_seed": args.no_seed,
-        "worldcount": worldcount,
-        "override_weights_fname": override,
+        "worldcount": args.worldcount,
+        "override_fname": args.override or global_override_fname,
         "check_new_settings": args.check_new_settings,
-        "seed_count": seed_count,
+        "seed_count": args.seed_count,
         "benchmark": args.benchmark,
-        "max_plando_retries": max_plando_retries,
-        "max_rando_retries": max_rando_retries
+        "plando_retries": args.plando_retries,
+        "rando_retries": args.rando_retries
     }
 
 
@@ -112,7 +111,7 @@ def main():
 
     # If we only want to benchmark weights
     if args["benchmark"]:
-        weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, args["override_weights_fname"])
+        weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, args["override_fname"])
         tools.benchmark_weights(weight_options, weight_dict, weight_multiselect)
         return
 
@@ -125,12 +124,12 @@ def main():
             tools.cleanup('ERRORLOG.TXT')
 
         plandos_to_cleanup = []
-        for i in range(args["max_plando_retries"]):
-            plando_filename = rs.generate_plando(WEIGHTS, args["override_weights_fname"], args["no_seed"])
+        for i in range(args["plando_retries"]):
+            plando_filename = rs.generate_plando(WEIGHTS, args["override_fname"], args["no_seed"])
             if args["no_seed"]:
                 break
             plandos_to_cleanup.append(plando_filename)
-            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=args["worldcount"], max_retries=args["max_rando_retries"])
+            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=args["worldcount"], max_retries=args["rando_retries"])
             if completed_process.returncode == 0:
                 break
             plandos_to_cleanup.remove(plando_filename)
@@ -138,7 +137,7 @@ def main():
                 if not os.path.isdir('failed_settings'):
                     os.mkdir('failed_settings')
                 os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
-            if i == args["max_plando_retries"]-1 and completed_process.returncode != 0:
+            if i == args["plando_retries"]-1 and completed_process.returncode != 0:
                 raise tools.RandomizerError(completed_process.stderr)
 
         if not args["no_seed"]:
