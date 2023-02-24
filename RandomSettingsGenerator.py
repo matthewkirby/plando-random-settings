@@ -93,27 +93,37 @@ def get_command_line_args():
     if args.max_rando_retries is not None:
         max_rando_retries = int(args.max_rando_retries)
 
-    return args.no_seed, worldcount, override, args.check_new_settings, seed_count, args.benchmark, max_plando_retries, max_rando_retries
+    # Condense everything into a dict
+    return {
+        "no_seed": args.no_seed,
+        "worldcount": worldcount,
+        "override": override,
+        "check_new_settings": args.check_new_settings,
+        "seed_count": seed_count,
+        "benchmark": args.benchmark,
+        "max_plando_retries": max_plando_retries,
+        "max_rando_retries": max_rando_retries
+    }
 
 
 def main():
     """ Roll a random settings seed """
-    no_seed, worldcount, override_weights_fname, check_new_settings, seed_count, benchmark, max_plando_retries, max_rando_retries = get_command_line_args()
+    args = get_command_line_args()
 
     # If we only want to check for new/changed settings
-    if check_new_settings:
+    if args["check_new_settings"]:
         _, _, rslweights = rs.load_weights_file("rsl_season5.json")
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
     # If we only want to benchmark weights
-    if benchmark:
+    if args["benchmark"]:
         weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, override_weights_fname)
         tools.benchmark_weights(weight_options, weight_dict, weight_multiselect)
         return
 
-    for i in range(seed_count):
-        if seed_count > 1:
+    for i in range(args["seed_count"]):
+        if args["seed_count"] > 1:
             print("Rolling test seed", i + 1, "...")
 
         if LOG_ERRORS:
@@ -121,13 +131,12 @@ def main():
             cleanup('ERRORLOG.TXT')
 
         plandos_to_cleanup = []
-        for i in range(max_plando_retries):
-            plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
-            if no_seed:
-                # tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
+        for i in range(args["max_plando_retries"]):
+            plando_filename = rs.generate_plando(WEIGHTS, args["override_weights_fname"], args["no_seed"])
+            if args["no_seed"]:
                 break
             plandos_to_cleanup.append(plando_filename)
-            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount, max_retries=max_rando_retries)
+            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=args["worldcount"], max_retries=args["max_rando_retries"])
             if completed_process.returncode == 0:
                 break
             plandos_to_cleanup.remove(plando_filename)
@@ -135,10 +144,10 @@ def main():
                 if not os.path.isdir('failed_settings'):
                     os.mkdir('failed_settings')
                 os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
-            if i == max_plando_retries-1 and completed_process.returncode != 0:
+            if i == args["max_plando_retries"]-1 and completed_process.returncode != 0:
                 raise tools.RandomizerError(completed_process.stderr)
 
-        if not no_seed:
+        if not args["no_seed"]:
             print(completed_process.stderr.split("Patching ROM")[-1])
 
         for plando_filename in plandos_to_cleanup:
