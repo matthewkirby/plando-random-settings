@@ -23,7 +23,8 @@
             "replace_dampe_diary_hint_with_lightarrow": [true],
             "adjust_chaos_hint_distro": [true],
             "exclude_mapcompass_info_remove": [true],
-            "ohko_starts_with_nayrus": [true]
+            "ohko_starts_with_nayrus": [true],
+            "invert_dungeons_mq_count": [false, 0]
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
