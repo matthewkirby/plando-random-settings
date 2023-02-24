@@ -56,6 +56,8 @@ def get_command_line_args():
     parser.add_argument("--no_log_errors", help="Only show errors in the console, don't log them to a file.", action="store_true")
     parser.add_argument("--stress_test", help="Generate the specified number of seeds.")
     parser.add_argument("--benchmark", help="Compare the specified weights file to spoiler log empirical data.", action="store_true")
+    parser.add_argument("--max_plando_retries", help="Try at most this many settings plandos. Defaults to 5.")
+    parser.add_argument("--max_rando_retries", help="Try at most this many randomizer runs per settings plando. Defaults to 3.")
 
     args = parser.parse_args()
 
@@ -71,7 +73,7 @@ def get_command_line_args():
     else:
         override = None
 
-    # Parse multiworld world count
+    # Parse args
     worldcount = 1
     if args.worldcount is not None:
         worldcount = int(args.worldcount)
@@ -83,12 +85,20 @@ def get_command_line_args():
     if args.stress_test is not None:
         seed_count = int(args.stress_test)
 
-    return args.no_seed, worldcount, override, args.check_new_settings, seed_count, args.benchmark
+    max_plando_retries = 5
+    if args.max_plando_retries is not None:
+        max_plando_retries = int(args.max_plando_retries)
+
+    max_rando_retries = 3
+    if args.max_rando_retries is not None:
+        max_rando_retries = int(args.max_rando_retries)
+
+    return args.no_seed, worldcount, override, args.check_new_settings, seed_count, args.benchmark, max_plando_retries, max_rando_retries
 
 
 def main():
     """ Roll a random settings seed """
-    no_seed, worldcount, override_weights_fname, check_new_settings, seed_count, benchmark = get_command_line_args()
+    no_seed, worldcount, override_weights_fname, check_new_settings, seed_count, benchmark, max_plando_retries, max_rando_retries = get_command_line_args()
 
     # If we only want to check for new/changed settings
     if check_new_settings:
@@ -111,14 +121,13 @@ def main():
             cleanup('ERRORLOG.TXT')
 
         plandos_to_cleanup = []
-        max_retries = 5
-        for i in range(max_retries):
+        for i in range(max_plando_retries):
             plando_filename = rs.generate_plando(WEIGHTS, override_weights_fname, no_seed)
             if no_seed:
                 # tools.init_randomizer_settings(plando_filename=plando_filename, worldcount=worldcount)
                 break
             plandos_to_cleanup.append(plando_filename)
-            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount)
+            completed_process = tools.generate_patch_file(plando_filename=plando_filename, worldcount=worldcount, max_retries=max_rando_retries)
             if completed_process.returncode == 0:
                 break
             plandos_to_cleanup.remove(plando_filename)
@@ -126,7 +135,7 @@ def main():
                 if not os.path.isdir('failed_settings'):
                     os.mkdir('failed_settings')
                 os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
-            if i == max_retries-1 and completed_process.returncode != 0:
+            if i == max_plando_retries-1 and completed_process.returncode != 0:
                 raise tools.RandomizerError(completed_process.stderr)
 
         if not no_seed:
