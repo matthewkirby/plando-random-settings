@@ -38,7 +38,7 @@ def exclude_ice_trap_misery(random_settings, weight_dict, **kwargs):
 def disable_pot_chest_texture_independence(random_settings, **kwargs):
     """ Set correct_potcrate_appearances to match correct_chest_appearances. """
     if random_settings['correct_chest_appearances'] in ['textures', 'both', 'classic']:
-        random_settings['correct_potcrate_appearances'] = 'textures'
+        random_settings['correct_potcrate_appearances'] = 'textures_content'
     else:
         random_settings['correct_potcrate_appearances'] = 'off'
 
