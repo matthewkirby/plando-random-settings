@@ -38,12 +38,6 @@ def error_handler(errortype, value, trace):
 sys.excepthook = error_handler
 
 
-def cleanup(file_to_delete):
-    """ Delete residual files that are no longer needed """
-    if os.path.isfile(file_to_delete):
-        os.remove(file_to_delete)
-
-
 def get_command_line_args():
     """ Parse the command line arguements """
     global LOG_ERRORS
@@ -97,7 +91,7 @@ def get_command_line_args():
     return {
         "no_seed": args.no_seed,
         "worldcount": worldcount,
-        "override": override,
+        "override_weights_fname": override,
         "check_new_settings": args.check_new_settings,
         "seed_count": seed_count,
         "benchmark": args.benchmark,
@@ -118,7 +112,7 @@ def main():
 
     # If we only want to benchmark weights
     if args["benchmark"]:
-        weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, override_weights_fname)
+        weight_options, weight_multiselect, weight_dict, start_with = rs.generate_weights_override(WEIGHTS, args["override_weights_fname"])
         tools.benchmark_weights(weight_options, weight_dict, weight_multiselect)
         return
 
@@ -128,7 +122,7 @@ def main():
 
         if LOG_ERRORS:
             # Clean up error log from previous run, if any
-            cleanup('ERRORLOG.TXT')
+            tools.cleanup('ERRORLOG.TXT')
 
         plandos_to_cleanup = []
         for i in range(args["max_plando_retries"]):
@@ -151,7 +145,7 @@ def main():
             print(completed_process.stderr.split("Patching ROM")[-1])
 
         for plando_filename in plandos_to_cleanup:
-            cleanup(os.path.join('data', plando_filename))
+            tools.cleanup(os.path.join('data', plando_filename))
 
 
 if __name__ == "__main__":
