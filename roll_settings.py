@@ -12,7 +12,7 @@ from randomizer.StartingItems import inventory, songs, equipment
 
 def load_weights_file(weights_fname):
     """ Given a weights filename, open it up. If the file does not exist, make it with even weights """
-    fpath = os.path.join("weights", weights_fname)
+    fpath = os.path.join(weights_fname)
     if os.path.isfile(fpath):
         with open(fpath) as fin:
             datain = json.load(fin)
@@ -145,7 +145,7 @@ def draw_dungeon_shortcuts(random_settings):
 def generate_weights_override(weights, override_weights_fname):
     # Load the weight dictionary
     if weights == "RSL":
-        weight_options, weight_multiselect, weight_dict = load_weights_file("rsl_season5.json")
+        weight_options, weight_multiselect, weight_dict = load_weights_file("weights/rsl_season5.json")
     elif weights == "full-random":
         weight_options = None
         weight_dict = generate_balanced_weights(None)
