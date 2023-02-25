@@ -229,3 +229,17 @@ def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
     new_mq_dungeons_count = 12 - current_mq_dungeons_count
     
     random_settings['mq_dungeons_count'] = new_mq_dungeons_count
+
+
+def replicate_old_child_trade(random_settings, extra_starting_items, **kwargs):
+    """ Emulate old behavior for sstarting child trade. This should be removed
+        once season 6 begins and is only here to keep season 5 support.
+    """
+    ctrade = random.choices(["vanilla", "shuffle", "scz"], weights=[1,1,2])[0]
+    if ctrade == "vanilla":
+        random_settings["shuffle_child_trade"] = []
+    elif ctrade == "shuffle":
+        random_settings["shuffle_child_trade"] = ["Weird Egg"]
+    else:
+        random_settings["shuffle_child_trade"] = []
+        extra_starting_items['starting_items'] += ["zeldas_letter"]

@@ -137,6 +137,8 @@ def main():
                 if not os.path.isdir('failed_settings'):
                     os.mkdir('failed_settings')
                 os.rename(os.path.join('data', plando_filename), os.path.join('failed_settings', plando_filename))
+                with open(os.path.join('failed_settings', plando_filename+'_errlog'), 'w+') as failed_err_msg:
+                    failed_err_msg.write(completed_process.stderr)
             if i == args["plando_retries"]-1 and completed_process.returncode != 0:
                 raise tools.RandomizerError(completed_process.stderr)
 

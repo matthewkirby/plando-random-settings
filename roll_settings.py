@@ -6,6 +6,7 @@ import random
 import conditionals as conds
 from rslversion import __version__
 sys.path.append("randomizer")
+from randomizer.ItemPool import trade_items, child_trade_items
 from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, get_setting_info
 from randomizer.StartingItems import inventory, songs, equipment
 
@@ -58,7 +59,13 @@ def geometric_weights(N, startat=0, rtype="list"):
 
 def draw_starting_item_pool(random_settings, start_with):
     """ Select starting items, songs, and equipment. """
-    random_settings["starting_items"] = draw_choices_from_pool(inventory)
+    # random_settings["starting_items"] = draw_choices_from_pool(inventory)
+    random_settings["starting_items"] = draw_choices_from_pool({
+        name: info
+        for name, info in inventory.items()
+        if (info.itemname not in trade_items or info.itemname in random_settings["adult_trade_start"])
+        and (info.itemname not in child_trade_items or info.itemname in random_settings["shuffle_child_trade"] or info.itemname == 'Zeldas Letter')
+    })
     random_settings["starting_songs"] = draw_choices_from_pool(songs)
     random_settings["starting_equipment"] = draw_choices_from_pool(equipment)
 

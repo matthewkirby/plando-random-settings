@@ -24,7 +24,8 @@
             "adjust_chaos_hint_distro": [true],
             "exclude_mapcompass_info_remove": [true],
             "ohko_starts_with_nayrus": [true],
-            "invert_dungeons_mq_count": [false, 0]
+            "invert_dungeons_mq_count": [false, 0],
+            "replicate_old_child_trade": [true]
         },
         "tricks": [
             "logic_fewer_tunic_requirements",
@@ -124,6 +125,23 @@
                 "child": 100,
                 "adult": 100
             }
+        },
+        "shuffle_child_trade": {
+            "global_enable_percentage": 0,
+            "geometric": false,
+            "opt_percentage": {
+                "weird egg": 0,
+                "chicken": 0,
+                "zeldas letter": 0,
+                "keaton mask": 0,
+                "skull mask": 0,
+                "spooky mask": 0,
+                "bunny hood": 0,
+                "goron mask": 0,
+                "zora mask": 0,
+                "gerudo mask": 0,
+                "mask of truth": 0
+            }
         }
     },
     "weights": {
@@ -131,6 +149,49 @@
             "glitchless": 1,
             "glitched": 0,
             "none": 0
+        },
+        "shuffle_freestanding_items": {
+            "off": 1,
+            "all": 0,
+            "overworld": 0,
+            "dungeons": 0
+        },
+        "shuffle_pots": {
+            "off": 1,
+            "all": 0,
+            "overworld": 0,
+            "dungeons": 0
+        },
+        "shuffle_crates": {
+            "off": 1,
+            "all": 0,
+            "overworld": 0,
+            "dungeons": 0
+        },
+        "shuffle_beehives": {
+            "true": 0,
+            "false": 1
+        },
+        "correct_potcrate_appearances": {
+            "off": 0,
+            "textures_content": 0,
+            "textures_unchecked": 1
+        },
+        "shuffle_gerudo_valley_river_exit": {
+            "true": 0,
+            "false": 1
+        },
+        "keyring_give_bk": {
+            "true": 0,
+            "false": 1
+        },
+        "free_bombchu_drops": {
+            "true": 1,
+            "false": 0
+        },
+        "adult_trade_shuffle": {
+            "true": 0,
+            "false": 1
         },
         "open_forest": {
             "open": 1,
@@ -193,10 +254,6 @@
         "triforce_hunt": {
             "true": 3,
             "false": 17
-        },
-        "bombchus_in_logic": {
-            "true": 1,
-            "false": 1
         },
         "one_item_per_dungeon": {
             "true": 0,
@@ -332,11 +389,6 @@
             "true": 1,
             "false": 1
         },
-        "shuffle_child_trade": {
-            "vanilla": 1,
-            "shuffle": 1,
-            "skip_child_zelda": 2
-        },
         "shuffle_gerudo_card": {
             "true": 1,
             "false": 1
@@ -345,7 +397,7 @@
             "true": 1,
             "false": 1
         },
-        "shuffle_medigoron_carpet_salesman": {
+        "shuffle_expensive_merchants": {
             "true": 2,
             "false": 3
         },
@@ -605,7 +657,7 @@
             "normal": 10,
             "double": 4,
             "quadruple": 2,
-            "ohko": 1
+            "ohko": 100000
         },
         "deadly_bonks": {
             "none": 19,
