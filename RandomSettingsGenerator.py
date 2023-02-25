@@ -7,6 +7,7 @@ import argparse
 import update_randomizer as ur
 ur.check_version()
 
+from utils import cleanup
 import rsl_tools as tools
 import roll_settings as rs
 
@@ -121,7 +122,7 @@ def main():
 
         if LOG_ERRORS:
             # Clean up error log from previous run, if any
-            tools.cleanup('ERRORLOG.TXT')
+            cleanup('ERRORLOG.TXT')
 
         plandos_to_cleanup = []
         for i in range(args["plando_retries"]):
@@ -146,7 +147,7 @@ def main():
             print(completed_process.stderr.split("Patching ROM")[-1])
 
         for plando_filename in plandos_to_cleanup:
-            tools.cleanup(os.path.join('data', plando_filename))
+            cleanup(os.path.join('data', plando_filename))
 
 
 if __name__ == "__main__":

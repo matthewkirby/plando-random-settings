@@ -9,12 +9,6 @@ sys.path.append("randomizer")
 from randomizer.SettingsList import get_setting_info
 
 
-def cleanup(file_to_delete):
-    """ Delete residual files that are no longer needed """
-    if os.path.isfile(file_to_delete):
-        os.remove(file_to_delete)
-
-
 def randomizer_settings_func(rootdir=os.getcwd(), plando_filename='random_settings.json', worldcount=1):
     """ Set the base randomizer settings. This function is a placeholder for a future GUI """
     return {

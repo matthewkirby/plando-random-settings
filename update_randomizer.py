@@ -4,7 +4,7 @@ import stat
 import zipfile
 import shutil
 import subprocess
-import rsl_tools as tools
+from utils import cleanup
 from rslversion import randomizer_commit, randomizer_version
 try:
     import requests
@@ -33,7 +33,7 @@ def download_randomizer():
     zippath = 'randomizer.zip'
 
     # Make sure an old zip isn't sitting around
-    tools.cleanup(zippath)
+    cleanup(zippath)
 
     # Download the zipped randomizer
     req = requests.get(f'https://github.com/Roman971/OoT-Randomizer/archive/{randomizer_commit}.zip', stream=True)
@@ -53,4 +53,4 @@ def download_randomizer():
         os.chmod(executable, os.stat(executable).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     # Delete the zip file
-    tools.cleanup(zippath)
+    cleanup(zippath)
