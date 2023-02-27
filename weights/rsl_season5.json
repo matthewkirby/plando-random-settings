@@ -657,7 +657,7 @@
             "normal": 10,
             "double": 4,
             "quadruple": 2,
-            "ohko": 100000
+            "ohko": 1
         },
         "deadly_bonks": {
             "none": 19,
