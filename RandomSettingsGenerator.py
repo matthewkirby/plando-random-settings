@@ -25,7 +25,9 @@ WEIGHTS = "RSL" # The default Random Settings League Season 5 weights
 # global_override_fname = "beginner_override.json"
 # global_override_fname = "coop_override.json"
 
-global_override_fname = os.path.join("weights", global_override_fname)
+
+if global_override_fname is not None:
+    global_override_fname = os.path.join("weights", global_override_fname)
 
 # Handle all uncaught exceptions with logging
 def error_handler(errortype, value, trace):
