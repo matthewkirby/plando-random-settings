@@ -13,7 +13,7 @@ This script allows its user to randomize every setting in the Randomizer, not ju
 If you are playing a format besides an official Random Setting League race, you may wish to edit the weights. 
 
 1. Put the weights you wish to change into a JSON file in the weights folder
-2. Open `RandomSettingsGenerator.py` in a text editor and add the line `global_override_fname = "<override file name>.json"` where you replace `<overworld file name>` with the name of your weights file.
+2. Open `RandomSettingsGenerator.py` in a text editor and add the line `global_override_fname = "<override file name>.json"` where you replace `<override file name>` with the name of your weights file.
 
 We simplify this process by providing some presets. To use these presets, open `RandomSettingsGenerator.py` in a text editor and remove the `# ` (including the space after the `#`) from...
 
