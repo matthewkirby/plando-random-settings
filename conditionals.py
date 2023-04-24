@@ -243,3 +243,23 @@ def replicate_old_child_trade(random_settings, extra_starting_items, **kwargs):
     else:
         random_settings["shuffle_child_trade"] = []
         extra_starting_items['starting_items'] += ["zeldas_letter"]
+
+
+def shuffle_valley_lake_exit(random_settings, **kwargs):
+    """ If both OWER and owl shuffle are on, shuffle the gerudo valley -> lake entrance """
+    if random_settings['shuffle_overworld_entrances'] == 'true'and random_settings['owl_drops'] == 'true':
+        random_settings['shuffle_gerudo_valley_river_exit'] = "true"
+
+
+def select_one_pots_crates_freestanding(random_settings, **kwargs):
+    chance_one_is_on = int(kwargs['cparams'][0])
+    setting_weights = [int(x) for x in kwargs['cparams'][1].split('/')]
+    weights = [int(x) for x in kwargs['cparams'][2].split('/')]
+
+    # If setting is randomized off, return
+    if not random.choices([True, False], weights=[chance_one_is_on, 100-chance_one_is_on]):
+        return
+    
+    # Chose which of the settings to turn on
+    setting = random.choices(["shuffle_pots", "shuffle_crates", "shuffle_freestanding_items"], weights=setting_weights)[0]
+    random_settings[setting] = random.choices(["overworld", "dungeons", "all"], weights=weights)[0]

@@ -14,7 +14,7 @@ import roll_settings as rs
 global_override_fname = None
 
 # Please set the weights file you with to load
-WEIGHTS = "RSL" # The default Random Settings League Season 5 weights
+WEIGHTS = "RSL" # The default Random Settings League Season 6 weights
 # Every setting with even weights
 # WEIGHTS = "full-random"
 # Provide your own weights file. If the specified file does not exist, this will create it
@@ -109,7 +109,7 @@ def main():
 
     # If we only want to check for new/changed settings
     if args["check_new_settings"]:
-        _, _, rslweights = rs.load_weights_file("weights/rsl_season5.json")
+        _, _, rslweights = rs.load_weights_file("weights/rsl_season6.json")
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
