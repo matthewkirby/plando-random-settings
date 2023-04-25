@@ -193,7 +193,9 @@ def adjust_chaos_hint_distro(random_settings, **kwargs):
 
     # Make changes and save
     distroin['distribution']['always']['copies'] = 2
-    distroin['distribution']['sometimes']['weight'] = 0
+    distroin['distribution']['overworld']['weight'] = 0
+    distroin['distribution']['dungeon']['weight'] = 0
+    distroin['distribution']['song']['weight'] = 0
     random_settings['hint_dist_user'] = distroin
 
 
