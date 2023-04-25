@@ -1,5 +1,6 @@
-# Python stuff
+# Stuff
 __pycache__
+.vscode/
 
 # The randomizer
 randomizer/
