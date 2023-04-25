@@ -99,7 +99,7 @@ def remove_redundant_settings(random_settings):
         if setting in random_settings.keys():
             info = get_setting_info(setting)
             choice = random_settings[setting]
-            if info.disable != None:
+            if info.disable is not None:
                 for option, disabling in info.disable.items():
                     negative = False
                     if isinstance(option, str) and option[0] == '!':
@@ -121,7 +121,7 @@ def remove_disabled_setting(random_settings, other_setting):
         random_settings.pop(other_setting)
 
 def resolve_multiselect_weights(setting, options):
-    """ Given a multiselect weights block, resolve into the plando options. 
+    """ Given a multiselect weights block, resolve into the plando options.
     A multiselect block should contain the following elements in addition to individual weights
 
     global_enable_percentage [0,100] - the chance at rolling any on in the first place
@@ -130,7 +130,7 @@ def resolve_multiselect_weights(setting, options):
     """
     if random.random()*100 > options["global_enable_percentage"]:
         return []
-    
+
     if "geometric" in options.keys() and options["geometric"]:
         nopts = len(get_setting_info(setting).choices)
         N = random.choices(range(nopts+1), weights=geometric_weights(nopts+1))[0]
@@ -207,7 +207,7 @@ def generate_weights_override(weights, override_weights_fname):
         if override_multiselect is not None:
             for key, value in override_multiselect.items():
                 weight_multiselect[key] = value
-    
+
     return weight_options, weight_multiselect, weight_dict, start_with
 
 
@@ -250,7 +250,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
-        
+
     # Remove plando setting if a _random setting is true
     remove_plando_if_random(random_settings)
 
@@ -277,7 +277,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
     random_settings['user_message'] = f'RSL Script v{__version__}'
 
     # Save the output plando
-    output = { "settings": random_settings }
+    output = {"settings": random_settings}
 
     plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
     # plando_filename = f'random_settings.json'
