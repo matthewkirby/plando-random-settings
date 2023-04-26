@@ -189,7 +189,7 @@
         },
         "free_bombchu_drops": {
             "true": 1,
-            "false": 0
+            "false": 1
         },
         "adult_trade_shuffle": {
             "true": 0,
