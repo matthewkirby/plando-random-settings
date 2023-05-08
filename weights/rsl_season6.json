@@ -586,8 +586,8 @@
             "affordable": 1
         },
         "fast_bunny_hood": {
-            "true": 1,
-            "false": 0
+            "true": 0,
+            "false": 1
         },
         "blue_fire_arrows": {
             "true": 3,
