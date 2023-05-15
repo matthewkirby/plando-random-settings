@@ -260,8 +260,8 @@ def select_one_pots_crates_freestanding(random_settings, **kwargs):
     weights = [int(x) for x in kwargs['cparams'][2].split('/')]
 
     # If setting is randomized off, return
-    if not random.choices([True, False], weights=[chance_one_is_on, 100-chance_one_is_on]):
-        return
+    if not (random.randint(0, 100) < chance_one_is_on):
+       return
 
     # Chose which of the settings to turn on
     setting = random.choices(["shuffle_pots", "shuffle_crates", "shuffle_freestanding_items"], weights=setting_weights)[0]
