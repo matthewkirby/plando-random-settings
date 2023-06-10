@@ -95,7 +95,7 @@
             "opt_percentage": {
                 "altar": 100,
                 "ganondorf": 100,
-                "warp_songs": 100,
+                "warp_songs_and_owls": 100,
                 "dampe_diary": 100,
                 "10_skulltulas": 0,
                 "20_skulltulas": 0,
@@ -144,9 +144,31 @@
                 "gerudo mask": 0,
                 "mask of truth": 0
             }
+        },
+        "silver_rupee_pouches": {
+            "global_enable_percentage": 0,
+            "geometric": false,
+            "opt_percentage": {}
         }
     },
     "weights": {
+        "shuffle_loach_reward": {
+            "off": 1,
+            "vanilla": 0,
+            "easy": 0
+        },
+        "shuffle_tcgkeys": {
+            "remove": 0,
+            "vanilla": 1,
+            "regional": 0,
+            "overworld": 0,
+            "any_dungeon": 0,
+            "keysanity": 0
+        },
+        "shuffle_hideout_entrances": {
+            "true": 0,
+            "false": 1
+        },
         "logic_rules": {
             "glitchless": 1,
             "glitched": 0,
@@ -173,6 +195,21 @@
         "shuffle_beehives": {
             "true": 0,
             "false": 1
+        },
+        "shuffle_silver_rupees": {
+            "remove": 0,
+            "vanilla": 1,
+            "dungeon": 0,
+            "overworld": 0,
+            "any_dungeon": 0,
+            "regional": 0,
+            "anywhere": 0
+        },
+        "silver_rupee_pouches_choice": {
+            "off": 1,
+            "choice": 0,
+            "all": 0,
+            "random": 0
         },
         "correct_potcrate_appearances": {
             "off": 0,

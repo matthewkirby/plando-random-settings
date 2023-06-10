@@ -1,4 +1,4 @@
-__version__ = "2.5.2"
+__version__ = "2.5.3"
 
-randomizer_version = '7.1.83 R-1'
-randomizer_commit = '578a64f4c78a831cde4215e0ac31565d3bf9bc46'
+randomizer_version = '7.1.118 R-1'
+randomizer_commit = '284d2df92d4d980c55fa50dca43b2b52f7956327'
