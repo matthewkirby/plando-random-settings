@@ -43,12 +43,19 @@ def disable_pot_chest_texture_independence(random_settings, **kwargs):
         random_settings['correct_potcrate_appearances'] = 'off'
 
 
-def disable_hideoutkeys_independence(random_settings, **kwargs):
-    """ Set shuffle_hideoutkeys to match shuffle_smallkeys. """
-    if random_settings['shuffle_smallkeys'] in ['remove', 'vanilla', 'dungeon']:
+def disable_keysanity_independence(random_settings, **kwargs):
+    """ Set shuffle_hideoutkeys and shuffle_tcgkeys to match shuffle_smallkeys. """
+    if random_settings['shuffle_smallkeys'] == 'remove':
         random_settings['shuffle_hideoutkeys'] = 'vanilla'
+        random_settings['shuffle_tcgkeys'] = 'remove'
+
+    elif random_settings['shuffle_smallkeys'] in ['vanilla', 'dungeon']:
+        random_settings['shuffle_hideoutkeys'] = 'vanilla'
+        random_settings['shuffle_tcgkeys'] = 'vanilla'
+
     else:
         random_settings['shuffle_hideoutkeys'] = random_settings['shuffle_smallkeys']
+        random_settings['shuffle_tcgkeys'] = random_settings['shuffle_smallkeys']
 
 
 def restrict_one_entrance_randomizer(random_settings, **kwargs):

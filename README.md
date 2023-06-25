@@ -53,8 +53,8 @@ When enabled, if the damage multiplier is quadruple damage or one hit ko, preven
 ### `disable_pot_chest_texture_independence: [status]`
 When enabled, match `correct_chest_appearances` and `correct_potcrate_appearances`.
 
-### `disable_hideoutkeys_independence: [status]`
-When enabled, match the `shuffle_hideoutkeys` setting to the selected option for `shuffle_smallkeys`.
+### `disable_keysanity_independence: [status]`
+When enabled, match the `shuffle_hideoutkeys` and `shuffle_tcgkeys` settings to the selected option for `shuffle_smallkeys`.
 
 ### `restrict_one_entrance_randomizer: [status]`
 When enabled, ensure that no more than one entrance pool is shuffled.

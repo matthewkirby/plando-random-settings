@@ -12,7 +12,7 @@
             "exclude_minimal_triforce_hunt": [false],
             "constant_triforce_hunt_extras": [true],
             "exclude_ice_trap_misery": [true],
-            "disable_hideoutkeys_independence": [true],
+            "disable_keysanity_independence": [true],
             "disable_pot_chest_texture_independence": [false],
             "restrict_one_entrance_randomizer": [false],
             "random_scrubs_start_wallet": [true],
@@ -25,7 +25,7 @@
             "exclude_mapcompass_info_remove": [true],
             "ohko_starts_with_nayrus": [true],
             "invert_dungeons_mq_count": [false, 0],
-            "replicate_old_child_trade": [true],
+            "replicate_old_child_trade": [false],
             "shuffle_valley_lake_exit": [true],
             "select_one_pots_crates_freestanding": [true, 20, "1/1/1", "1/1/1"]
         },
@@ -94,14 +94,17 @@
             "geometric": false,
             "opt_percentage": {
                 "altar": 100,
+                "dampe_diary": 100,
                 "ganondorf": 100,
                 "warp_songs_and_owls": 100,
-                "dampe_diary": 100,
                 "10_skulltulas": 0,
                 "20_skulltulas": 0,
                 "30_skulltulas": 0,
                 "40_skulltulas": 0,
-                "50_skulltulas": 0
+                "50_skulltulas": 0,
+                "frogs2": 0,
+                "mask_shop": 100,
+                "unique_merchants": 100
             }
         },
         "adult_trade_start": {
@@ -129,26 +132,49 @@
             }
         },
         "shuffle_child_trade": {
-            "global_enable_percentage": 0,
+            "global_enable_percentage": 20,
             "geometric": false,
             "opt_percentage": {
-                "weird egg": 0,
-                "chicken": 0,
-                "zeldas letter": 0,
-                "keaton mask": 0,
-                "skull mask": 0,
-                "spooky mask": 0,
-                "bunny hood": 0,
-                "goron mask": 0,
-                "zora mask": 0,
-                "gerudo mask": 0,
-                "mask of truth": 0
+                "weird egg": 100,
+                "chicken": 100,
+                "zeldas letter": 100,
+                "keaton mask": 100,
+                "skull mask": 100,
+                "spooky mask": 100,
+                "bunny hood": 100,
+                "goron mask": 100,
+                "zora mask": 100,
+                "gerudo mask": 100,
+                "mask of truth": 100
             }
         },
         "silver_rupee_pouches": {
             "global_enable_percentage": 0,
             "geometric": false,
-            "opt_percentage": {}
+            "opt_percentage": {
+                "Dodongo's Cavern Staircase": 100,
+                "Ice Cavern Spinning Scythe": 100,
+                "Ice Cavern Push Block": 100,
+                "Bottom of the Well Basement": 100,
+                "Shadow Temple Scythe Shortcut": 100,
+                "Shadow Temple Invisible Blades": 100,
+                "Shadow Temple Huge Pit": 100,
+                "Shadow Temple Invisible Spikes": 100,
+                "Gerudo Training Ground Slopes": 100,
+                "Gerudo Training Ground Lava": 100,
+                "Gerudo Training Ground Water": 100,
+                "Spirit Temple Child Early Torches": 100,
+                "Spirit Temple Adult Boulders": 100,
+                "Spirit Temple Lobby and Lower Adult": 100,
+                "Spirit Temple Sun Block": 100,
+                "Spirit Temple Adult Climb": 100,
+                "Ganon's Castle Spirit Trial": 100,
+                "Ganon's Castle Light Trial": 100,
+                "Ganon's Castle Fire Trial": 100,
+                "Ganon's Castle Shadow Trial": 100,
+                "Ganon's Castle Water Trial": 100,
+                "Ganon's Castle Forest Trial": 100
+            }
         }
     },
     "weights": {
@@ -197,18 +223,18 @@
             "false": 1
         },
         "shuffle_silver_rupees": {
-            "remove": 0,
-            "vanilla": 1,
-            "dungeon": 0,
+            "remove": 1,
+            "vanilla": 16,
+            "dungeon": 1,
             "overworld": 0,
             "any_dungeon": 0,
-            "regional": 0,
-            "anywhere": 0
+            "regional": 1,
+            "anywhere": 1
         },
         "silver_rupee_pouches_choice": {
-            "off": 1,
+            "off": 0,
             "choice": 0,
-            "all": 0,
+            "all": 1,
             "random": 0
         },
         "correct_potcrate_appearances": {
@@ -229,8 +255,8 @@
             "false": 1
         },
         "adult_trade_shuffle": {
-            "true": 0,
-            "false": 1
+            "true": 1,
+            "false": 4
         },
         "open_forest": {
             "open": 1,
@@ -326,9 +352,9 @@
             "false": 1
         },
         "shuffle_dungeon_entrances": {
-            "off": 1,
-            "simple": 1,
-            "all": 0
+            "off": 9,
+            "simple": 9,
+            "all": 2
         },
         "shuffle_bosses": {
             "off": 4,
@@ -537,8 +563,8 @@
             "false": 2
         },
         "no_guard_stealth": {
-            "true": 3,
-            "false": 2
+            "true": 1,
+            "false": 0
         },
         "no_epona_race": {
             "true": 3,
