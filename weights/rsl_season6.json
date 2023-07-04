@@ -55,7 +55,8 @@
             "logic_lens_shadow",
             "logic_lens_shadow_platform",
             "logic_lens_shadow_mq_dead_hand",
-	        "logic_lens_bongo"
+	        "logic_lens_bongo",
+            "logic_lens_castle_mq"
         ],
         "disabled_locations": []
     },
