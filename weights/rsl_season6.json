@@ -135,17 +135,17 @@
             "global_enable_percentage": 20,
             "geometric": false,
             "opt_percentage": {
-                "weird egg": 100,
-                "chicken": 100,
-                "zeldas letter": 100,
-                "keaton mask": 100,
-                "skull mask": 100,
-                "spooky mask": 100,
-                "bunny hood": 100,
-                "goron mask": 100,
-                "zora mask": 100,
-                "gerudo mask": 100,
-                "mask of truth": 100
+                "Weird Egg": 100,
+                "Chicken": 100,
+                "Zeldas Letter": 100,
+                "Keaton Mask": 100,
+                "Skull Mask": 100,
+                "Spooky Mask": 100,
+                "Bunny Hood": 100,
+                "Goron Mask": 100,
+                "Zora Mask": 100,
+                "Gerudo Mask": 100,
+                "Mask of Truth": 100
             }
         },
         "silver_rupee_pouches": {
@@ -649,8 +649,8 @@
             "affordable": 1
         },
         "fast_bunny_hood": {
-            "true": 0,
-            "false": 1
+            "true": 1,
+            "false": 0
         },
         "blue_fire_arrows": {
             "true": 3,
@@ -802,6 +802,22 @@
             "18": 4,
             "19": 2,
             "20": 1
+        },
+        "auto_equip_masks": {
+            "true": 0,
+            "false": 1
+        },
+        "key_appearance_match_dungeon": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_individual_ocarina_notes": {
+            "true": 0,
+            "false": 1
+        },
+        "ruto_already_f1_jabu": {
+            "true": 0,
+            "false": 1
         }
     }
 }

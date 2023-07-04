@@ -7,8 +7,12 @@ import conditionals as conds
 from rslversion import __version__
 sys.path.append("randomizer")
 from randomizer.ItemPool import trade_items, child_trade_items
-from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, get_setting_info
+from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, SettingInfos
 from randomizer.StartingItems import inventory, songs, equipment
+
+def get_setting_info(setting_name):
+    """ Quick replacement for removed function in the randomizer. """
+    return SettingInfos.setting_infos[setting_name]
 
 
 def load_weights_file(weights_fname):
@@ -59,12 +63,11 @@ def geometric_weights(N, startat=0, rtype="list"):
 
 def draw_starting_item_pool(random_settings, start_with):
     """ Select starting items, songs, and equipment. """
-    # random_settings["starting_items"] = draw_choices_from_pool(inventory)
-    random_settings["starting_items"] = draw_choices_from_pool({
+    random_settings["starting_inventory"] = draw_choices_from_pool({
         name: info
         for name, info in inventory.items()
-        if (info.itemname not in trade_items or info.itemname in random_settings["adult_trade_start"])
-        and (info.itemname not in child_trade_items or info.itemname in random_settings["shuffle_child_trade"] or info.itemname == 'Zeldas Letter')
+        if (info.item_name not in trade_items or info.item_name in random_settings["adult_trade_start"])
+        and (info.item_name not in child_trade_items or info.item_name in random_settings["shuffle_child_trade"] or info.item_name == 'Zeldas Letter')
     })
     random_settings["starting_songs"] = draw_choices_from_pool(songs)
     random_settings["starting_equipment"] = draw_choices_from_pool(equipment)
@@ -161,7 +164,7 @@ def generate_weights_override(weights, override_weights_fname):
 
 
     # If an override_weights file name is provided, load it
-    start_with = {"starting_items":[], "starting_songs":[], "starting_equipment":[]}
+    start_with = {"starting_inventory":[], "starting_songs":[], "starting_equipment":[]}
     if override_weights_fname is not None:
         print(f"RSL GENERATOR: LOADING OVERRIDE WEIGHTS from {override_weights_fname}")
         override_options, override_multiselect, override_weights = load_weights_file(override_weights_fname)
@@ -266,7 +269,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_items", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 

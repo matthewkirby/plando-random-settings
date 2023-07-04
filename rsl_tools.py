@@ -6,7 +6,8 @@ import os
 import json
 import glob
 sys.path.append("randomizer")
-from randomizer.SettingsList import get_setting_info
+# from randomizer.SettingsList import get_setting_info
+from randomizer.SettingsList import SettingInfos
 
 
 def randomizer_settings_func(rootdir=os.getcwd(), plando_filename='random_settings.json', worldcount=1):
@@ -74,19 +75,21 @@ def check_for_setting_changes(weights, randomizer_settings):
     """ Function to check for new settings and options when the randomizer is updated. """
     ignore_list = ["tricks_list_msg", "bingosync_url", "dungeon_shortcuts", "misc_hints", "mix_entrance_pools", "mq_dungeons_specific",
                    "key_rings", "empty_dungeons_specific", "empty_dungeons_count", "adult_trade_start", "spawn_positions", "hint_dist"]
+    multiselect_list = ["silver_rupee_pouches", "shuffle_child_trade", "starting_inventory"]
+    ignore_list += multiselect_list
 
     # Find new or changed settings by name
     old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))
     new_settings = list(set(randomizer_settings.keys()) - set(weights.keys()))
     if len(old_settings) > 0:
         for setting in old_settings:
-            print(f"{setting} with options {list(weights[setting].keys())} is no longer a setting.")
+            print(f"{setting} with options {list(weights[setting].keys())} is no longer a setting.\n")
             weights.pop(setting)
         print("-------------------------------------")
     if len(new_settings) > 0:
         for setting in new_settings:
             if setting not in ignore_list:
-                print(f"{setting} with options {list(randomizer_settings[setting].keys())} is a new setting!")
+                print(f"{setting} with options {list(randomizer_settings[setting].keys())} is a new setting!\n")
         print("-------------------------------------")
 
     # Find new or changed options
@@ -99,10 +102,10 @@ def check_for_setting_changes(weights, randomizer_settings):
         new_options = list(randomizer_settings_strings - set(weights[setting].keys()))
         if len(old_options) > 0:
             for name in old_options:
-                print(f"{setting} option {name} no longer exists.")
+                print(f"{setting} option {name} no longer exists.\n")
         if len(new_options) > 0:
             for name in new_options:
-                print(f"{setting} option {name} is new!")
+                print(f"{setting} option {name} is new!\n")
 
 
 def benchmark_weights(weight_options, weight_dict, weight_multiselect):
@@ -154,7 +157,7 @@ def benchmark_weights(weight_options, weight_dict, weight_multiselect):
                 }
         else:
             geometric_multis.append(setting_name)
-            max_options = len(get_setting_info(setting_name).choices)
+            max_options = len(SettingInfos.setting_infos[setting_name].choices)
             for option_num in range(0, max_options+1):
                 settings_counts[setting_name][option_num] = {
                     "weight": str(2**(max_options - option_num)) + " (global " + str(multi_options["global_enable_percentage"]) + "%)",
