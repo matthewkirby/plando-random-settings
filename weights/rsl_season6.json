@@ -66,6 +66,7 @@
             "geometric": false,
             "opt_percentage": {
                 "Thieves Hideout": 100,
+                "Treasure Chest Game": 100,
                 "Forest Temple": 100,
                 "Fire Temple": 100,
                 "Water Temple": 100,
@@ -419,12 +420,12 @@
         },
         "shopsanity": {
             "off": 2,
-            "0": 0,
-            "1": 0,
-            "2": 0,
-            "3": 0,
-            "4": 0,
-            "random": 0
+            "0": 1,
+            "1": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "random": 2
         },
         "tokensanity": {
             "off": 6,
