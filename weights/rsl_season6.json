@@ -187,11 +187,11 @@
         },
         "shuffle_tcgkeys": {
             "remove": 0,
-            "vanilla": 1,
-            "regional": 0,
+            "vanilla": 8,
+            "regional": 1,
             "overworld": 0,
             "any_dungeon": 0,
-            "keysanity": 0
+            "keysanity": 1
         },
         "shuffle_hideout_entrances": {
             "true": 0,
@@ -818,7 +818,7 @@
             "false": 1
         },
         "ruto_already_f1_jabu": {
-            "true": 0,
+            "true": 1,
             "false": 1
         }
     }
