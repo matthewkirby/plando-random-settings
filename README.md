@@ -10,7 +10,7 @@ The above functionality requires this external generator to run, but this code a
 
 
 # Instructions
-Requirements: Python 3.7 (or newer)
+Requirements: Python 3.9 (or newer)
 
 1. Download the latest [release](https://github.com/matthewkirby/plando-random-settings/releases) and unzip the folder anywhere.
 2. Place your Ocarina of Time 1.0 rom in this directory. It must have the `.z64` file extension. If your rom has a different file extension or is a later version of the game, you can use [this tool](https://oot.flagrama.com/) to convert to the required version.
@@ -18,8 +18,20 @@ Requirements: Python 3.7 (or newer)
 4. After it finishes running, your patch file will be saved in the `patches` directory.
 
 
+# Advanced Instructions
+```console
+$ pip install virtualenv
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt install python3.9 && sudo apt install python3.9-distutils
+$ virtualenv -p python3.9 venv
+$ source venv/bin/activate
+$ pip install requests
+$ python RandomSettingsGenerator.py
+```
+
+
 # Rolling seeds with Weight Overrides
-If you are playing a format besides an official Random Setting League race, you may wish to edit the weights. 
+If you are playing a format besides an official Random Setting League race, you may wish to edit the weights.
 
 1. Put the weights you wish to change into a JSON file in the weights folder
 2. Open `RandomSettingsGenerator.py` in a text editor and add the line `global_override_fname = "<override file name>.json"` where you replace `<override file name>` with the name of your weights file.

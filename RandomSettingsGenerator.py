@@ -5,6 +5,7 @@ import traceback
 import argparse
 
 import update_randomizer as ur
+ur.check_python()
 ur.check_version()
 
 from utils import cleanup
@@ -46,7 +47,7 @@ def range_limited_int_type(arg):
     """ Type function for argparse - a positive int """
     try:
         i = int(arg)
-    except ValueError:    
+    except ValueError:
         raise argparse.ArgumentTypeError("Must be an integer")
     if i < 1:
         raise argparse.ArgumentTypeError("Argument must be > 0")

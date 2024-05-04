@@ -5,7 +5,7 @@ import zipfile
 import shutil
 import subprocess
 from utils import cleanup
-from rslversion import randomizer_commit, randomizer_version
+import rslversion as rslv
 try:
     import requests
 except ModuleNotFoundError:
@@ -13,11 +13,16 @@ except ModuleNotFoundError:
     import requests
 
 
+def check_python():
+    if sys.version_info < rslv.MIN_PY_VERSION:
+        print(f"Error: Python {rslv.MIN_PY_VERSION[0]}.{rslv.MIN_PY_VERSION[1]} or higher is required to run this script.")
+        sys.exit(1)
+
 def check_version():
     """ Ensure the downloaded version of the randomizer is the correct, if not update """
     if os.path.isfile(os.path.join('randomizer', 'version.py')):
         from randomizer import version as ootrversion
-        if ootrversion.__version__ == randomizer_version:
+        if ootrversion.__version__ == rslv.randomizer_version:
             return
         print("Updating the randomizer...")
         shutil.rmtree('randomizer')
@@ -36,7 +41,7 @@ def download_randomizer():
     cleanup(zippath)
 
     # Download the zipped randomizer
-    req = requests.get(f'https://github.com/Roman971/OoT-Randomizer/archive/{randomizer_commit}.zip', stream=True)
+    req = requests.get(f'https://github.com/{rslv.randomizer_repo}/archive/{rslv.randomizer_commit}.zip', stream=True)
     with open(zippath, 'wb') as fin:
         for chunk in req.iter_content():
             fin.write(chunk)
@@ -44,7 +49,7 @@ def download_randomizer():
     # Extract the zip file and add __init__.py
     with zipfile.ZipFile(zippath, 'r') as zipped:
         zipped.extractall('.')
-    shutil.move(f'OoT-Randomizer-{randomizer_commit}', 'randomizer')
+    shutil.move(f'OoT-Randomizer-{rslv.randomizer_commit}', 'randomizer')
     with open(os.path.join('randomizer', '__init__.py'), 'w') as fin:
         pass
 

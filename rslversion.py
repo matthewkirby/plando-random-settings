@@ -1,4 +1,9 @@
-__version__ = "2.5.11"
+__version__ = "2.6.0"
 
-randomizer_version = '7.1.181 R-1'
-randomizer_commit = '4dbfdae3b8d1242af895569feb06536581dcf2b6'
+# Randomizer Info
+randomizer_repo = 'rrealmuto/OoT-Randomizer'
+randomizer_version = '8.1.29 Rob-101'
+randomizer_commit = 'c342eb28bceb1bc4609a955b090a48e6c8632647'
+
+# Requirements
+MIN_PY_VERSION = (3, 9)
