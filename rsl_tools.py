@@ -74,8 +74,9 @@ def find_rom_file():
 def check_for_setting_changes(weights, randomizer_settings):
     """ Function to check for new settings and options when the randomizer is updated. """
     ignore_list = ["tricks_list_msg", "bingosync_url", "dungeon_shortcuts", "misc_hints", "mix_entrance_pools", "mq_dungeons_specific",
-                   "key_rings", "empty_dungeons_specific", "empty_dungeons_count", "adult_trade_start", "spawn_positions", "hint_dist"]
-    multiselect_list = ["silver_rupee_pouches", "shuffle_child_trade", "starting_inventory"]
+                   "key_rings", "empty_dungeons_specific", "empty_dungeons_count", "adult_trade_start", "spawn_positions", "hint_dist",
+                   "custom_ice_trap_count", "custom_ice_trap_percent"]
+    multiselect_list = ["silver_rupee_pouches", "shuffle_child_trade", "starting_inventory", "minor_items_as_major_chest"]
     ignore_list += multiselect_list
 
     # Find new or changed settings by name

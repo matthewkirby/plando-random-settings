@@ -178,6 +178,15 @@
                 "Ganon's Castle Water Trial": 100,
                 "Ganon's Castle Forest Trial": 100
             }
+        },
+        "minor_items_as_major_chest": {
+            "global_enable_percentage": 0,
+            "geometric": false,
+            "opt_percentage": {
+                "bombchus": 100,
+                "shields": 100,
+                "capacity": 100
+            }
         }
     },
     "weights": {
@@ -763,7 +772,9 @@
             "normal": 5,
             "on": 3,
             "mayhem": 1,
-            "onslaught": 0
+            "onslaught": 0,
+            "custom_count": 0,
+            "custom_percent": 0
         },
         "ice_trap_appearance": {
             "major_only": 1,
@@ -776,14 +787,6 @@
         },
         "start_with_rupees": {
             "true": 1,
-            "false": 1
-        },
-        "fix_broken_drops": {
-            "true": 1,
-            "false": 0
-        },
-        "minor_items_as_major_chest": {
-            "true": 0,
             "false": 1
         },
         "starting_hearts": {
@@ -820,6 +823,60 @@
         },
         "ruto_already_f1_jabu": {
             "true": 1,
+            "false": 1
+        },
+        "shuffle_enemy_spawns": {
+            "off": 1,
+            "all": 0,
+            "bosses": 0,
+            "regional": 0
+        },
+        "shuffle_empty_pots": {
+            "true": 0,
+            "false": 1
+        },
+        "fix_broken_actors": {
+            "true": 1,
+            "false": 0
+        },
+        "shuffle_grass": {
+            "true": 0,
+            "false": 1
+        },
+        "prevent_guay_respawns": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_gossipstones": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_fishies": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_enemy_drops": {
+            "true": 0,
+            "false": 1
+        },
+        "dogs_anywhere": {
+            "true": 0,
+            "false": 1
+        },
+        "minimap_enemy_tracker": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_boulders": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_wonderitems": {
+            "true": 0,
+            "false": 1
+        },
+        "shuffle_empty_crates": {
+            "true": 0,
             "false": 1
         }
     }

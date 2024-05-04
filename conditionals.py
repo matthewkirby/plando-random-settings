@@ -59,8 +59,8 @@ def disable_keysanity_independence(random_settings, **kwargs):
 
 
 def restrict_one_entrance_randomizer(random_settings, **kwargs):
-    """ Ensure only a single pool is shuffled. If more than 1 is shuffled, randomly select one to disable until only one is enabled. """
-    erlist = ["shuffle_interior_entrances:off", "shuffle_grotto_entrances:false", "shuffle_dungeon_entrances:false", "shuffle_overworld_entrances:false"]
+    """ Ensure only a single pool is shuffled. If more than 1 is shuffled, randomly select one to keep and disable the rest. """
+    erlist = ["shuffle_interior_entrances:off", "shuffle_grotto_entrances:false", "shuffle_dungeon_entrances:off", "shuffle_overworld_entrances:false"]
 
     # Count how many ER are on
     enabled_er = []
