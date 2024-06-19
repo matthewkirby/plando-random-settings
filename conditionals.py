@@ -87,42 +87,6 @@ def random_scrubs_start_wallet(random_settings, weight_dict, extra_starting_item
         extra_starting_items['starting_equipment'] += ['wallet']
 
 
-def dynamic_skulltula_wincon(random_settings, **kwargs):
-    """ Rolls skull win condition seperately. Takes extra inputs [weight of skull win con, "bridge%/gbk%/both"] """
-    chance_of_skull_wincon = int(kwargs['cparams'][0])
-    weights = [int(x) for x in kwargs['cparams'][1].split('/')]
-
-    # Roll for a skull win condition
-    skull_wincon = random.choices([True, False], weights=[chance_of_skull_wincon, 100-chance_of_skull_wincon])[0]
-    if not skull_wincon:
-        return
-
-    # Roll for bridge/bosskey/both
-    whichtype = random.choices(['bridge', 'gbk', 'both'], weights=weights)[0]
-    if whichtype in ['bridge', 'both']:
-        random_settings['bridge'] = 'tokens'
-    if whichtype in ['gbk', 'both']:
-        random_settings['shuffle_ganon_bosskey'] = 'tokens'
-
-
-def dynamic_heart_wincon(random_settings, **kwargs):
-    """ Rolls heart win condition seperately. Takes extra inputs [weight of skheartull win con, "bridge%/gbk%/both"] """
-    chance_of_heart_wincon = int(kwargs['cparams'][0])
-    weights = [int(x) for x in kwargs['cparams'][1].split('/')]
-
-    # Roll for a heart win condition
-    heart_wincon = random.choices([True, False], weights=[chance_of_heart_wincon, 100-chance_of_heart_wincon])[0]
-    if not heart_wincon:
-        return
-
-    # Roll for bridge/bosskey/both
-    whichtype = random.choices(['bridge', 'gbk', 'both'], weights=weights)[0]
-    if whichtype in ['bridge', 'both']:
-        random_settings['bridge'] = 'hearts'
-    if whichtype in ['gbk', 'both']:
-        random_settings['shuffle_ganon_bosskey'] = 'hearts'
-
-
 def shuffle_goal_hints(random_settings, **kwargs):
     """ Swaps Way of the Hero hints with Goal hints. Takes an extra input [how often to swap] """
     chance_of_goals = int(kwargs['cparams'][0])
@@ -153,7 +117,6 @@ def replace_dampe_diary_hint_with_lightarrow(random_settings, **kwargs):
         distroin = json.load(fin)
     distroin['misc_hint_items'] = {'dampe_diary': "Light Arrows"}
     random_settings['hint_dist_user'] = distroin
-
 
 
 def split_collectible_bridge_conditions(random_settings, **kwargs):
@@ -239,20 +202,6 @@ def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
     new_mq_dungeons_count = 12 - current_mq_dungeons_count
 
     random_settings['mq_dungeons_count'] = new_mq_dungeons_count
-
-
-def replicate_old_child_trade(random_settings, extra_starting_items, **kwargs):
-    """ Emulate old behavior for sstarting child trade. This should be removed
-        once season 6 begins and is only here to keep season 5 support.
-    """
-    ctrade = random.choices(["vanilla", "shuffle", "scz"], weights=[1, 1, 2])[0]
-    if ctrade == "vanilla":
-        random_settings["shuffle_child_trade"] = []
-    elif ctrade == "shuffle":
-        random_settings["shuffle_child_trade"] = ["Weird Egg"]
-    else:
-        random_settings["shuffle_child_trade"] = []
-        extra_starting_items['starting_inventory'] += ["zeldas_letter"]
 
 
 def shuffle_valley_lake_exit(random_settings, **kwargs):

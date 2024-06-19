@@ -16,8 +16,6 @@
             "disable_pot_chest_texture_independence": [false],
             "restrict_one_entrance_randomizer": [false],
             "random_scrubs_start_wallet": [true],
-            "dynamic_skulltula_wincon": [false, 7.5, "40/40/20"],
-            "dynamic_heart_wincon": [false, 7.5, "40/40/20"],
             "split_collectible_bridge_conditions": [true, 15, "50/50", "40/40/20"],
             "shuffle_goal_hints": [false, 50],
             "replace_dampe_diary_hint_with_lightarrow": [true],
@@ -25,7 +23,6 @@
             "exclude_mapcompass_info_remove": [true],
             "ohko_starts_with_nayrus": [true],
             "invert_dungeons_mq_count": [false, 0],
-            "replicate_old_child_trade": [false],
             "shuffle_valley_lake_exit": [true],
             "select_one_pots_crates_freestanding": [true, 20, "1/1/1", "1/1/1"]
         },
