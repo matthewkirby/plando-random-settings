@@ -4,6 +4,7 @@ import datetime
 import json
 import random
 import conditionals as conds
+from multiselects import resolve_multiselects, ms_option_lookup
 from rslversion import __version__
 sys.path.append("randomizer")
 from randomizer.ItemPool import trade_items, child_trade_items
@@ -215,7 +216,7 @@ def generate_weights_override(weights, override_weights_fname):
 
 
 def generate_plando(weights, override_weights_fname, no_seed):
-    weight_options, weight_multiselect, weight_dict, start_with = generate_weights_override(weights, override_weights_fname)
+    weight_options, weight_multiselects, weight_dict, start_with = generate_weights_override(weights, override_weights_fname)
 
     ####################################################################################
     # Make a new function that parses the weights file that does this stuff
@@ -239,9 +240,8 @@ def generate_plando(weights, override_weights_fname, no_seed):
         random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
 
     # Draw the multiselects
-    if weight_multiselect is not None:
-        for setting, options in weight_multiselect.items():
-            random_settings[setting] = resolve_multiselect_weights(setting, options)
+    if weight_multiselects is not None:
+        random_settings.update(resolve_multiselects(weight_multiselects))
 
     # Add starting items, conditionals, tricks, excluded locations, and misc hints
     if weight_options is not None:
@@ -251,8 +251,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
             random_settings["allowed_tricks"] = weight_options["tricks"]
         if "disabled_locations" in weight_options:
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
-        if "misc_hints" in weight_options:
-            random_settings["misc_hints"] = weight_options["misc_hints"]
+        random_settings["misc_hints"] = weight_options["misc_hints"] if "misc_hints" in weight_options else []
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
 
@@ -271,7 +270,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "misc_hints", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "misc_hints", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(ms_option_lookup.keys()):
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 
