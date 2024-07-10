@@ -1,4 +1,4 @@
-__version__ = "2.6.1"
+__version__ = "2.6.2"
 
 # Randomizer Info
 randomizer_repo = 'rrealmuto/OoT-Randomizer'
