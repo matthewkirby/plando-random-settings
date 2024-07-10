@@ -243,7 +243,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
         for setting, options in weight_multiselect.items():
             random_settings[setting] = resolve_multiselect_weights(setting, options)
 
-    # Add starting items, conditionals, tricks and excluded locations
+    # Add starting items, conditionals, tricks, excluded locations, and misc hints
     if weight_options is not None:
         if "conditionals" in weight_options:
             conds.parse_conditionals(weight_options["conditionals"], weight_dict, random_settings, start_with)
@@ -251,6 +251,8 @@ def generate_plando(weights, override_weights_fname, no_seed):
             random_settings["allowed_tricks"] = weight_options["tricks"]
         if "disabled_locations" in weight_options:
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
+        if "misc_hints" in weight_options:
+            random_settings["misc_hints"] = weight_options["misc_hints"]
         if "starting_items" in weight_options and weight_options["starting_items"] == True:
             draw_starting_item_pool(random_settings, start_with)
 
@@ -269,7 +271,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
+        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "misc_hints", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(weight_multiselect.keys()):
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 

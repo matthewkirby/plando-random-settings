@@ -26,6 +26,14 @@
             "invert_dungeons_mq_count": [false, 0],
             "exclude_minimal_triforce_hunt": [false]
         },
+        "misc_hints": [
+            "altar",
+            "dampe_diary",
+            "ganondorf",
+            "warp_songs_and_owls",
+            "mask_shop",
+            "unique_merchants"
+        ],
         "tricks": [
             "logic_fewer_tunic_requirements",
             "logic_grottos_without_agony",
@@ -86,24 +94,6 @@
                 "GrottoGrave": 100,
                 "Dungeon": 100,
                 "Overworld": 20
-            }
-        },
-        "misc_hints": {
-            "global_enable_percentage": 100,
-            "geometric": false,
-            "opt_percentage": {
-                "altar": 100,
-                "dampe_diary": 100,
-                "ganondorf": 100,
-                "warp_songs_and_owls": 100,
-                "10_skulltulas": 0,
-                "20_skulltulas": 0,
-                "30_skulltulas": 0,
-                "40_skulltulas": 0,
-                "50_skulltulas": 0,
-                "frogs2": 0,
-                "mask_shop": 100,
-                "unique_merchants": 100
             }
         },
         "adult_trade_start": {
