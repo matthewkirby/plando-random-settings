@@ -78,5 +78,15 @@
     "id": "select_one_pots_crates_freestanding",
     "description": "{0} of the time, shuffle either pots, crates, OR freestanding items. Between these three options, the selected one is randomly chosen and all three options are equally likely. For the chosen setting, whether to shuffle the overworld instance, dungeon instances, or both is also chosen randomly with equal likelihoods.",
     "settings_to_skip": ["shuffle_pots", "shuffle_crates", "shuffle_freestanding_items"]
+  },
+  {
+    "id": "geometrically_draw_dungeon_shortcuts",
+    "description": "Enable for dungeon shortcuts for N randomly selected dungeons where N is drawn from a geometric distribution, i.e. 50% for 0, 25% for 1, 12.5% for 2, etc",
+    "settings_to_skip": ["dungeon_shortcuts"]
+  },
+  {
+    "id": "limit_overworld_entrances_in_mixed_entrance_pools",
+    "description": "When entrance pools are mixed, overworld should only be included {0} of the time. All of the other entrance pools are always mixed if mixed pools is enabled and those entrance pools are randomized.",
+    "settings_to_skip": ["mix_entrance_pools"]
   }
 ]

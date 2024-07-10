@@ -10,6 +10,7 @@ sys.path.append("randomizer")
 from randomizer.ItemPool import trade_items, child_trade_items
 from randomizer.SettingsList import get_settings_from_tab, get_settings_from_section, SettingInfos
 from randomizer.StartingItems import inventory, songs, equipment
+from utils import geometric_weights
 
 def get_setting_info(setting_name):
     """ Quick replacement for removed function in the randomizer. """
@@ -52,14 +53,6 @@ def generate_balanced_weights(fname="default_weights.json"):
             json.dump(weight_dict, fp, indent=4)
 
     return weight_dict
-
-
-def geometric_weights(N, startat=0, rtype="list"):
-    """ Compute weights according to a geometric distribution """
-    if rtype == "list":
-        return [50.0/2**i for i in range(N)]
-    elif rtype == "dict":
-        return {str(startat+i): 50.0/2**i for i in range(N)}
 
 
 def draw_starting_item_pool(random_settings, start_with):
@@ -123,27 +116,6 @@ def remove_redundant_settings(random_settings):
 def remove_disabled_setting(random_settings, other_setting):
     if other_setting in random_settings.keys():
         random_settings.pop(other_setting)
-
-def resolve_multiselect_weights(setting, options):
-    """ Given a multiselect weights block, resolve into the plando options.
-    A multiselect block should contain the following elements in addition to individual weights
-
-    global_enable_percentage [0,100] - the chance at rolling any on in the first place
-    geometric [true/false] - If true, ignore individual weights and chose a random number
-    to enable according to the geometric distribution
-    """
-    if random.random()*100 > options["global_enable_percentage"]:
-        return []
-
-    if "geometric" in options.keys() and options["geometric"]:
-        nopts = len(get_setting_info(setting).choices)
-        N = random.choices(range(nopts+1), weights=geometric_weights(nopts+1))[0]
-        return random.sample(list(get_setting_info(setting).choices.keys()), N)
-
-    # Randomly draw which multiselects should be enabled
-    if not "opt_percentage" in options.keys():
-        return []
-    return [msopt for msopt, perc in options["opt_percentage"].items() if random.random()*100 < perc]
 
 
 def draw_dungeon_shortcuts(random_settings):

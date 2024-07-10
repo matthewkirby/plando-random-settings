@@ -4,6 +4,9 @@ import os
 import sys
 from decimal import Decimal, ROUND_UP
 
+from multiselects import ms_option_lookup
+from utils import geometric_weights
+
 
 def parse_conditionals(conditional_list, weight_dict, random_settings, extra_starting_items):
     """ Parse the conditionals in the weights file to enable/disable them """
@@ -222,3 +225,21 @@ def select_one_pots_crates_freestanding(random_settings, **kwargs):
     # Choose which of the settings to turn on
     setting = random.choices(["shuffle_pots", "shuffle_crates", "shuffle_freestanding_items"], weights=setting_weights)[0]
     random_settings[setting] = random.choices(["overworld", "dungeons", "all"], weights=weights)[0]
+
+
+def geometrically_draw_dungeon_shortcuts(random_settings, **kwargs):
+    nunique = len(ms_option_lookup["dungeon_shortcuts"])
+    chooseN = random.choices(range(nunique+1), weights=geometric_weights(nunique+1))[0]
+    random_settings["dungeon_shortcuts"] = random.sample(ms_option_lookup["dungeon_shortcuts"], chooseN)
+
+
+def limit_overworld_entrances_in_mixed_entrance_pools(random_settings, **kwargs):
+    if len(random_settings["mix_entrance_pools"]) < 1:
+        return
+
+    # Decide if overworld should be included
+    overworld_probability = int(kwargs['cparams'][0])
+    includeOverworld = random.random()*100 < overworld_probability
+    # If needed, remove overworld from mixed pools
+    if not includeOverworld:
+        random_settings["mix_entrance_pools"].remove("Overworld")
