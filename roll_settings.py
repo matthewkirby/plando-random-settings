@@ -187,7 +187,7 @@ def generate_weights_override(weights, override_weights_fname):
     return weight_options, weight_multiselect, weight_dict, start_with
 
 
-def generate_plando(weights, override_weights_fname, no_seed):
+def generate_plando(weights, override_weights_fname, no_seed, plando_filename_base='random_settings'):
     weight_options, weight_multiselects, weight_dict, start_with = generate_weights_override(weights, override_weights_fname)
 
     ####################################################################################
@@ -255,7 +255,7 @@ def generate_plando(weights, override_weights_fname, no_seed):
     # Save the output plando
     output = {"settings": random_settings}
 
-    plando_filename = f'random_settings_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
+    plando_filename = f'{plando_filename_base}_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
     # plando_filename = f'random_settings.json'
 
     if not os.path.isdir("data"):

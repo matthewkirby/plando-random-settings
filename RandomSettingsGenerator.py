@@ -69,6 +69,8 @@ def get_command_line_args():
                         help="When the version updates, run with this flag to find changes to settings names or new settings.")
     parser.add_argument("--no_log_errors", action="store_true", default=False,
                         help="Only show errors in the console, don't log them to a file.")
+    parser.add_argument("--plando_filename_base", default="random_settings",
+                        help="First part of the file names for the generated plandomizer files.")
     parser.add_argument("--stress_test", type=range_limited_int_type, default=1, dest="seed_count",
                         help="Generate the specified number of seeds for benchmarking.")
     parser.add_argument("--benchmark", action="store_true",
@@ -97,6 +99,7 @@ def get_command_line_args():
         "worldcount": args.worldcount,
         "override_fname": args.override or global_override_fname,
         "check_new_settings": args.check_new_settings,
+        "plando_filename_base": args.plando_filename_base,
         "seed_count": args.seed_count,
         "benchmark": args.benchmark,
         "plando_retries": args.plando_retries,
@@ -130,7 +133,7 @@ def main():
 
         plandos_to_cleanup = []
         for i in range(args["plando_retries"]):
-            plando_filename = rs.generate_plando(WEIGHTS, args["override_fname"], args["no_seed"])
+            plando_filename = rs.generate_plando(WEIGHTS, args["override_fname"], args["no_seed"], args["plando_filename_base"])
             if args["no_seed"]:
                 break
             plandos_to_cleanup.append(plando_filename)
