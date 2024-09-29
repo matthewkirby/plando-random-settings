@@ -71,7 +71,7 @@
         "key_rings": 20,
         "silver_rupee_pouches": 100,
         "dungeon_shortcuts": 0,
-        "mix_entrance_pools": 50,
+        "mix_entrance_pools": 30,
         "spawn_positions": 50,
         "shuffle_child_trade": 20,
         "minor_items_as_major_chest": 0,
@@ -174,7 +174,7 @@
         },
         "zora_fountain": {
             "closed": 1,
-            "adult": 1,
+            "adult": 0,
             "open": 1
         },
         "gerudo_fortress": {
@@ -262,8 +262,8 @@
             "full": 1
         },
         "shuffle_overworld_entrances": {
-            "true": 3,
-            "false": 7
+            "true": 1,
+            "false": 3
         },
         "decouple_entrances": {
             "true": 0,
@@ -295,26 +295,26 @@
             "random": 0
         },
         "mq_dungeons_mode": {
-            "random": 3,
-            "count": 17,
-            "vanilla": 0,
+            "random": 0,
+            "count": 0,
+            "vanilla": 1,
             "mq": 0,
             "specific": 0
         },
         "mq_dungeons_count": {
-            "0": 4096,
-            "1": 2048,
-            "2": 1024,
-            "3": 512,
-            "4": 256,
-            "5": 128,
-            "6": 64,
-            "7": 32,
-            "8": 16,
-            "9": 8,
-            "10": 4,
-            "11": 2,
-            "12": 1
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0,
+            "12": 0
         },
         "shopsanity": {
             "off": 2,
@@ -613,24 +613,24 @@
             "weekly": 0
         },
         "text_shuffle": {
-            "none": 19,
-            "except_hints": 1,
+            "none": 1,
+            "except_hints": 0,
             "complete": 0
         },
         "damage_multiplier": {
             "half": 3,
             "normal": 10,
-            "double": 4,
+            "double": 5,
             "quadruple": 2,
-            "ohko": 1
+            "ohko": 0
         },
         "deadly_bonks": {
-            "none": 19,
+            "none": 1,
             "half": 0,
             "normal": 0,
             "double": 0,
             "quadruple": 0,
-            "ohko": 1
+            "ohko": 0
         },
         "no_collectible_hearts": {
             "true": 0,
@@ -706,26 +706,26 @@
             "false": 1
         },
         "shuffle_individual_ocarina_notes": {
-            "true": 0,
-            "false": 1
+            "true": 1,
+            "false": 9
         },
         "ruto_already_f1_jabu": {
             "true": 1,
             "false": 1
         },
         "shuffle_enemy_spawns": {
-            "off": 1,
-            "all": 0,
-            "bosses": 0,
-            "regional": 0
+            "off": 17,
+            "all": 1,
+            "bosses": 1,
+            "regional": 1
         },
         "shuffle_empty_pots": {
             "true": 0,
             "false": 1
         },
         "fix_broken_actors": {
-            "true": 1,
-            "false": 0
+            "true": 0,
+            "false": 1
         },
         "shuffle_grass": {
             "true": 0,
@@ -756,8 +756,8 @@
             "false": 1
         },
         "shuffle_boulders": {
-            "true": 0,
-            "false": 1
+            "true": 1,
+            "false": 9
         },
         "shuffle_wonderitems": {
             "true": 0,
