@@ -8,6 +8,7 @@ import glob
 sys.path.append("randomizer")
 # from randomizer.SettingsList import get_setting_info
 from randomizer.SettingsList import SettingInfos
+from multiselects import ms_option_lookup
 
 
 def randomizer_settings_func(rootdir=os.getcwd(), plando_filename='random_settings.json', worldcount=1):
@@ -73,11 +74,8 @@ def find_rom_file():
 # Compare weights file to settings list to check for changes to the randomizer settings table
 def check_for_setting_changes(weights, randomizer_settings):
     """ Function to check for new settings and options when the randomizer is updated. """
-    ignore_list = ["tricks_list_msg", "bingosync_url", "dungeon_shortcuts", "misc_hints", "mix_entrance_pools", "mq_dungeons_specific",
-                   "key_rings", "empty_dungeons_specific", "empty_dungeons_count", "adult_trade_start", "spawn_positions", "hint_dist",
-                   "custom_ice_trap_count", "custom_ice_trap_percent"]
-    multiselect_list = ["silver_rupee_pouches", "shuffle_child_trade", "starting_inventory", "minor_items_as_major_chest"]
-    ignore_list += multiselect_list
+    ignore_list = ["custom_ice_trap_percent", "custom_ice_trap_count", "bingosync_url", "starting_inventory",
+        "tricks_list_msg", "empty_dungeons_count", "hint_dist"] + list(ms_option_lookup.keys())
 
     # Find new or changed settings by name
     old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))

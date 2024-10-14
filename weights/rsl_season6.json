@@ -67,7 +67,9 @@
         "spawn_positions": 50,
         "shuffle_child_trade": 20,
         "minor_items_as_major_chest": 0,
-        "adult_trade_start": 100
+        "adult_trade_start": 100,
+        "potcrate_textures_specific": 100,
+        "chest_textures_specific": 100
     },
     "weights": {
         "shuffle_loach_reward": {
@@ -278,7 +280,8 @@
         "empty_dungeons_mode": {
             "none": 1,
             "specific": 0,
-            "count": 0
+            "count": 0,
+            "rewards": 0
         },
         "key_rings_choice": {
             "off": 0,
@@ -758,6 +761,27 @@
         "shuffle_empty_crates": {
             "true": 0,
             "false": 1
+        },
+        "soa_unlocks_chest_texture": {
+            "true": 0,
+            "false": 1
+        },
+        "soa_unlocks_potcrate_texture": {
+            "true": 0,
+            "false": 1
+        },
+        "skip_reward_from_rauru": {
+            "true": 1,
+            "false": 0
+        },
+        "shuffle_dungeon_rewards": {
+            "vanilla": 0,
+            "reward": 1,
+            "dungeon": 0,
+            "regional": 0,
+            "overworld": 0,
+            "any_dungeon": 0,
+            "anywhere": 0
         }
     }
 }

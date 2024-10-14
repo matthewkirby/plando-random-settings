@@ -47,10 +47,15 @@ ms_option_lookup = {
         '20_skulltulas', '30_skulltulas', '40_skulltulas', '50_skulltulas', 'frogs2', 'mask_shop',
         'unique_merchants'],
     "adult_trade_start": ['Pocket Egg', 'Pocket Cucco', 'Cojiro', 'Odd Mushroom', 'Odd Potion',
-        'Poachers Saw', 'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check']
+        'Poachers Saw', 'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check'],
+    "potcrate_textures_specific": ['major', 'bosskeys', 'keys', 'tokens', 'hearts'],
+    "chest_textures_specific": ['major', 'bosskeys', 'keys', 'tokens', 'hearts'],
+    "empty_dungeons_rewards": ['Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire', 'Light Medallion',
+        'Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Shadow Medallion',
+        'Spirit Medallion']
 }
 
-invalid_settings = ["mq_dungeons_specific", "empty_dungeons_specific", "misc_hints"]
+invalid_settings = ["mq_dungeons_specific", "empty_dungeons_specific", "misc_hints", "empty_dungeons_rewards"]
 
 
 def _validate_ms_weights(ms_weights):
