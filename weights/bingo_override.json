@@ -1,10 +1,5 @@
 {
     "weights": {
-        "zora_fountain": {
-            "closed": 1,
-            "adult": 1,
-            "open": 0
-        },
         "shuffle_beans": {
             "true": 0,
             "false": 1
