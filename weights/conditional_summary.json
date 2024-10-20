@@ -106,5 +106,17 @@
     "description": "When entrance pools are mixed, overworld should only be included {0} of the time. All of the other entrance pools are always mixed if mixed pools is enabled and those entrance pools are randomized.",
     "settings_to_skip": ["mix_entrance_pools"],
     "settings_to_warn": []
+  },
+  {
+    "id": "limit_mixed_pool_entrances",
+    "description": "When entrance pools are mixed, limit the maximum number of pools that are included to {0}. The third option should be set to true if overworld ER is always off.",
+    "settings_to_skip": [],
+    "settings_to_warn": []
+  },
+  {
+    "id": "keysanity_key_get_keyrings",
+    "description": "When keysanity is enabled, enable all keyrings.",
+    "settings_to_skip": [],
+    "settings_to_warn": []
   }
 ]

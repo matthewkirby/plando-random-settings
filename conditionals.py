@@ -243,3 +243,17 @@ def limit_overworld_entrances_in_mixed_entrance_pools(random_settings, **kwargs)
     # If needed, remove overworld from mixed pools
     if not includeOverworld:
         random_settings["mix_entrance_pools"].remove("Overworld")
+
+
+def limit_mixed_pool_entrances(random_settings, **kwargs):
+    max_mixed = int(kwargs['cparams'][0])
+    omit_overworld = bool(kwargs['cparams'][1])
+    if omit_overworld and "Overworld" in random_settings["mix_entrance_pools"]:
+        random_settings["mix_entrance_pools"].remove("Overworld")
+    if len(random_settings["mix_entrance_pools"]) > max_mixed:
+        random_settings["mix_entrance_pools"] = random.sample(random_settings["mix_entrance_pools"], max_mixed)
+
+
+def keysanity_key_get_keyrings(random_settings, **kwargs):
+    if random_settings['shuffle_smallkeys'] == 'keysanity':
+        random_settings['key_rings'] = ms_option_lookup["key_rings"]

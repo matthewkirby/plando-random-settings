@@ -26,7 +26,9 @@
             "disable_pot_chest_texture_independence": [false],
             "shuffle_goal_hints": [false, 50],
             "invert_dungeons_mq_count": [false, 0],
-            "exclude_minimal_triforce_hunt": [false]
+            "exclude_minimal_triforce_hunt": [false],
+            "limit_mixed_pool_entrances": [false, 2, false],
+            "keysanity_key_get_keyrings": [false]
         },
         "misc_hints": [
             "altar",
