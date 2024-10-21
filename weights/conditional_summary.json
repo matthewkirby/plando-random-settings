@@ -109,7 +109,8 @@
   },
   {
     "id": "limit_mixed_pool_entrances",
-    "description": "When entrance pools are mixed, limit the maximum number of pools that are included to {0}. The third option should be set to true if overworld ER is always off.",
+    "description": "When entrance pools are mixed, limit the maximum number of pools that are included to {0}.",
+    "extra_notes": "The second parameter the conditional takes allows you to exclude overworld ER if it is set to always off. This ensures that it doesn't take up one of the allowed mixed pools if its always going to be disabled.",
     "settings_to_skip": [],
     "settings_to_warn": []
   },
