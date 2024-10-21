@@ -1,7 +1,7 @@
 [
   {
     "id": "constant_triforce_hunt_extras",
-    "description": "Triforce hunt always 25% extra Triforce pieces in the item pool.",
+    "description": "Triforce hunt always has 25% extra Triforce pieces in the item pool.",
     "settings_to_skip": ["triforce_goal_per_world "],
     "settings_to_warn": []
   },

@@ -6,7 +6,7 @@
         "ganon_bosskey_hearts_max": 10,
         "triforce_goal_per_world_max": 75,
         "conditionals": {
-            "split_collectible_bridge_conditions": [true, 10, "50/50", "40/40/20"],
+            "split_collectible_bridge_conditions": [true, "10%", "50/50", "40/40/20"],
             "select_one_pots_crates_freestanding": [false]
         },
         "extra_conditionals": {
