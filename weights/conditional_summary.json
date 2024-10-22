@@ -43,7 +43,7 @@
   },
   {
     "id": "shuffle_goal_hints",
-    "description": "{0} of the time, replace \"Way of the Hero\" hints with \"Goal\" hints in the selected hint distribution.",
+    "description": "{} of the time, replace \"Way of the Hero\" hints with \"Goal\" hints in the selected hint distribution.",
     "settings_to_skip": [],
     "settings_to_warn": []
   },
@@ -55,7 +55,7 @@
   },
   {
     "id": "split_collectible_bridge_conditions",
-    "description": "{0} of the time, a collectible (Gold Skulltula Tokens or Heart Containers) is chosen as the win condition. When selected, either Gold Skulltula Tokens or Heart Containers are chosen with {1} likelihoods. Finally, determine whether this should apply to the Bridge Condition, Ganon Boss Key Condition, or both with {2} likelihoods. If \"Both\" is not selected, the other win condition is chosen according to the weights given below.",
+    "description": "{} of the time, a collectible (Gold Skulltula Tokens or Heart Containers) is chosen as the win condition. When selected, either Gold Skulltula Tokens or Heart Containers are chosen with {} likelihoods. Finally, determine whether this should apply to the Bridge Condition, Ganon Boss Key Condition, or both with {} likelihoods. If \"Both\" is not selected, the other win condition is chosen according to the weights given below.",
     "settings_to_skip": [],
     "settings_to_warn": ["bridge:tokens", "bridge:hearts", "shuffle_ganon_bosskey:tokens", "shuffle_ganon_bosskey:hearts"]
   },
@@ -79,7 +79,7 @@
   },
   {
     "id": "invert_dungeons_mq_count",
-    "description": "{0} of the time, the dungeons will all be set to Master Quest and the setting for number of Master Quest dungeons will instead determine the number of vanilla dungeons.",
+    "description": "{} of the time, the dungeons will all be set to Master Quest and the setting for number of Master Quest dungeons will instead determine the number of vanilla dungeons.",
     "settings_to_skip": [],
     "settings_to_warn": []
   },
@@ -91,7 +91,7 @@
   },
   {
     "id": "select_one_pots_crates_freestanding",
-    "description": "{0} of the time, shuffle either pots, crates, OR freestanding items. Between these three options, the selected one is randomly chosen and all three options are equally likely. For the chosen setting, whether to shuffle the overworld instance, dungeon instances, or both is also chosen randomly with equal likelihoods.",
+    "description": "{} of the time, shuffle either pots, crates, OR freestanding items. Between these three options, the selected one is randomly chosen and all three options are equally likely. For the chosen setting, whether to shuffle the overworld instance, dungeon instances, or both is also chosen randomly with equal likelihoods.",
     "settings_to_skip": ["shuffle_pots", "shuffle_crates", "shuffle_freestanding_items"],
     "settings_to_warn": []
   },
@@ -103,13 +103,13 @@
   },
   {
     "id": "limit_overworld_entrances_in_mixed_entrance_pools",
-    "description": "When entrance pools are mixed, overworld should only be included {0} of the time. All of the other entrance pools are always mixed if mixed pools is enabled and those entrance pools are randomized.",
+    "description": "When entrance pools are mixed, overworld should only be included {} of the time. All of the other entrance pools are always mixed if mixed pools is enabled and those entrance pools are randomized.",
     "settings_to_skip": ["mix_entrance_pools"],
     "settings_to_warn": []
   },
   {
     "id": "limit_mixed_pool_entrances",
-    "description": "When entrance pools are mixed, limit the maximum number of pools that are included to {0}.",
+    "description": "When entrance pools are mixed, limit the maximum number of pools that are included to {}.",
     "extra_notes": "The second parameter the conditional takes allows you to exclude overworld ER if it is set to always off. This ensures that it doesn't take up one of the allowed mixed pools if its always going to be disabled.",
     "settings_to_skip": [],
     "settings_to_warn": []
