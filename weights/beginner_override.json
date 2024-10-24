@@ -4,15 +4,13 @@
         "ganon_bosskey_tokens_max": 50,
         "bridge_hearts_max": 10,
         "ganon_bosskey_hearts_max": 10,
-        "triforce_goal_per_world_max": 75,
-        "conditionals": {
-            "split_collectible_bridge_conditions": [true, "10%", "50/50", "40/40/20"],
-            "select_one_pots_crates_freestanding": [false]
-        },
-        "extra_conditionals": {
-            "limit_mixed_pool_entrances": [true, 2, true],
-            "keysanity_key_get_keyrings": [true]
-        }
+        "triforce_goal_per_world_max": 75
+    },
+    "conditionals": {
+        "split_collectible_bridge_conditions": [true, "10%", "50/50", "40/40/20"],
+        "select_one_pots_crates_freestanding": [false],
+        "limit_mixed_pool_entrances": [true, 2, true],
+        "keysanity_key_get_keyrings": [true]
     },
     "weights": {
         "bridge": {
