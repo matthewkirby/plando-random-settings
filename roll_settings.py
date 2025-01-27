@@ -129,7 +129,7 @@ def draw_dungeon_shortcuts(random_settings):
 def generate_weights_override(weights, override_weights_fname):
     # Load the weight dictionary
     if weights == "RSL":
-        weight_options, conditionals, weight_multiselect, weight_dict = load_weights_file("weights/rsl_season6.json")
+        weight_options, conditionals, weight_multiselect, weight_dict = load_weights_file("weights/rsl_season7.json")
     elif weights == "full-random":
         weight_options = None
         weight_dict = generate_balanced_weights(None)

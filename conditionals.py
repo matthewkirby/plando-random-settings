@@ -241,7 +241,7 @@ def limit_overworld_entrances_in_mixed_entrance_pools(random_settings, **kwargs)
     overworld_probability = string_to_int(kwargs['cparams'][0])
     includeOverworld = random.random()*100 < overworld_probability
     # If needed, remove overworld from mixed pools
-    if not includeOverworld:
+    if not includeOverworld and "Overworld" in random_settings["mix_entrance_pools"]:
         random_settings["mix_entrance_pools"].remove("Overworld")
 
 
