@@ -790,8 +790,9 @@
             "false": 1
         },
         "shuffle_gerudo_fortress_heart_piece": {
-            "true": 0,
-            "false": 1
+            "remove": 0,
+            "vanilla": 1,
+            "shuffle": 0
         },
         "shuffle_ganon_tower": {
             "true": 0,
