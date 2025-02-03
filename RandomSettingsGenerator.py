@@ -84,9 +84,10 @@ def get_command_line_args():
     if args.override is not None:
         if global_override_fname is not None:
             raise RuntimeError("RSL GENERATOR ERROR: PROVIDING MULTIPLE SETTINGS WEIGHT OVERRIDES IS NOT SUPPORTED.")
-        override_path = os.path.join(os.getcwd(), args.override)
-        if not os.path.isfile(override_path):
-            raise FileNotFoundError(f"RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY:\n{override_path}")
+        if args.override != '-':
+            override_path = os.path.join(os.getcwd(), args.override)
+            if not os.path.isfile(override_path):
+                raise FileNotFoundError(f"RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY:\n{override_path}")
 
     # Parse args
     LOG_ERRORS = not args.no_log_errors
