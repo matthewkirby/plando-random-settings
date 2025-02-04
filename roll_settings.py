@@ -234,8 +234,6 @@ def generate_plando(weights, override_weights_fname, no_seed, plando_filename_ba
 
     # Add starting items, tricks, and excluded locations
     if weight_options is not None:
-        # if "conditionals" in weight_options:
-        #     conds.parse_conditionals(weight_options["conditionals"], weight_dict, random_settings, start_with)
         if "tricks" in weight_options:
             random_settings["allowed_tricks"] = weight_options["tricks"]
         if "disabled_locations" in weight_options:
@@ -272,8 +270,7 @@ def generate_plando(weights, override_weights_fname, no_seed, plando_filename_ba
     # Save the output plando
     output = {"settings": random_settings}
 
-    plando_filename = f'{plando_filename_base}_{datetime.datetime.utcnow():%Y-%m-%d_%H-%M-%S_%f}.json'
-    # plando_filename = f'random_settings.json'
+    plando_filename = f'{plando_filename_base}_{datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d_%H-%M-%S_%f}.json'
 
     if not os.path.isdir("data"):
         os.mkdir("data")
