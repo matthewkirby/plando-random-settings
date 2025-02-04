@@ -2,37 +2,116 @@
     "options": {
         "bridge_tokens_max": 50,
         "ganon_bosskey_tokens_max": 50,
-        "extra_conditionals": {
-            "restrict_one_entrance_randomizer": [true]
-        }
+        "bridge_hearts_max": 10,
+        "ganon_bosskey_hearts_max": 10,
+        "triforce_goal_per_world_max": 75
+    },
+    "conditionals": {
+        "split_collectible_bridge_conditions": [true, "10%", "50/50", "40/40/20"],
+        "select_one_pots_crates_freestanding": [false],
+        "limit_mixed_pool_entrances": [true, 2, true],
+        "keysanity_key_get_keyrings": [true]
     },
     "weights": {
+        "bridge": {
+            "open": 1,
+            "vanilla": 2,
+            "stones": 2,
+            "medallions": 2,
+            "dungeons": 2
+        },
+        "bridge_medallions": {
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 3,
+            "5": 4,
+            "6": 6
+        },
+        "bridge_rewards": {
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 3,
+            "5": 3,
+            "6": 5,
+            "7": 5,
+            "8": 5,
+            "9": 12
+        },
         "trials_random": {
             "false": 1
         },
         "trials": {
             "0": 1,
-            "1": 1
+            "1": 1,
+            "2": 1
+        },
+        "shuffle_interior_entrances": {
+            "off": 1,
+            "all": 1
         },
         "shuffle_overworld_entrances": {
             "false": 1
         },
-        "mq_dungeons_mode": {
-            "vanilla": 1
+        "shuffle_kokiri_sword": {
+            "true": 1,
+            "false": 0
         },
-        "shuffle_song_items": {
-            "song": 6,
-            "any": 4
+        "shopsanity": {
+            "off": 1,
+            "4": 1
+        },
+        "tokensanity": {
+            "off": 1,
+            "all": 1
         },
         "shuffle_scrubs": {
-            "off": 10,
-            "low": 5
+            "off": 1,
+            "low": 1
         },
-        "no_escape_sequence": {
-            "true": 1
+        "shuffle_smallkeys": {
+            "remove": 2,
+            "vanilla": 2,
+            "dungeon": 2,
+            "keysanity": 1,
+            "regional": 1
         },
-        "no_epona_race": {
-            "true": 1
+        "shuffle_bosskeys": {
+            "remove": 1,
+            "vanilla": 1,
+            "dungeon": 1,
+            "regional": 1
+        },
+
+        "shuffle_ganon_bosskey": {
+            "remove": 3,
+            "vanilla": 3,
+            "dungeon": 3,
+            "on_lacs": 2,
+            "medallions": 2,
+            "stones": 2,
+            "dungeons": 2,
+            "regional": 1
+        },
+        "ganon_bosskey_medallions": {
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 3,
+            "5": 4,
+            "6": 6
+        },
+        "ganon_bosskey_rewards": {
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 3,
+            "5": 3,
+            "6": 5,
+            "7": 5,
+            "8": 5,
+            "9": 12
         },
         "big_poe_count_random": {
             "false": 1
@@ -43,32 +122,40 @@
             "3": 1,
             "4": 1
         },
-        "hints": {
-            "always": 1
-        },
-        "hint_dist": {
-            "balanced": 1,
-            "scrubs": 1,
-            "strong": 1,
-            "very_strong": 1
-        },
-        "text_shuffle": {
-            "none": 1
+        "correct_chest_appearances": {
+            "off": 3,
+            "both": 7
         },
         "damage_multiplier": {
-            "half": 3,
-            "normal": 13,
-            "double": 4
+            "half": 1,
+            "normal": 2,
+            "double": 1
         },
         "item_pool_value": {
             "plentiful": 3,
-            "balanced": 12,
-            "scarce": 5
+            "balanced": 10,
+            "scarce": 7
         },
         "junk_ice_traps": {
             "off": 12,
-            "normal": 6,
+            "normal": 5,
             "on": 3
+        },
+        "ice_trap_appearance": {
+            "anything": 1
+        },
+        "shuffle_enemy_spawns": {
+            "off": 9,
+            "regional": 1
+        },
+        "shuffle_individual_ocarina_notes": {
+            "false": 1
+        },
+        "no_escape_sequence": {
+            "true": 1
+        },
+        "no_epona_race": {
+            "true": 1
         }
     }
 }

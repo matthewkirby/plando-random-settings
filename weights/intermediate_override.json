@@ -1,14 +1,7 @@
 {
     "options": {
         "bridge_tokens_max": 75,
-        "ganon_bosskey_tokens_max": 75,
-        "remove_tricks": [
-            "logic_lens_gtg_mq",
-            "logic_lens_jabu_mq",
-            "logic_lens_shadow_mq",
-            "logic_lens_shadow_mq_back",
-            "logic_lens_spirit_mq"
-        ]
+        "ganon_bosskey_tokens_max": 75
     },
     "weights": {
         "trials_random": {
@@ -22,13 +15,6 @@
         },
         "shuffle_overworld_entrances": {
             "false": 1
-        },
-        "mq_dungeons_mode": {
-            "count": 1
-        },
-        "mq_dungeons_count": {
-            "0": 1,
-            "1": 1
         },
         "big_poe_count_random": {
             "false": 1
@@ -45,15 +31,6 @@
         "hints": {
             "always": 19,
             "agony": 1
-        },
-        "text_shuffle": {
-            "none": 1
-        },
-        "damage_multiplier": {
-            "half": 3,
-            "normal": 11,
-            "double": 4,
-            "quadruple": 2
         }
     }
 }

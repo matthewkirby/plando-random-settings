@@ -5,7 +5,7 @@ import sys
 from decimal import Decimal, ROUND_UP
 
 from multiselects import ms_option_lookup
-from utils import geometric_weights
+from utils import geometric_weights, string_to_int
 
 
 def parse_conditionals(conditional_list, weight_dict, random_settings, extra_starting_items):
@@ -92,7 +92,7 @@ def random_scrubs_start_wallet(random_settings, weight_dict, extra_starting_item
 
 def shuffle_goal_hints(random_settings, **kwargs):
     """ Swaps Way of the Hero hints with Goal hints. Takes an extra input [how often to swap] """
-    chance_of_goals = int(kwargs['cparams'][0])
+    chance_of_goals = string_to_int(kwargs['cparams'][0])
     current_distro = random_settings['hint_dist']
 
     # Roll to swap goal hints
@@ -126,7 +126,7 @@ def split_collectible_bridge_conditions(random_settings, **kwargs):
     """ Split heart and skulltula token bridge and ganon boss key.
     kwargs: [how often to have a heart or skull bridge, "heart%/skull%", "bridge%/gbk%/both"]
     """
-    chance_of_collectible_wincon = int(kwargs['cparams'][0])
+    chance_of_collectible_wincon = string_to_int(kwargs['cparams'][0])
     typeweights = [int(x) for x in kwargs['cparams'][1].split('/')]
     weights = [int(x) for x in kwargs['cparams'][2].split('/')]
 
@@ -195,7 +195,7 @@ def invert_dungeons_mq_count(random_settings, weight_dict, **kwargs):
     if random_settings['mq_dungeons_mode'] != 'count':
         return
 
-    chance_of_inverting_mq_count = int(kwargs['cparams'][0])
+    chance_of_inverting_mq_count = string_to_int(kwargs['cparams'][0])
     invert_mq_count = random.choices([True, False], weights=[chance_of_inverting_mq_count, 100-chance_of_inverting_mq_count])[0]
 
     if not invert_mq_count:
@@ -214,7 +214,7 @@ def shuffle_valley_lake_exit(random_settings, **kwargs):
 
 
 def select_one_pots_crates_freestanding(random_settings, **kwargs):
-    chance_one_is_on = int(kwargs['cparams'][0])
+    chance_one_is_on = string_to_int(kwargs['cparams'][0])
     setting_weights = [int(x) for x in kwargs['cparams'][1].split('/')]
     weights = [int(x) for x in kwargs['cparams'][2].split('/')]
 
@@ -238,8 +238,22 @@ def limit_overworld_entrances_in_mixed_entrance_pools(random_settings, **kwargs)
         return
 
     # Decide if overworld should be included
-    overworld_probability = int(kwargs['cparams'][0])
+    overworld_probability = string_to_int(kwargs['cparams'][0])
     includeOverworld = random.random()*100 < overworld_probability
     # If needed, remove overworld from mixed pools
-    if not includeOverworld:
+    if not includeOverworld and "Overworld" in random_settings["mix_entrance_pools"]:
         random_settings["mix_entrance_pools"].remove("Overworld")
+
+
+def limit_mixed_pool_entrances(random_settings, **kwargs):
+    max_mixed = int(kwargs['cparams'][0])
+    omit_overworld = bool(kwargs['cparams'][1])
+    if omit_overworld and "Overworld" in random_settings["mix_entrance_pools"]:
+        random_settings["mix_entrance_pools"].remove("Overworld")
+    if len(random_settings["mix_entrance_pools"]) > max_mixed:
+        random_settings["mix_entrance_pools"] = random.sample(random_settings["mix_entrance_pools"], max_mixed)
+
+
+def keysanity_key_get_keyrings(random_settings, **kwargs):
+    if random_settings['shuffle_smallkeys'] == 'keysanity':
+        random_settings['key_rings'] = ms_option_lookup["key_rings"]

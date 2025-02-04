@@ -11,3 +11,11 @@ def geometric_weights(N, startat=0, rtype="list"):
         return [50.0/2**i for i in range(N)]
     elif rtype == "dict":
         return {str(startat+i): 50.0/2**i for i in range(N)}
+
+def string_to_int(string):
+    """ Convert a string to an integer if string may or may not include % symbol """
+    if not isinstance(string, str):
+        return string
+    if string[-1] == "%":
+        return int(string[:-1])
+    return int(string)

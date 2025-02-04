@@ -15,7 +15,7 @@ import roll_settings as rs
 global_override_fname = None
 
 # Please set the weights file you with to load
-WEIGHTS = "RSL" # The default Random Settings League Season 6 weights
+WEIGHTS = "RSL" # The default Random Settings League Season 7 weights
 # Every setting with even weights
 # WEIGHTS = "full-random"
 # Provide your own weights file. If the specified file does not exist, this will create it
@@ -86,9 +86,10 @@ def get_command_line_args():
     if args.override is not None:
         if global_override_fname is not None:
             raise RuntimeError("RSL GENERATOR ERROR: PROVIDING MULTIPLE SETTINGS WEIGHT OVERRIDES IS NOT SUPPORTED.")
-        override_path = os.path.join(os.getcwd(), args.override)
-        if not os.path.isfile(override_path):
-            raise FileNotFoundError(f"RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY:\n{override_path}")
+        if args.override != '-':
+            override_path = os.path.join(os.getcwd(), args.override)
+            if not os.path.isfile(override_path):
+                raise FileNotFoundError(f"RSL GENERATOR ERROR: CANNOT FIND SPECIFIED OVERRIDE FILE IN DIRECTORY:\n{override_path}")
 
     # Parse args
     LOG_ERRORS = not args.no_log_errors
@@ -113,7 +114,7 @@ def main():
 
     # If we only want to check for new/changed settings
     if args["check_new_settings"]:
-        _, _, rslweights = rs.load_weights_file("weights/rsl_season6.json")
+        _, _, rslmultis, rslweights = rs.load_weights_file("weights/rsl_season7.json")
         tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
         return
 
