@@ -3,6 +3,8 @@ import sys
 import os
 import traceback
 import argparse
+import random
+import hashlib
 
 import update_randomizer as ur
 ur.check_python()
@@ -11,6 +13,7 @@ ur.check_version()
 from utils import cleanup
 import rsl_tools as tools
 import roll_settings as rs
+from rslversion import __version__
 
 global_override_fname = None
 
@@ -79,6 +82,7 @@ def get_command_line_args():
                         help="Retry limit for generating a plando file.")
     parser.add_argument("--rando_retries", type=range_limited_int_type, default=3,
                         help="Retry limit for running the randomizer with a given settings plando.")
+    parser.add_argument("--seed", help="Generate the specified seed.")
     args = parser.parse_args()
 
 
@@ -93,6 +97,10 @@ def get_command_line_args():
 
     # Parse args
     LOG_ERRORS = not args.no_log_errors
+
+    if args.seed is not None:
+        full_string = __version__ + args.seed
+        random.seed(int(hashlib.sha256(full_string.encode('utf-8')).hexdigest(), 16))
 
     # Condense everything into a dict
     return {

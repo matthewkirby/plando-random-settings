@@ -5,6 +5,7 @@ import subprocess
 import os
 import json
 import glob
+import random
 sys.path.append("randomizer")
 # from randomizer.SettingsList import get_setting_info
 from randomizer.SettingsList import SettingInfos
@@ -32,7 +33,7 @@ def init_randomizer_settings(plando_filename='random_settings.json', worldcount=
         json.dump(settings, fout, indent=4)
 
 
-def generate_patch_file(plando_filename='random_settings.json', worldcount=1, max_retries=3):
+def generate_patch_file(plando_filename='random_settings.json', worldcount=1, max_retries=3, seed=None):
     """ Using the randomized settings, roll a seed using the randomizer CLI. """
     settings = json.dumps(randomizer_settings_func(plando_filename=plando_filename, worldcount=worldcount))
 
@@ -40,7 +41,7 @@ def generate_patch_file(plando_filename='random_settings.json', worldcount=1, ma
     while True:
         print(f"RSL GENERATOR: RUNNING THE RANDOMIZER - ATTEMPT {retries+1} OF {max_retries}")
         completed_process = subprocess.run(
-            [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings=-"],
+            [sys.executable, os.path.join("randomizer", "OoTRandomizer.py"), "--settings=-", f"--seed={int(random.getrandbits(256))}"],
             capture_output=True,
             input=settings,
             encoding='utf-8',
