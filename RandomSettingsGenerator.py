@@ -65,7 +65,7 @@ def get_command_line_args():
     parser.add_argument("--override", help="Use the specified weights file over the default RSL weights.")
     parser.add_argument("--worldcount", type=range_limited_int_type, default=1,
                         help="Generate a seed with more than 1 world.")
-    parser.add_argument("--check_new_settings", action="store_true",
+    parser.add_argument("--check_new_settings", "-u", action="store_true",
                         help="When the version updates, run with this flag to find changes to settings names or new settings.")
     parser.add_argument("--no_log_errors", action="store_true", default=False,
                         help="Only show errors in the console, don't log them to a file.")
