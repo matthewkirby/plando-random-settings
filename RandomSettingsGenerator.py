@@ -116,7 +116,7 @@ def main():
     # If we only want to check for new/changed settings
     if args["check_new_settings"]:
         _, _, rslmultis, rslweights = rs.load_weights_file("weights/rsl_main.json")
-        validation.validate_rsl(rslweights, rs.generate_balanced_weights(None))
+        validation.validate_rsl(rslweights)
         return
 
     # If we only want to benchmark weights

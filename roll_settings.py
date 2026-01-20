@@ -45,7 +45,8 @@ def generate_balanced_weights(fname="default_weights.json"):
     exclude_from_weights = ["bridge_tokens", "ganon_bosskey_tokens", "bridge_hearts", "ganon_bosskey_hearts",
                             "triforce_goal_per_world", "triforce_count_per_world", "disabled_locations",
                             "allowed_tricks", "advanced_allowed_tricks", "starting_equipment", "starting_items",
-                            "starting_songs"]
+                            "starting_songs", "bingosync_url", "plandomized_locations", "starting_inventory",
+                            "tricks_list_msg", "empty_dungeons_count"]
     weight_dict = {}
     for name in settings_to_randomize:
         if name not in exclude_from_weights:

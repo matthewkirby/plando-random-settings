@@ -1,19 +1,23 @@
 from multiselects import ms_option_lookup
 from randomizer.SettingsList import SettingInfos
+import roll_settings as rs
 
 
-def validate_rsl(weights, randomizer_settings):
-    validate_weights(weights, randomizer_settings)
+def validate_rsl(weights):
+    validate_weights(weights)
+    validate_multiselect_knowledge()
+    validate_conditionals()
+    validate_overrides()
 
 
-
-def validate_weights(weights, randomizer_settings):
+def validate_weights(weights):
     """ Function to check for new settings and options when the randomizer is updated. """
-    ignore_list = ["custom_ice_trap_percent", "custom_ice_trap_count", "bingosync_url", "starting_inventory",
-        "tricks_list_msg", "empty_dungeons_count", "hint_dist", "plandomized_locations"] + list(ms_option_lookup.keys())
-    # This second list is to avoid needing to specify every setting in enumerate fields. We still check that OUR keys exist, but not that we aren't missing any
-    # special_deal_price_min for example supports 0, 5, 10, 15, ..., 990, 995 but I still want to ensure what we DO specify in weights is valid
-    settings_ignore_list = ["special_deal_price_min", "special_deal_price_max"]
+    # Settings to not care about validating if they show up in balanced weights because they are handled manually
+    ignore_settings = ["custom_ice_trap_percent", "custom_ice_trap_count", "hint_dist"] + list(ms_option_lookup.keys())
+    # Settings not to care about missing options (enumerations)
+    ignore_options = ["special_deal_price_min", "special_deal_price_max"]
+
+    randomizer_settings = rs.generate_balanced_weights(None)
 
     # Find new or changed settings by name
     print("Checking for new or removed settings...")
@@ -22,27 +26,26 @@ def validate_weights(weights, randomizer_settings):
     for setting in rsl_settings_set-ootr_settings_set:
         print(f"\tRSL:  {setting} {list(weights[setting].keys())}")
     for setting in ootr_settings_set-rsl_settings_set:
-        if setting not in ignore_list:
+        if setting not in ignore_settings:
             print(f"\tOoTR: {setting} {list(SettingInfos.setting_infos[setting].choice_list)}")
     print("\n\n")
 
     # Find new or changed options
     print("Checking settings for new or removed options...")
-    for setting in weights.keys():
-        if setting in ignore_list:
+    for setting, optweights in weights.items():
+        if setting in ignore_settings:
             continue
-        # Randomizer has appropriate types for each variable but we store options as strings
-        randomizer_settings_strings = set(map(lambda x: x.lower(), map(str, list(randomizer_settings[setting].keys()))))
-        old_options = list(set(weights[setting].keys()) - randomizer_settings_strings)
-        new_options = list(randomizer_settings_strings - set(weights[setting].keys()))
-        if len(old_options) > 0:
-            for name in old_options:
-                print(f"{setting} option {name} no longer exists.\n")
-        if setting not in settings_ignore_list and len(new_options) > 0:
-            for name in new_options:
-                print(f"{setting} option {name} is new!\n")
+        rsl_options = set(optweights.keys())
+        ootr_options = set(map(lambda x: str(x).lower(), SettingInfos.setting_infos[setting].choice_list))
+        for option in rsl_options-ootr_options:
+            print(f"\tRSL:  {setting}:{option} removed or renamed")
+        for option in ootr_options-rsl_options:
+            if setting not in ignore_options:
+                print(f"\tOoTR: {setting}:{option} newly added")
     print("\n\n")
 
+
+def validate_multiselect_knowledge():
     print("Verifying multiselect knowledge...")
     for mskey in ms_option_lookup.keys():
         rslset = set(ms_option_lookup[mskey])
@@ -52,3 +55,11 @@ def validate_weights(weights, randomizer_settings):
             print(f"\t\tRSL:  {rslset-ootrset}")
             print(f"\t\tOoTR: {ootrset-rslset}")
     print("\n\n")
+
+
+def validate_overrides():
+    pass
+
+
+def validate_conditionals():
+    pass
