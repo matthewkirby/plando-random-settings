@@ -44,7 +44,8 @@ def generate_balanced_weights(fname="default_weights.json"):
 
     exclude_from_weights = ["bridge_tokens", "ganon_bosskey_tokens", "bridge_hearts", "ganon_bosskey_hearts",
                             "triforce_goal_per_world", "triforce_count_per_world", "disabled_locations",
-                            "allowed_tricks", "starting_equipment", "starting_items", "starting_songs"]
+                            "allowed_tricks", "advanced_allowed_tricks", "starting_equipment", "starting_items",
+                            "starting_songs"]
     weight_dict = {}
     for name in settings_to_randomize:
         if name not in exclude_from_weights:
@@ -236,6 +237,8 @@ def generate_plando(weights, override_weights_fname, no_seed, plando_filename_ba
     if weight_options is not None:
         if "tricks" in weight_options:
             random_settings["allowed_tricks"] = weight_options["tricks"]
+        if "advanced_tricks" in weight_options:
+            random_settings["advanced_allowed_tricks"] = weight_options["advanced_tricks"]
         if "disabled_locations" in weight_options:
             random_settings["disabled_locations"] = weight_options["disabled_locations"]
         random_settings["misc_hints"] = weight_options["misc_hints"] if "misc_hints" in weight_options else []

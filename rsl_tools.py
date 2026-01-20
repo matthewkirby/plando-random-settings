@@ -71,42 +71,6 @@ def find_rom_file():
     return rom_filename[0]
 
 
-# Compare weights file to settings list to check for changes to the randomizer settings table
-def check_for_setting_changes(weights, randomizer_settings):
-    """ Function to check for new settings and options when the randomizer is updated. """
-    ignore_list = ["custom_ice_trap_percent", "custom_ice_trap_count", "bingosync_url", "starting_inventory",
-        "tricks_list_msg", "empty_dungeons_count", "hint_dist"] + list(ms_option_lookup.keys())
-
-    # Find new or changed settings by name
-    old_settings = list(set(weights.keys()) - set(randomizer_settings.keys()))
-    new_settings = list(set(randomizer_settings.keys()) - set(weights.keys()))
-    if len(old_settings) > 0:
-        for setting in old_settings:
-            print(f"{setting} with options {list(weights[setting].keys())} is no longer a setting.\n")
-            weights.pop(setting)
-        print("-------------------------------------")
-    if len(new_settings) > 0:
-        for setting in new_settings:
-            if setting not in ignore_list:
-                print(f"{setting} with options {list(randomizer_settings[setting].keys())} is a new setting!\n")
-        print("-------------------------------------")
-
-    # Find new or changed options
-    for setting in weights.keys():
-        if setting in ignore_list:
-            continue
-        # Randomizer has appropriate types for each variable but we store options as strings
-        randomizer_settings_strings = set(map(lambda x: x.lower(), map(str, list(randomizer_settings[setting].keys()))))
-        old_options = list(set(weights[setting].keys()) - randomizer_settings_strings)
-        new_options = list(randomizer_settings_strings - set(weights[setting].keys()))
-        if len(old_options) > 0:
-            for name in old_options:
-                print(f"{setting} option {name} no longer exists.\n")
-        if len(new_options) > 0:
-            for name in new_options:
-                print(f"{setting} option {name} is new!\n")
-
-
 def benchmark_weights(weight_options, weight_dict, weight_multiselect):
     """ Compare weights file definition to empirical data from generated spoiler logs. """
     # Initialize weight comparison object

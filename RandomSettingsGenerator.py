@@ -11,6 +11,7 @@ ur.check_version()
 from utils import cleanup
 import rsl_tools as tools
 import roll_settings as rs
+import validation
 
 global_override_fname = None
 
@@ -115,7 +116,7 @@ def main():
     # If we only want to check for new/changed settings
     if args["check_new_settings"]:
         _, _, rslmultis, rslweights = rs.load_weights_file("weights/rsl_main.json")
-        tools.check_for_setting_changes(rslweights, rs.generate_balanced_weights(None))
+        validation.validate_rsl(rslweights, rs.generate_balanced_weights(None))
         return
 
     # If we only want to benchmark weights

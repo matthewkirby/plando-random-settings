@@ -37,7 +37,8 @@
             "logic_lens_shadow_platform",
 	        "logic_lens_bongo"
         ],
-        "disabled_locations": []
+        "disabled_locations": [],
+        "advanced_tricks": []
     },
     "conditionals": {
         "constant_triforce_hunt_extras": [true],
@@ -71,7 +72,9 @@
         "minor_items_as_major_chest": 0,
         "adult_trade_start": 100,
         "potcrate_textures_specific": 100,
-        "chest_textures_specific": 100
+        "chest_textures_specific": 100,
+        "ocarina_songs": 0,
+        "enhance_map_compass": 50
     },
     "weights": {
         "shuffle_loach_reward": {
@@ -93,7 +96,7 @@
         },
         "logic_rules": {
             "glitchless": 1,
-            "glitched": 0,
+            "advanced": 0,
             "none": 0
         },
         "shuffle_freestanding_items": {
@@ -165,8 +168,12 @@
             "closed": 0
         },
         "open_door_of_time": {
-            "true": 1,
-            "false": 1
+            "open": 1,
+            "sot": 1,
+            "oot_sot": 0,
+            "stones": 0,
+            "stones_sot": 0,
+            "stones_oot_sot": 0
         },
         "zora_fountain": {
             "closed": 1,
@@ -442,10 +449,6 @@
             "8": 4,
             "9": 20
         },
-        "enhance_map_compass": {
-            "true": 1,
-            "false": 1
-        },
         "reachable_locations": {
             "all": 1,
             "goals": 0,
@@ -479,9 +482,10 @@
             "true": 1,
             "false": 0
         },
-        "free_scarecrow": {
-            "true": 1,
-            "false": 1
+        "scarecrow_behavior": {
+            "vanilla": 0,
+            "fast": 1,
+            "free": 1
         },
         "chicken_count_random": {
             "true": 1,
@@ -521,12 +525,6 @@
             "9": 1,
             "10": 1
         },
-        "ocarina_songs": {
-            "off": 1,
-            "frog": 0,
-            "warp": 0,
-            "all": 0
-        },
         "correct_chest_appearances": {
             "off": 4,
             "textures": 3,
@@ -537,13 +535,19 @@
             "true": 0,
             "false": 1
         },
-        "shopsanity_prices": {
-            "random": 1,
-            "random_starting": 1,
-            "random_adult": 1,
-            "random_giant": 1,
-            "random_tycoon": 0,
-            "affordable": 1
+        "special_deal_price_distribution": {
+            "vanilla": 0,
+            "betavariate": 0,
+            "uniform": 1
+        },
+        "special_deal_price_min": {
+            "0": 1
+        },
+        "special_deal_price_max": {
+            "10": 1,
+            "95": 1,
+            "200": 1,
+            "500": 0
         },
         "fast_bunny_hood": {
             "true": 1,
@@ -732,7 +736,7 @@
             "true": 0,
             "false": 1
         },
-        "shuffle_gossipstones": {
+        "shuffle_fairies": {
             "true": 0,
             "false": 1
         },
@@ -805,6 +809,35 @@
         "golden_boulders": {
             "true": 0,
             "false": 1
+        },
+        "shuffle_100_skulltula_rupee": {
+            "true": 0,
+            "false": 1
+        },
+        "add_random_starting_items": {
+            "true": 0,
+            "false": 1
+        },
+        "random_starting_items_count": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0
+        },
+        "random_starting_items_exclude": {
+            "songs": 0,
+            "bombchus": 0,
+            "shields": 0,
+            "deku_upgrades": 0,
+            "health_upgrades": 0,
+            "junk": 0
         }
     }
 }

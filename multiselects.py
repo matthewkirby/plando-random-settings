@@ -44,15 +44,17 @@ ms_option_lookup = {
         'Spooky Mask', 'Bunny Hood', 'Goron Mask', 'Zora Mask', 'Gerudo Mask', 'Mask of Truth'],
     "minor_items_as_major_chest": ["bombchus", "shields", "capacity"],
     "misc_hints": ['altar', 'dampe_diary', 'ganondorf', 'warp_songs_and_owls', '10_skulltulas',
-        '20_skulltulas', '30_skulltulas', '40_skulltulas', '50_skulltulas', 'frogs2', 'mask_shop',
-        'unique_merchants'],
+        '20_skulltulas', '30_skulltulas', '40_skulltulas', '50_skulltulas', '100_skulltulas', 'frogs2',
+        'mask_shop', 'unique_merchants', 'skull_mask', 'mask_of_truth', 'big_poes'],
     "adult_trade_start": ['Pocket Egg', 'Pocket Cucco', 'Cojiro', 'Odd Mushroom', 'Odd Potion',
         'Poachers Saw', 'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check'],
     "potcrate_textures_specific": ['major', 'bosskeys', 'keys', 'tokens', 'hearts'],
     "chest_textures_specific": ['major', 'bosskeys', 'keys', 'tokens', 'hearts'],
     "empty_dungeons_rewards": ['Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire', 'Light Medallion',
         'Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Shadow Medallion',
-        'Spirit Medallion']
+        'Spirit Medallion'],
+    "ocarina_songs": ['frog', 'warp', 'frogs2'],
+    "enhance_map_compass": ['map_mq', 'map_dungeon_location', 'compass_boss_location', 'compass_reward']
 }
 
 invalid_settings = ["mq_dungeons_specific", "empty_dungeons_specific", "misc_hints", "empty_dungeons_rewards"]
