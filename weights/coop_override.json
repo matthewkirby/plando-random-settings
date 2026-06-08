@@ -1,8 +1,10 @@
 {
-    "weights": {
+    "options": {
         "bridge_tokens_max": 50,
         "ganon_bosskey_tokens_max": 50,
-        "triforce_goal_per_world_max": 50,
+        "triforce_goal_per_world_max": 50
+    },
+    "weights": {
         "damage_multiplier": {
             "normal": 1
         },
