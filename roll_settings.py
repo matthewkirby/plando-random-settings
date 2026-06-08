@@ -3,6 +3,7 @@ import sys
 import datetime
 import json
 import random
+import traceback
 import conditionals as conds
 from multiselects import resolve_multiselects, ms_option_lookup
 from rslversion import __version__
@@ -224,7 +225,12 @@ def generate_plando(weights, override_weights_fname, no_seed, plando_filename_ba
     # Draw the random settings
     random_settings = {}
     for setting, options in weight_dict.items():
-        random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
+        try:
+            random_settings[setting] = random.choices(list(options.keys()), weights=list(options.values()))[0]
+        except:
+            print(f"\nXXXXXXXXXXXXXXX > {setting} caused a problem!\n")
+            traceback.print_exc()
+            sys.exit(1)
 
     # Draw the multiselects
     if weight_multiselects is not None:
@@ -261,7 +267,7 @@ def generate_plando(weights, override_weights_fname, no_seed, plando_filename_ba
                 raise TypeError(f'Value for setting {setting!r} must be "true" or "false"')
         elif setting_type is int:
             value = int(value)
-        elif setting_type is not str and setting not in ["allowed_tricks", "disabled_locations", "starting_inventory", "misc_hints", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(ms_option_lookup.keys()):
+        elif setting_type is not str and setting not in ["allowed_tricks", "advanced_allowed_tricks", "disabled_locations", "starting_inventory", "misc_hints", "starting_songs", "starting_equipment", "hint_dist_user", "dungeon_shortcuts"] + list(ms_option_lookup.keys()):
             raise NotImplementedError(f'{setting} has an unsupported setting type: {setting_type!r}')
         random_settings[setting] = value
 

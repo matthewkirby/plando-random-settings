@@ -74,7 +74,9 @@
         "potcrate_textures_specific": 100,
         "chest_textures_specific": 100,
         "ocarina_songs": 0,
-        "enhance_map_compass": 50
+        "enhance_map_compass": 50,
+        "shuffle_fairies": 0,
+        "random_starting_items_exclude": 0
     },
     "weights": {
         "shuffle_loach_reward": {
@@ -736,10 +738,6 @@
             "true": 0,
             "false": 1
         },
-        "shuffle_fairies": {
-            "true": 0,
-            "false": 1
-        },
         "shuffle_fishies": {
             "true": 0,
             "false": 1
@@ -830,14 +828,6 @@
             "8": 0,
             "9": 0,
             "10": 0
-        },
-        "random_starting_items_exclude": {
-            "songs": 0,
-            "bombchus": 0,
-            "shields": 0,
-            "deku_upgrades": 0,
-            "health_upgrades": 0,
-            "junk": 0
         }
     }
 }

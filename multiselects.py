@@ -54,7 +54,9 @@ ms_option_lookup = {
         'Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Shadow Medallion',
         'Spirit Medallion'],
     "ocarina_songs": ['frog', 'warp', 'frogs2'],
-    "enhance_map_compass": ['map_mq', 'map_dungeon_location', 'compass_boss_location', 'compass_reward']
+    "enhance_map_compass": ['map_mq', 'map_dungeon_location', 'compass_boss_location', 'compass_reward'],
+    "shuffle_fairies": ["GossipFairy", "ButterflyFairy", "SunsStormsFairy", "FountainFairy", "BeanPlantFairy"],
+    "random_starting_items_exclude": ["songs", "bombchus", "shields", "deku_upgrades", "health_upgrades", "junk"]
 }
 
 invalid_settings = ["mq_dungeons_specific", "empty_dungeons_specific", "misc_hints", "empty_dungeons_rewards"]
