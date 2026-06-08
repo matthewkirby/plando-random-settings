@@ -68,6 +68,8 @@ def get_command_line_args():
                         help="Generate a seed with more than 1 world.")
     parser.add_argument("--check_new_settings", "-u", action="store_true",
                         help="When the version updates, run with this flag to find changes to settings names or new settings.")
+    parser.add_argument("--verbose", "-V", action="store_true",
+                        help="When checking for new settings, verbosely narrate some checks.")
     parser.add_argument("--no_log_errors", action="store_true", default=False,
                         help="Only show errors in the console, don't log them to a file.")
     parser.add_argument("--plando_filename_base", default="random_settings",
@@ -101,6 +103,7 @@ def get_command_line_args():
         "worldcount": args.worldcount,
         "override_fname": args.override or global_override_fname,
         "check_new_settings": args.check_new_settings,
+        "verbose": args.verbose,
         "plando_filename_base": args.plando_filename_base,
         "seed_count": args.seed_count,
         "benchmark": args.benchmark,
@@ -116,7 +119,7 @@ def main():
     # If we only want to check for new/changed settings
     if args["check_new_settings"]:
         _, _, rslmultis, rslweights = rs.load_weights_file("weights/rsl_main.json")
-        validation.validate_rsl(rslweights)
+        validation.validate_rsl(rslweights, args["verbose"])
         return
 
     # If we only want to benchmark weights
