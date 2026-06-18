@@ -6,11 +6,6 @@ import shutil
 import subprocess
 from utils import cleanup
 import rslversion as rslv
-try:
-    import requests
-except ModuleNotFoundError:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
-    import requests
 
 
 def check_python():
@@ -35,6 +30,13 @@ def check_version():
 
 def download_randomizer():
     """ Download the randomizer from commit listed in version.py """
+
+    try:
+        import requests
+    except ModuleNotFoundError:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
+        import requests
+
     zippath = 'randomizer.zip'
 
     # Make sure an old zip isn't sitting around
